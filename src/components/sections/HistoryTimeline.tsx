@@ -1,0 +1,114 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { Flag, Target, Trophy, Users } from "lucide-react"
+import { SectionHeader } from "./SectionHeader"
+
+const timeline = [
+  { year: "2018", title: "Lahirnya Satria Cengkara", desc: "Paskibra resmi berdiri di SMKN 1 Kertosono dengan 12 anggota perdana." },
+  { year: "2020", title: "Juara Pertama", desc: "Meraih juara 1 LKBB tingkat Kabupaten Nganjuk untuk pertama kalinya." },
+  { year: "2022", title: "Tingkat Provinsi", desc: "Menjadi wakil Jawa Timur dalam ajang paskibra tingkat provinsi." },
+  { year: "2024", title: "Generasi Emas", desc: "45 anggota aktif dengan 6 divisi lengkap — terbanyak dalam sejarah." },
+  { year: "2026", title: "Terus Berkarya", desc: "Pelatihan modern, jasa pasukan, dan sekolah kepemimpinan." },
+]
+
+export function HistoryTimeline() {
+  return (
+    <section id="sejarah" className="relative py-24">
+      <div className="container mx-auto px-4">
+        <SectionHeader
+          label="Perjalanan Kami"
+          title="Sejarah Satria Cengkara"
+          subtitle="Delapan tahun membangun tradisi disiplin dan prestasi."
+        />
+
+        <div className="mx-auto max-w-2xl">
+          <div className="relative border-l border-white/10 pl-8 ml-3">
+            {timeline.map((item, index) => (
+              <motion.div
+                key={item.year}
+                initial={{ opacity: 0, x: -16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                viewport={{ once: true, margin: "-60px" }}
+                className="relative pb-10 last:pb-0"
+              >
+                <span className="absolute -left-[41px] top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-accent bg-background">
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                </span>
+                <p className="font-display text-sm font-bold text-accent">{item.year}</p>
+                <h3 className="mt-1 font-display text-base font-bold">{item.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const elements = [
+  { icon: Flag, title: "Sang Merah Putih", desc: "Simbol nasionalisme dan cinta tanah air." },
+  { icon: Target, title: "Mata Banteng", desc: "Fokus, keberanian, dan kewaspadaan." },
+  { icon: Trophy, title: "Lima Sinar", desc: "Disiplin, loyalitas, integritas, solidaritas, prestasi." },
+  { icon: Users, title: "Genggaman Tangan", desc: "Persaudaraan dan kekompakan tim." },
+]
+
+export function LogoPhilosophy() {
+  return (
+    <section id="filosofi" className="relative py-24">
+      <div className="container mx-auto px-4">
+        <SectionHeader
+          label="Makna Lambang"
+          title="Filosofi Logo Satria Cengkara"
+        />
+
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-80px" }}
+            className="mx-auto"
+          >
+            <div className="relative flex h-56 w-56 items-center justify-center md:h-72 md:w-72">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 rounded-full border border-dashed border-white/15"
+              />
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ duration: 36, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-5 rounded-full border border-dashed border-accent/20"
+              />
+              <div className="absolute inset-10 overflow-hidden rounded-full border border-white/10 bg-card shadow-2xl shadow-black/40">
+                <img src="/logo.png" alt="Logo Satria Cengkara" className="h-full w-full object-contain p-6" />
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {elements.map((el, index) => (
+              <motion.div
+                key={el.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                viewport={{ once: true, margin: "-40px" }}
+                className="rounded-2xl border border-white/[0.08] bg-card p-5 card-glow"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                  <el.icon className="h-4.5 w-4.5 text-accent" />
+                </div>
+                <h3 className="mt-3 font-display text-sm font-bold">{el.title}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{el.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

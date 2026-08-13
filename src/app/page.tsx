@@ -1,0 +1,45 @@
+import { HeroSection } from "@/components/sections/HeroSection"
+import { SchoolBentoGrid } from "@/components/sections/SchoolBentoGrid"
+import { StructureMembers } from "@/components/sections/StructureMembers"
+import { AchievementsGallery } from "@/components/sections/AchievementsGallery"
+import { RentalCatalog } from "@/components/sections/RentalCatalog"
+import { HistoryTimeline, LogoPhilosophy } from "@/components/sections/HistoryTimeline"
+import { FeedbackForm } from "@/components/sections/FeedbackForm"
+import { Footer } from "@/components/sections/Footer"
+import { AIChatWidget } from "@/components/widgets/AIChatWidget"
+import { FloatingWhatsApp } from "@/components/widgets/FloatingWhatsApp"
+import { supabase } from "@/lib/supabase/server"
+
+export default async function Home() {
+  const { data: members } = await supabase.from("structure_members").select("*")
+  const { data: achievements } = await supabase.from("gallery").select("*")
+  const { data: allGallery } = await supabase.from("gallery").select("category")
+  const { data: rentals } = await supabase.from("rentals").select("*")
+
+  const categories = [...new Set((allGallery || []).map(g => g.category))]
+
+  return (
+    <main>
+      <HeroSection />
+      <SchoolBentoGrid />
+      {members && <StructureMembers members={members} />}
+      {achievements && (
+        <AchievementsGallery
+          achievements={achievements.map(a => ({
+            ...a,
+            image_url: a.image_url || "",
+            year: new Date(a.created_at).getFullYear().toString()
+          }))}
+          categories={categories}
+        />
+      )}
+      <HistoryTimeline />
+      <LogoPhilosophy />
+      {rentals && <RentalCatalog items={rentals} />}
+      <FeedbackForm />
+      <Footer />
+      <FloatingWhatsApp />
+      <AIChatWidget />
+    </main>
+  )
+}

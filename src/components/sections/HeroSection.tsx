@@ -1,0 +1,254 @@
+"use client"
+
+import { motion, useScroll, useTransform } from "framer-motion"
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { Menu, X, ArrowRight, ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+const NAV_LINKS = [
+  { label: "Beranda", href: "#beranda" },
+  { label: "Sekolah", href: "#sekolah" },
+  { label: "Pengurus", href: "#pengurus" },
+  { label: "Galeri", href: "#galeri" },
+  { label: "Sejarah", href: "#sejarah" },
+  { label: "Penyewaan", href: "#penyewaan" },
+  { label: "Kontak", href: "#kontak" },
+]
+
+const WORDS = [
+  { text: "SATRIA", gradient: false },
+  { text: "CENGKARA", gradient: true },
+]
+
+export function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  return (
+    <header
+      className={cn(
+        "fixed top-0 inset-x-0 z-50 transition-all duration-300",
+        scrolled ? "py-2" : "py-4"
+      )}
+    >
+      <div className="container mx-auto px-4">
+        <nav
+          className={cn(
+            "flex items-center justify-between rounded-2xl px-4 py-2.5 transition-all duration-300",
+            scrolled ? "glass shadow-lg shadow-black/20" : "bg-transparent border border-transparent"
+          )}
+        >
+          <Link href="#beranda" className="flex items-center gap-3">
+            <div className="relative h-9 w-9 rounded-full overflow-hidden ring-1 ring-white/15 bg-card">
+              <Image src="/logo.png" alt="Satria Cengkara" fill className="object-cover" />
+            </div>
+            <div className="hidden sm:block leading-tight">
+              <p className="font-display font-bold text-sm tracking-wide">SATRIA CENGKARA</p>
+              <p className="text-[10px] text-muted-foreground">Paskibra SMKN 1 Kertosono</p>
+            </div>
+          </Link>
+
+          <div className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin"
+              className="hidden md:inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
+            >
+              Admin
+            </Link>
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-muted-foreground hover:text-foreground"
+              aria-label="Menu"
+            >
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
+        </nav>
+
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden mt-2 glass rounded-2xl p-3"
+          >
+            <div className="flex flex-col">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-white/10 text-center hover:bg-white/5 transition-colors"
+              >
+                Login Admin
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </header>
+  )
+}
+
+const container = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+}
+
+const wordReveal = {
+  hidden: { opacity: 0, y: 40, filter: "blur(8px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
+  },
+}
+
+export function HeroSection() {
+  const { scrollY } = useScroll()
+  const bgY = useTransform(scrollY, [0, 600], [0, 120])
+
+  return (
+    <section id="beranda" className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Background layers */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 -z-10 will-change-transform">
+        <div className="absolute inset-0 bg-grid" />
+        <div className="absolute inset-0 bg-radial-glow" />
+        <div className="absolute -top-40 -right-40 h-[480px] w-[480px] rounded-full bg-secondary/10 blur-[140px]" />
+        <div className="absolute -bottom-40 -left-40 h-[480px] w-[480px] rounded-full bg-primary/10 blur-[140px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+      </motion.div>
+
+      <Navbar />
+
+      {/* Hero content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-28 pb-16 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-muted-foreground backdrop-blur"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+          </span>
+          Paskibra • SMKN 1 Kertosono
+        </motion.div>
+
+        <motion.h1
+          variants={container}
+          initial="hidden"
+          animate="visible"
+          className="mt-8 font-display font-extrabold leading-[0.95] tracking-tight"
+        >
+          {WORDS.map((word) => (
+            <span key={word.text} className="block">
+              {word.text.split("").map((char, i) => (
+                <motion.span
+                  key={i}
+                  variants={wordReveal}
+                  className={cn("inline-block", word.gradient && "text-gradient-red")}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </span>
+          ))}
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="mt-6 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed"
+        >
+          Membentuk generasi muda yang <span className="text-foreground">disiplin</span>,{" "}
+          <span className="text-foreground">tangguh</span>, dan{" "}
+          <span className="text-foreground">berintegritas</span> lewat baris-berbaris,
+          kepemimpinan, dan pengabdian kepada bangsa.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.6 }}
+          className="mt-10 flex flex-col sm:flex-row items-center gap-3"
+        >
+          <Link
+            href="#sekolah"
+            className="group inline-flex items-center gap-2 rounded-xl gradient-primary px-7 py-3.5 text-sm font-semibold text-white shadow-glow-red transition-all hover:brightness-110 active:scale-[0.98]"
+          >
+            Jelajahi Kami
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <Link
+            href="#penyewaan"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-7 py-3.5 text-sm font-medium text-foreground backdrop-blur transition-all hover:border-white/20 hover:bg-white/10 active:scale-[0.98]"
+          >
+            Sewa Kostum & Pasukan
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
+          className="mt-16 grid grid-cols-3 gap-8 md:gap-16"
+        >
+          {[
+            { value: "8+", label: "Tahun Berkarya" },
+            { value: "45+", label: "Anggota Aktif" },
+            { value: "15+", label: "Trofi & Prestasi" },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="font-display text-2xl md:text-3xl font-bold text-gradient">{stat.value}</p>
+              <p className="mt-1 text-[11px] md:text-xs text-muted-foreground">{stat.label}</p>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
+      <motion.a
+        href="#sekolah"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.8 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-muted-foreground/60 hover:text-foreground transition-colors"
+        aria-label="Scroll ke bawah"
+      >
+        <ChevronDown className="h-5 w-5 animate-bounce" />
+      </motion.a>
+    </section>
+  )
+}

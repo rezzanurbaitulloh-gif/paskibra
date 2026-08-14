@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
               ],
               stream: true,
             }),
-            signal: AbortSignal.timeout(60000),
+            signal: AbortSignal.timeout(20000),
           })
 
           if (!response.ok) {
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
 
     return Response.json(
       { error: lastError.message },
-      { status: lastError.status && lastError.status !== 401 ? lastError.status : 500 }
+      { status: 503 }
     )
   } catch (err) {
     return Response.json(

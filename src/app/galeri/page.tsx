@@ -16,6 +16,8 @@ interface GalleryItem {
   category: string
   media_type: string
   video_url: string | null
+  images: string[] | null
+  created_at: string
 }
 
 const CATEGORIES = ["Semua", "LKBB", "Latihan Rutin", "Pelantikan", "Pengukuhan", "Kegiatan Lain"]
@@ -67,11 +69,12 @@ function VideoEmbed({ item }: { item: GalleryItem }) {
   )
 }
 
+const MotionLink = motion(Link)
+
 export default function GaleriPage() {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [category, setCategory] = useState("Semua")
   const [loading, setLoading] = useState(true)
-  const [lightbox, setLightbox] = useState<GalleryItem | null>(null)
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -128,65 +131,55 @@ export default function GaleriPage() {
         ) : (
           <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
             {filtered.map((item, index) => (
-              <motion.div
+              <MotionLink
                 key={item.id}
+                href={`/galeri/${item.id}`}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.04 }}
-                className="break-inside-avoid overflow-hidden rounded-2xl border border-line bg-card"
+                className="group block break-inside-avoid overflow-hidden rounded-2xl border border-line bg-card transition-all hover:border-accent/40"
               >
                 {item.media_type === "video_embed" ? (
                   <VideoEmbed item={item} />
                 ) : item.image_url ? (
-                  <button
-                    onClick={() => setLightbox(item)}
-                    className="block w-full cursor-zoom-in"
-                    aria-label="Perbesar foto"
-                  >
+                  <div className="relative w-full overflow-hidden">
                     <Image
                       src={item.image_url}
                       alt={item.title}
                       width={800}
                       height={600}
-                      className="w-full object-cover"
+                      className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                  </button>
+                    {item.images && item.images.length > 0 && (
+                      <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                        +{item.images.length} foto
+                      </span>
+                    )}
+                  </div>
                 ) : null}
                 <div className="p-4">
                   <p className="text-sm font-semibold">{item.title}</p>
                   {item.description && (
-                    <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
                   )}
-                  <span className="mt-2 inline-block rounded-md border border-line bg-soft px-2 py-0.5 text-[10px] font-medium text-accent">
-                    {item.category}
-                  </span>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="inline-block rounded-md border border-line bg-soft px-2 py-0.5 text-[10px] font-medium text-accent">
+                      {item.category}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {new Date(item.created_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
                 </div>
-              </motion.div>
+              </MotionLink>
             ))}
           </div>
         )}
       </div>
-
-      {/* Lightbox */}
-      {lightbox && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
-          onClick={() => setLightbox(null)}
-        >
-          <div className="max-h-full w-full max-w-3xl overflow-hidden rounded-2xl" onClick={(e) => e.stopPropagation()}>
-            <Image
-              src={lightbox.image_url || ""}
-              alt={lightbox.title}
-              width={1200}
-              height={900}
-              className="h-auto w-full object-contain"
-            />
-            <p className="mt-3 text-center text-sm font-medium">{lightbox.title}</p>
-          </div>
-        </motion.div>
-      )}
     </div>
   )
 }

@@ -36,3 +36,6 @@ $$ LANGUAGE sql STABLE SECURITY DEFINER;
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS media_type TEXT NOT NULL DEFAULT 'image' CHECK (media_type IN ('image', 'video_embed'));
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS embed_code TEXT;
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS video_url TEXT;
+
+-- GALERI: foto tambahan untuk halaman detail
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS images text[] DEFAULT '{}';

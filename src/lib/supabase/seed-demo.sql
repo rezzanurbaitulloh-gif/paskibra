@@ -20,13 +20,13 @@ INSERT INTO structure_members (name, position, division, generation, photo_url) 
 ON CONFLICT DO NOTHING;
 
 -- GALERI (foto demo lokal bertema paskibra)
-INSERT INTO gallery (title, description, image_url, category, media_type) VALUES
-  ('Upacara Hari Senin', 'Pengibaran bendera oleh pasukan Paskibra SMKN 1 Kertosono', '/images/upacara.svg', 'Kegiatan Lain', 'image'),
-  ('Latihan LKBB Intensif', 'Persiapan lomba LKBB tingkat kabupaten Nganjuk', '/images/lkbb.svg', 'LKBB', 'image'),
-  ('Latihan Rutin Sabtu', 'Latihan baris-berbaris rutin di halaman sekolah', '/images/latihan.svg', 'Latihan Rutin', 'image'),
-  ('Pelantikan Pengurus Baru', 'Pelantikan pengurus periode baru Satria Cengkara', '/images/pelantikan.svg', 'Pelantikan', 'image'),
-  ('Pengukuhan Anggota Baru', 'Pengukuhan anggota angkatan 25 Satria Cengkara', '/images/pengukuhan.svg', 'Pengukuhan', 'image'),
-  ('Kegiatan Organisasi', 'Kegiatan kebersamaan dan pembinaan karakter anggota', '/images/kegiatan.svg', 'Kegiatan Lain', 'image')
+INSERT INTO gallery (title, description, image_url, category, media_type, images) VALUES
+  ('Upacara Hari Senin', 'Pengibaran bendera oleh pasukan Paskibra SMKN 1 Kertosono', '/images/upacara.svg', 'Kegiatan Lain', 'image', ARRAY['/images/pelantikan.svg','/images/pengukuhan.svg','/images/kegiatan.svg']),
+  ('Latihan LKBB Intensif', 'Persiapan lomba LKBB tingkat kabupaten Nganjuk', '/images/lkbb.svg', 'LKBB', 'image', ARRAY['/images/latihan.svg','/images/kegiatan.svg']),
+  ('Latihan Rutin Sabtu', 'Latihan baris-berbaris rutin di halaman sekolah', '/images/latihan.svg', 'Latihan Rutin', 'image', '{}'),
+  ('Pelantikan Pengurus Baru', 'Pelantikan pengurus periode baru Satria Cengkara', '/images/pelantikan.svg', 'Pelantikan', 'image', ARRAY['/images/upacara.svg','/images/lkbb.svg']),
+  ('Pengukuhan Anggota Baru', 'Pengukuhan anggota angkatan 25 Satria Cengkara', '/images/pengukuhan.svg', 'Pengukuhan', 'image', '{}'),
+  ('Kegiatan Organisasi', 'Kegiatan kebersamaan dan pembinaan karakter anggota', '/images/kegiatan.svg', 'Kegiatan Lain', 'image', ARRAY['/images/latihan.svg'])
 ON CONFLICT DO NOTHING;
 
 -- KATALOG LAYANAN SEWA (inventory)

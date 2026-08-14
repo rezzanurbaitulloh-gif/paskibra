@@ -34,6 +34,7 @@ export default function GaleriAdminPage() {
     category: "Kegiatan Lain",
     media_type: "image" as "image" | "video_embed",
     image_url: "",
+    extra_images: "",
     video_url: "",
   })
 
@@ -48,7 +49,7 @@ export default function GaleriAdminPage() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ title: "", description: "", category: "Kegiatan Lain", media_type: "image", image_url: "", video_url: "" })
+    setForm({ title: "", description: "", category: "Kegiatan Lain", media_type: "image", image_url: "", extra_images: "", video_url: "" })
     setOpen(true)
   }
 
@@ -60,6 +61,7 @@ export default function GaleriAdminPage() {
       category: item.category,
       media_type: item.media_type === "video_embed" ? "video_embed" : "image",
       image_url: item.image_url || "",
+      extra_images: (item.images || []).join(", "),
       video_url: item.video_url || "",
     })
     setOpen(true)
@@ -73,6 +75,9 @@ export default function GaleriAdminPage() {
       category: form.category,
       media_type: form.media_type,
       image_url: form.media_type === "image" ? form.image_url : null,
+      images: form.media_type === "image"
+        ? form.extra_images.split(",").map((u) => u.trim()).filter(Boolean)
+        : [],
       video_url: form.media_type === "video_embed" ? form.video_url : null,
     }
     if (editing) {
@@ -182,10 +187,17 @@ export default function GaleriAdminPage() {
               </div>
 
               {form.media_type === "image" ? (
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">URL Gambar</Label>
-                  <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} required placeholder="/images/upacara.svg atau https://..." className="h-10 border-line bg-soft" />
-                </div>
+                <>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">URL Gambar</Label>
+                    <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} required placeholder="/images/upacara.svg atau https://..." className="h-10 border-line bg-soft" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">URL Foto Lainnya (pisahkan dengan koma)</Label>
+                    <Input value={form.extra_images} onChange={(e) => setForm({ ...form, extra_images: e.target.value })} placeholder="https://...jpg, https://...jpg" className="h-10 border-line bg-soft" />
+                    <p className="text-[10px] text-muted-foreground">Opsional — foto tambahan untuk halaman detail galeri.</p>
+                  </div>
+                </>
               ) : (
                 <div className="space-y-1.5">
                   <Label className="text-xs text-muted-foreground">Link Video (TikTok / Instagram Reel / YouTube)</Label>

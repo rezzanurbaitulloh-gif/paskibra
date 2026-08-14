@@ -25,20 +25,19 @@ const socials = [
 ]
 
 const links = [
-  { label: "Beranda", href: "#beranda" },
-  { label: "Sekolah", href: "#sekolah" },
-  { label: "Pengurus", href: "#pengurus" },
-  { label: "Galeri", href: "#galeri" },
-  { label: "Sejarah", href: "#sejarah" },
-  { label: "Penyewaan", href: "#penyewaan" },
-  { label: "Kotak Saran", href: "#saran" },
+  { label: "Beranda", href: "/#beranda" },
+  { label: "Profil Sekolah", href: "/#sekolah" },
+  { label: "Pengurus", href: "/pengurus" },
+  { label: "Galeri", href: "/galeri" },
+  { label: "Layanan Sewa", href: "/layanan" },
+  { label: "Kotak Saran", href: "/saran" },
 ]
 
 export function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer id="kontak" className="border-t border-white/[0.08] bg-card/50">
+    <footer id="kontak" className="border-t border-line bg-card/50">
       <div className="container mx-auto px-4 py-14">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
           <div>
@@ -63,7 +62,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-muted-foreground transition-all hover:border-white/25 hover:text-foreground"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-line text-muted-foreground transition-all hover:border-white/25 hover:text-foreground"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -105,12 +104,15 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-6 text-[11px] text-muted-foreground md:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-[11px] text-muted-foreground md:flex-row">
           <p>© {year} Paskibra Satria Cengkara — SMKN 1 Kertosono</p>
           <p>
             Dibuat dengan <span className="text-primary">♥</span> oleh Tim Satria Cengkara
           </p>
         </div>
+        <p className="mt-2 text-[10px] text-muted-foreground/60">
+          Foto watermark: Wikimedia Commons (CC BY-SA 4.0)
+        </p>
       </div>
     </footer>
   )

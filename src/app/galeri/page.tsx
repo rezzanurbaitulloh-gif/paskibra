@@ -1,0 +1,192 @@
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { motion } from "framer-motion"
+import Link from "next/link"
+import Image from "next/image"
+import { supabase } from "@/lib/supabase/client"
+import { embedFromUrl } from "@/lib/embed"
+import { ArrowLeft, Play, Inbox } from "lucide-react"
+
+interface GalleryItem {
+  id: string
+  title: string
+  description: string | null
+  image_url: string | null
+  category: string
+  media_type: string
+  video_url: string | null
+}
+
+const CATEGORIES = ["Semua", "LKBB", "Latihan Rutin", "Pelantikan", "Pengukuhan", "Kegiatan Lain"]
+
+function VideoEmbed({ item }: { item: GalleryItem }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setInView(true)
+        else setInView(false)
+      },
+      { threshold: 0.4 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const embed = embedFromUrl(item.video_url || "")
+  if (!embed) {
+    return (
+      <div className="flex aspect-video items-center justify-center rounded-xl bg-soft">
+        <p className="text-xs text-muted-foreground">Link video tidak valid</p>
+      </div>
+    )
+  }
+
+  return (
+    <div ref={ref} className="aspect-video w-full overflow-hidden rounded-xl bg-black">
+      {inView ? (
+        <iframe
+          src={embed.embedUrl}
+          className="h-full w-full"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+          title={item.title}
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-soft">
+          <Play className="h-6 w-6 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function GaleriPage() {
+  const [items, setItems] = useState<GalleryItem[]>([])
+  const [category, setCategory] = useState("Semua")
+  const [loading, setLoading] = useState(true)
+  const [lightbox, setLightbox] = useState<GalleryItem | null>(null)
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const { data } = await supabase.from("gallery").select("*").order("created_at", { ascending: false })
+      setItems(data || [])
+      setLoading(false)
+    }
+    fetchItems()
+  }, [])
+
+  const filtered = category === "Semua" ? items : items.filter((i) => i.category === category)
+
+  return (
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 pt-28 pb-16">
+        <Link href="/#beranda" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Beranda
+        </Link>
+
+        <div className="mt-6 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Galeri Kegiatan</p>
+          <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Dokumentasi Satria Cengkara</h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
+            Foto dan video kegiatan kami — video TikTok, Instagram Reel, dan YouTube akan otomatis
+            diputar saat di-scroll.
+          </p>
+        </div>
+
+        {/* Filter */}
+        <div className="mt-8 flex flex-wrap justify-center gap-2">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
+                category === c
+                  ? "gradient-primary text-white shadow-glow-red"
+                  : "border border-line bg-card text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+
+        {/* Grid */}
+        {loading ? (
+          <p className="mt-12 text-center text-sm text-muted-foreground">Memuat...</p>
+        ) : filtered.length === 0 ? (
+          <div className="mt-12 flex flex-col items-center py-16 text-center">
+            <Inbox className="h-8 w-8 text-muted-foreground" />
+            <p className="mt-3 text-sm text-muted-foreground">Belum ada galeri untuk kategori ini.</p>
+          </div>
+        ) : (
+          <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
+            {filtered.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.04 }}
+                className="break-inside-avoid overflow-hidden rounded-2xl border border-line bg-card"
+              >
+                {item.media_type === "video_embed" ? (
+                  <VideoEmbed item={item} />
+                ) : item.image_url ? (
+                  <button
+                    onClick={() => setLightbox(item)}
+                    className="block w-full cursor-zoom-in"
+                    aria-label="Perbesar foto"
+                  >
+                    <Image
+                      src={item.image_url}
+                      alt={item.title}
+                      width={800}
+                      height={600}
+                      className="w-full object-cover"
+                    />
+                  </button>
+                ) : null}
+                <div className="p-4">
+                  <p className="text-sm font-semibold">{item.title}</p>
+                  {item.description && (
+                    <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
+                  )}
+                  <span className="mt-2 inline-block rounded-md border border-line bg-soft px-2 py-0.5 text-[10px] font-medium text-accent">
+                    {item.category}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <div className="max-h-full w-full max-w-3xl overflow-hidden rounded-2xl" onClick={(e) => e.stopPropagation()}>
+            <Image
+              src={lightbox.image_url || ""}
+              alt={lightbox.title}
+              width={1200}
+              height={900}
+              className="h-auto w-full object-contain"
+            />
+            <p className="mt-3 text-center text-sm font-medium">{lightbox.title}</p>
+          </div>
+        </motion.div>
+      )}
+    </div>
+  )
+}

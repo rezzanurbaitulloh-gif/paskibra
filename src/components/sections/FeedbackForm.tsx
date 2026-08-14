@@ -10,7 +10,7 @@ import { Send, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { SectionHeader } from "./SectionHeader"
 
-export function FeedbackForm() {
+export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
@@ -24,7 +24,7 @@ export function FeedbackForm() {
     setError("")
 
     const { error: insertError } = await supabase.from("feedbacks").insert({
-      name: name.trim() || "Anonim",
+      sender_name: name.trim() || "Anonim",
       message: message.trim(),
     })
 
@@ -34,6 +34,7 @@ export function FeedbackForm() {
       setSent(true)
       setName("")
       setMessage("")
+      onSubmitted?.()
       setTimeout(() => setSent(false), 4000)
     }
     setLoading(false)
@@ -45,6 +46,8 @@ export function FeedbackForm() {
         <SectionHeader
           label="Suara Anda"
           title="Kotak Saran & Masukan"
+          actionLabel="Lihat Semua Saran"
+          actionHref="/saran"
           subtitle="Kritik dan saran membantu Satria Cengkara tumbuh lebih baik. Nama bersifat opsional."
         />
 
@@ -55,7 +58,7 @@ export function FeedbackForm() {
           viewport={{ once: true, margin: "-60px" }}
           className="mx-auto max-w-xl"
         >
-          <div className="rounded-2xl border border-white/[0.08] bg-card p-6 md:p-8">
+          <div className="rounded-2xl border border-line bg-card p-6 md:p-8">
             {sent ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.94 }}
@@ -77,7 +80,7 @@ export function FeedbackForm() {
                     placeholder="Anonim jika dikosongkan"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-11 border-white/10 bg-white/[0.03] focus-visible:ring-accent"
+                    className="h-11 border-line bg-soft focus-visible:ring-accent"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -88,7 +91,7 @@ export function FeedbackForm() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={4}
-                    className="resize-none border-white/10 bg-white/[0.03] focus-visible:ring-accent"
+                    className="resize-none border-line bg-soft focus-visible:ring-accent"
                     required
                   />
                 </div>

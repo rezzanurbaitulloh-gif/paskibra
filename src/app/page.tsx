@@ -14,7 +14,7 @@ export default async function Home() {
   const { data: members } = await supabase.from("structure_members").select("*")
   const { data: achievements } = await supabase.from("gallery").select("*")
   const { data: allGallery } = await supabase.from("gallery").select("category")
-  const { data: rentals } = await supabase.from("rentals").select("*")
+  const { data: rentals } = await supabase.from("inventory").select("*")
 
   const categories = [...new Set((allGallery || []).map(g => g.category))]
 
@@ -35,7 +35,16 @@ export default async function Home() {
       )}
       <HistoryTimeline />
       <LogoPhilosophy />
-      {rentals && <RentalCatalog items={rentals} />}
+      {rentals && (
+        <RentalCatalog
+          items={rentals.map(r => ({
+            ...r,
+            available: r.is_available,
+            image_url: r.image_url || "",
+            description: r.description || "",
+          }))}
+        />
+      )}
       <FeedbackForm />
       <Footer />
       <FloatingWhatsApp />

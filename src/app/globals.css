@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0c;
-  --foreground: #ededed;
-  --card: #101014;
-  --card-foreground: #ededed;
-  --popover: #101014;
-  --popover-foreground: #ededed;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+  --secondary: #2563eb;
+  --secondary-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #d97706;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #dc2626;
+  --line: rgba(15, 23, 42, 0.08);
+  --soft: rgba(15, 23, 42, 0.04);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --grid-color: rgba(15, 23, 42, 0.05);
+  --glow-red: rgba(220, 38, 38, 0.12);
+  --text-grad-a: #0f172a;
+  --text-grad-b: #d97706;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #151f33;
+  --card-foreground: #f1f5f9;
+  --popover: #151f33;
+  --popover-foreground: #f1f5f9;
   --primary: #ef4444;
   --primary-foreground: #ffffff;
-  --secondary: #1e88e5;
+  --secondary: #3b82f6;
   --secondary-foreground: #ffffff;
-  --muted: #1a1a1f;
-  --muted-foreground: #8b8b93;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
   --accent: #f5c542;
-  --accent-foreground: #0a0a0c;
+  --accent-foreground: #0f172a;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #232329;
-  --input: #232329;
+  --border: #26334d;
+  --input: #26334d;
   --ring: #ef4444;
-  --radius: 0.75rem;
+  --line: rgba(255, 255, 255, 0.08);
+  --soft: rgba(255, 255, 255, 0.04);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --grid-color: rgba(255, 255, 255, 0.04);
+  --glow-red: rgba(239, 68, 68, 0.14);
+  --text-grad-a: #ffffff;
+  --text-grad-b: #f5c542;
 }
 
 @theme inline {
@@ -39,9 +77,12 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-line: var(--line);
+  --color-soft: var(--soft);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -75,11 +116,11 @@
     background: var(--background);
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2a31;
+    background: color-mix(in oklab, var(--muted-foreground) 35%, transparent);
     border-radius: 8px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a42;
+    background: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
   }
 }
 
@@ -89,7 +130,7 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #ffffff 20%, #f5c542 90%);
+    background: linear-gradient(135deg, var(--text-grad-a) 20%, var(--text-grad-b) 90%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -105,29 +146,29 @@
   }
 
   .glass {
-    background: rgba(16, 16, 20, 0.6);
+    background: var(--glass-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
   }
 
   .card-glow {
     transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   }
   .card-glow:hover {
-    border-color: rgba(239, 68, 68, 0.45);
-    box-shadow: 0 8px 40px -12px rgba(239, 68, 68, 0.25);
+    border-color: color-mix(in oklab, var(--primary) 45%, transparent);
+    box-shadow: 0 8px 40px -12px color-mix(in oklab, var(--primary) 25%, transparent);
   }
 
   .bg-grid {
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
     background-size: 56px 56px;
   }
 
   .bg-radial-glow {
-    background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(239, 68, 68, 0.14), transparent);
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--glow-red), transparent);
   }
 
   .gradient-primary {

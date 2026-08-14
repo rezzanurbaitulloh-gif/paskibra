@@ -48,7 +48,7 @@ export default function AdminLogin() {
       return
     }
 
-    router.push("/admin")
+    router.push('/admin/dashboard')
     router.refresh()
   }
 
@@ -61,7 +61,7 @@ export default function AdminLogin() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
-        <Card className="glass border-border/20">
+        <Card className="glass border-line">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="relative w-20 h-20">
@@ -84,7 +84,7 @@ export default function AdminLogin() {
                   placeholder="admin@paskibra.id"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                   required
                 />
               </div>
@@ -96,7 +96,7 @@ export default function AdminLogin() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                   required
                 />
               </div>

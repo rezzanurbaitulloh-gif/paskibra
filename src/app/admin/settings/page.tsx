@@ -99,7 +99,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="warna" className="w-full">
-        <TabsList className="glass border-border/20">
+        <TabsList className="glass border-line">
           <TabsTrigger value="warna">Warna</TabsTrigger>
           <TabsTrigger value="hero">Hero</TabsTrigger>
           <TabsTrigger value="branding">Branding</TabsTrigger>
@@ -108,7 +108,7 @@ export default function SettingsPage() {
 
         <TabsContent value="warna" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="glass border-border/20">
+            <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Palet Warna</CardTitle>
               </CardHeader>
@@ -121,26 +121,26 @@ export default function SettingsPage() {
                         type="color"
                         value={value}
                         onChange={(e) => updateSetting("colors", key, e.target.value)}
-                        className="w-12 h-10 rounded cursor-pointer border border-border/20 bg-transparent"
+                        className="w-12 h-10 rounded cursor-pointer border border-line bg-transparent"
                       />
                     </div>
                     <Input
                       value={value}
                       onChange={(e) => updateSetting("colors", key, e.target.value)}
-                      className="glass border-border/20 max-w-[160px] font-mono"
+                      className="glass border-line max-w-[160px] font-mono"
                     />
                   </div>
                 ))}
               </CardContent>
             </Card>
 
-            <Card className="glass border-border/20">
+            <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Live Preview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div
-                  className="rounded-xl p-8 border border-border/20 min-h-[220px] flex flex-col items-center justify-center gap-4 transition-colors duration-300"
+                  className="rounded-xl p-8 border border-line min-h-[220px] flex flex-col items-center justify-center gap-4 transition-colors duration-300"
                   style={{ backgroundColor: settings.colors.background }}
                 >
                   <span
@@ -172,7 +172,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="hero" className="mt-6">
-          <Card className="glass border-border/20 max-w-2xl">
+          <Card className="glass border-line max-w-2xl">
             <CardHeader>
               <CardTitle className="font-display">Editor Hero Section</CardTitle>
             </CardHeader>
@@ -182,7 +182,7 @@ export default function SettingsPage() {
                 <Input
                   value={settings.hero.title}
                   onChange={(e) => updateSetting("hero", "title", e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                 />
               </div>
               <div className="space-y-2">
@@ -191,7 +191,7 @@ export default function SettingsPage() {
                   value={settings.hero.subtitle}
                   onChange={(e) => updateSetting("hero", "subtitle", e.target.value)}
                   rows={3}
-                  className="glass border-border/20 resize-none"
+                  className="glass border-line resize-none"
                 />
               </div>
               <div className="space-y-2">
@@ -199,7 +199,7 @@ export default function SettingsPage() {
                 <Input
                   value={settings.hero.ctaText}
                   onChange={(e) => updateSetting("hero", "ctaText", e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                 />
               </div>
             </CardContent>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="branding" className="mt-6">
-          <Card className="glass border-border/20 max-w-2xl">
+          <Card className="glass border-line max-w-2xl">
             <CardHeader>
               <CardTitle className="font-display">Branding & Logo</CardTitle>
             </CardHeader>
@@ -217,7 +217,7 @@ export default function SettingsPage() {
                 <Input
                   value={settings.branding.logoUrl}
                   onChange={(e) => updateSetting("branding", "logoUrl", e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                 />
               </div>
               <div className="space-y-2">
@@ -225,7 +225,7 @@ export default function SettingsPage() {
                 <Input
                   value={settings.branding.schoolLogoUrl}
                   onChange={(e) => updateSetting("branding", "schoolLogoUrl", e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                 />
               </div>
               <div className="space-y-2">
@@ -233,7 +233,7 @@ export default function SettingsPage() {
                 <Input
                   value={settings.branding.orgName}
                   onChange={(e) => updateSetting("branding", "orgName", e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                 />
               </div>
               <div className="space-y-2">
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                 <Input
                   value={settings.branding.schoolName}
                   onChange={(e) => updateSetting("branding", "schoolName", e.target.value)}
-                  className="glass border-border/20"
+                  className="glass border-line"
                 />
               </div>
             </CardContent>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="ai" className="mt-6">
-          <Card className="glass border-border/20 max-w-2xl">
+          <Card className="glass border-line max-w-2xl">
             <CardHeader>
               <CardTitle className="font-display">AI System Prompt Config</CardTitle>
               <p className="text-sm text-muted-foreground">
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                 value={settings.aiPrompt as unknown as string}
                 onChange={(e) => setSettings(prev => ({ ...prev, aiPrompt: e.target.value }))}
                 rows={8}
-                className="glass border-border/20 resize-none font-mono text-sm"
+                className="glass border-line resize-none font-mono text-sm"
               />
             </CardContent>
           </Card>

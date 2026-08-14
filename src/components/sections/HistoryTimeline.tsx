@@ -23,7 +23,7 @@ export function HistoryTimeline() {
         />
 
         <div className="mx-auto max-w-2xl">
-          <div className="relative border-l border-white/10 pl-8 ml-3">
+          <div className="relative border-l border-line pl-8 ml-3">
             {timeline.map((item, index) => (
               <motion.div
                 key={item.year}
@@ -83,7 +83,7 @@ export function LogoPhilosophy() {
                 transition={{ duration: 36, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-5 rounded-full border border-dashed border-accent/20"
               />
-              <div className="absolute inset-10 overflow-hidden rounded-full border border-white/10 bg-card shadow-2xl shadow-black/40">
+              <div className="absolute inset-10 overflow-hidden rounded-full border border-line bg-card shadow-2xl shadow-black/40">
                 <img src="/logo.png" alt="Logo Satria Cengkara" className="h-full w-full object-contain p-6" />
               </div>
             </div>
@@ -97,9 +97,9 @@ export function LogoPhilosophy() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: index * 0.08 }}
                 viewport={{ once: true, margin: "-40px" }}
-                className="rounded-2xl border border-white/[0.08] bg-card p-5 card-glow"
+                className="rounded-2xl border border-line bg-card p-5 card-glow"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 border border-white/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-soft border border-line">
                   <el.icon className="h-4.5 w-4.5 text-accent" />
                 </div>
                 <h3 className="mt-3 font-display text-sm font-bold">{el.title}</h3>

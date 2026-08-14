@@ -35,6 +35,8 @@ export function AchievementsGallery({
         <SectionHeader
           label="Wall of Fame"
           title="Galeri & Prestasi"
+          actionLabel="Lihat Semua Galeri"
+          actionHref="/galeri"
           subtitle="Momen kebanggaan dan pencapaian Satria Cengkara di berbagai ajang."
         />
 
@@ -48,7 +50,7 @@ export function AchievementsGallery({
                 "rounded-full px-4 py-2 text-xs font-medium transition-all",
                 active === tab
                   ? "bg-white text-black"
-                  : "border border-white/10 bg-white/[0.03] text-muted-foreground hover:text-foreground hover:border-white/20"
+                  : "border border-line bg-soft text-muted-foreground hover:text-foreground hover:border-white/20"
               )}
             >
               {tab}
@@ -67,7 +69,7 @@ export function AchievementsGallery({
                 transition={{ duration: 0.4, delay: index * 0.03 }}
                 viewport={{ once: true, margin: "-40px" }}
                 onClick={() => setSelected(item)}
-                className="group relative mb-4 block w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-card text-left card-glow break-inside-avoid"
+                className="group relative mb-4 block w-full overflow-hidden rounded-2xl border border-line bg-card text-left card-glow break-inside-avoid"
               >
                 <div className="relative overflow-hidden">
                   {item.image_url ? (
@@ -96,7 +98,7 @@ export function AchievementsGallery({
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-card/40 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-line bg-card/40 py-16 text-center">
             <p className="text-sm text-muted-foreground">
               Belum ada galeri — tambahkan melalui dashboard admin.
             </p>
@@ -119,7 +121,7 @@ export function AchievementsGallery({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.92, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-card"
+              className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-line bg-card"
               onClick={(e) => e.stopPropagation()}
             >
               <button

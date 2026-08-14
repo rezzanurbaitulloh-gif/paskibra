@@ -6,6 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const NAV_LINKS = [
   { label: "Beranda", href: "#beranda" },
@@ -13,7 +14,7 @@ const NAV_LINKS = [
   { label: "Pengurus", href: "#pengurus" },
   { label: "Galeri", href: "#galeri" },
   { label: "Sejarah", href: "#sejarah" },
-  { label: "Penyewaan", href: "#penyewaan" },
+  { label: "Layanan", href: "#penyewaan" },
   { label: "Kontak", href: "#kontak" },
 ]
 
@@ -62,7 +63,7 @@ export function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-white/5"
+                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-soft"
               >
                 {link.label}
               </a>
@@ -70,15 +71,16 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link
-              href="/admin"
-              className="hidden md:inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
+              href="/admin/dashboard"
+              className="hidden md:inline-flex items-center gap-1.5 rounded-lg border border-line px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
             >
               Admin
             </Link>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-muted-foreground hover:text-foreground"
+              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
               aria-label="Menu"
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -99,15 +101,15 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 rounded-lg transition-colors"
+                  className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-soft rounded-lg transition-colors"
                 >
                   {link.label}
                 </a>
               ))}
               <Link
-                href="/admin"
+                href="/admin/dashboard"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-white/10 text-center hover:bg-white/5 transition-colors"
+                className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-line text-center hover:bg-soft transition-colors"
               >
                 Login Admin
               </Link>
@@ -157,7 +159,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-muted-foreground backdrop-blur"
+          className="inline-flex items-center gap-2 rounded-full border border-line bg-soft px-4 py-1.5 text-xs text-muted-foreground backdrop-blur"
         >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
@@ -214,7 +216,7 @@ export function HeroSection() {
           </Link>
           <Link
             href="#penyewaan"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-7 py-3.5 text-sm font-medium text-foreground backdrop-blur transition-all hover:border-white/20 hover:bg-white/10 active:scale-[0.98]"
+            className="inline-flex items-center gap-2 rounded-xl border border-line bg-soft px-7 py-3.5 text-sm font-medium text-foreground backdrop-blur transition-all hover:border-white/20 hover:bg-soft active:scale-[0.98]"
           >
             Sewa Kostum & Pasukan
           </Link>

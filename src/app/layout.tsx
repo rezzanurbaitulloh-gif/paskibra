@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Syne, Plus_Jakarta_Sans } from "next/font/google";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { ThemeProvider } from "next-themes"
+import { AnimatedBackground } from "@/components/animated-background";
 import "./globals.css";
 
 const syne = Syne({
@@ -19,6 +21,19 @@ export const metadata: Metadata = {
   title: "Satria Cengkara — Paskibra SMKN 1 Kertosono",
   description:
     "Organisasi Paskibra Satria Cengkara SMKN 1 Kertosono. Disiplin, tangguh, berintegritas.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/icon-192x192.png",
+    apple: "/icons/icon-192x192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Satria Cengkara",
+  },
+  other: {
+    "theme-color": "#0f172a",
+  },
 };
 
 export default function RootLayout({
@@ -29,7 +44,10 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${syne.variable} ${plusJakarta.variable} antialiased`}>
-        <TooltipProvider>{children}</TooltipProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <AnimatedBackground />
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#0F172A"/>
+  <circle cx="300" cy="190" r="120" fill="none" stroke="#DC2626" stroke-width="3" opacity="0.6"/>
+  <circle cx="300" cy="190" r="90" fill="none" stroke="#B45309" stroke-width="2" opacity="0.5"/>
+  <g fill="#334155">
+    <circle cx="190" cy="240" r="13"/><rect x="177" y="255" width="26" height="70" rx="7"/>
+    <circle cx="410" cy="240" r="13"/><rect x="397" y="255" width="26" height="70" rx="7"/>
+  </g>
+  <g fill="#DC2626" opacity="0.85">
+    <circle cx="245" cy="215" r="12"/><rect x="233" y="229" width="24" height="62" rx="7"/>
+    <circle cx="355" cy="215" r="12"/><rect x="343" y="229" width="24" height="62" rx="7"/>
+    <circle cx="300" cy="245" r="13"/><rect x="287" y="260" width="26" height="68" rx="7"/>
+  </g>
+  <text x="300" y="380" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#94A3B8">Kegiatan Organisasi</text>
+</svg>

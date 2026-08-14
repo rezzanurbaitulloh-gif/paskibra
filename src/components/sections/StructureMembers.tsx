@@ -29,7 +29,7 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
       whileHover={{ y: -6 }}
       className="group"
     >
-      <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-card card-glow">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-card card-glow">
         {/* Foto */}
         <div className="relative aspect-[4/5] overflow-hidden bg-muted">
           {member.photo_url ? (
@@ -56,7 +56,7 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
             <Badge
               className={cn(
                 "border-0 text-[10px] font-semibold",
-                isBPH ? "gradient-gold text-black" : "bg-white/10 text-foreground"
+                isBPH ? "gradient-gold text-black" : "bg-soft text-foreground"
               )}
             >
               {isBPH ? "★ " : ""}
@@ -79,6 +79,8 @@ export function StructureMembers({ members }: { members: Member[] }) {
         <SectionHeader
           label="Struktur Organisasi"
           title="Pengurus Satria Cengkara"
+          actionLabel="Halaman Pengurus"
+          actionHref="/pengurus"
           subtitle="Badan Pengurus Harian dan seluruh divisi yang menjalankan roda organisasi."
         />
 
@@ -89,7 +91,7 @@ export function StructureMembers({ members }: { members: Member[] }) {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-card/40 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-line bg-card/40 py-16 text-center">
             <p className="text-sm text-muted-foreground">
               Data pengurus belum tersedia — kelola melalui dashboard admin.
             </p>

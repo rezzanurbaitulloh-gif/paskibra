@@ -63,7 +63,7 @@ export function SchoolBentoGrid() {
               viewport={{ once: true, margin: "-60px" }}
               className={cn(item.className)}
             >
-              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-card p-6 card-glow">
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card p-6 card-glow">
                 {item.image && (
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.05]">
                     <Image
@@ -77,7 +77,7 @@ export function SchoolBentoGrid() {
                   </div>
                 )}
                 <div className="relative">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-soft">
                     <item.icon className="h-5 w-5 text-accent" />
                   </div>
                   <h3 className="mt-4 font-display text-lg font-bold">{item.title}</h3>

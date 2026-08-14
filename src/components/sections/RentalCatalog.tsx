@@ -27,6 +27,8 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
         <SectionHeader
           label="Layanan Kami"
           title="Katalog Penyewaan & Jasa"
+          actionLabel="Katalog Lengkap"
+          actionHref="/layanan"
           subtitle="Kostum, atribut, dan jasa pasukan untuk acara Anda."
         />
 
@@ -42,7 +44,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
                 whileHover={{ y: -6 }}
                 className="group"
               >
-                <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-card card-glow">
+                <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card card-glow">
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     {item.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -85,7 +87,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
                           "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all",
                           item.available
                             ? "bg-white text-black hover:bg-white/90 active:scale-[0.97]"
-                            : "pointer-events-none bg-white/5 text-muted-foreground"
+                            : "pointer-events-none bg-soft text-muted-foreground"
                         )}
                       >
                         <MessageCircle className="h-3.5 w-3.5" />
@@ -98,7 +100,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-card/40 py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-line bg-card/40 py-16 text-center">
             <p className="text-sm text-muted-foreground">
               Katalog penyewaan belum tersedia — kelola melalui dashboard admin.
             </p>
@@ -112,7 +114,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-white/20 hover:bg-white/[0.07]"
+            className="inline-flex items-center gap-2 rounded-xl border border-line bg-soft px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-white/20 hover:bg-white/[0.07]"
           >
             Pesan Jasa Pasukan Khusus
             <ArrowRight className="h-4 w-4" />

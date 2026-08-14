@@ -69,12 +69,14 @@ export default function StructureManagement() {
       <div className="flex justify-between items-center">
         <h1 className="font-display text-3xl font-bold">Manajemen Pengurus</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gradient-primary">
-              <Plus className="w-4 h-4 mr-2" /> Tambah Pengurus
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="glass border-border/20">
+          <DialogTrigger
+            render={
+              <Button className="gradient-primary">
+                <Plus className="w-4 h-4 mr-2" /> Tambah Pengurus
+              </Button>
+            }
+          />
+          <DialogContent className="glass border-line">
             <DialogHeader>
               <DialogTitle className="font-display">{currentMember ? 'Edit Pengurus' : 'Tambah Pengurus'}</DialogTitle>
             </DialogHeader>
@@ -105,7 +107,7 @@ export default function StructureManagement() {
         </Dialog>
       </div>
 
-      <Card className="glass border-border/20">
+      <Card className="glass border-line">
         <Table>
           <TableHeader>
             <TableRow>

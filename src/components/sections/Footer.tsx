@@ -1,5 +1,8 @@
+"use client"
+
 import Image from "next/image"
 import { Mail, MapPin, Phone } from "lucide-react"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -19,11 +22,6 @@ function TikTokIcon({ className }: { className?: string }) {
   )
 }
 
-const socials = [
-  { label: "Instagram", href: "https://www.instagram.com/satria_cengkara", Icon: InstagramIcon },
-  { label: "TikTok", href: "https://www.tiktok.com/@satria_cengkara", Icon: TikTokIcon },
-]
-
 const links = [
   { label: "Beranda", href: "/#beranda" },
   { label: "Profil Sekolah", href: "/#sekolah" },
@@ -35,6 +33,12 @@ const links = [
 
 export function Footer() {
   const year = new Date().getFullYear()
+  const { settings } = useSiteSettings()
+  const { branding, contacts, pages } = settings
+  const socials = [
+    { label: "Instagram", href: contacts.instagram, Icon: InstagramIcon },
+    { label: "TikTok", href: contacts.tiktok, Icon: TikTokIcon },
+  ]
 
   return (
     <footer id="kontak" className="border-t border-line bg-card/50">
@@ -43,16 +47,17 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-3">
               <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
-                <Image src="/logo.png" alt="Satria Cengkara" fill className="object-cover" />
+                <Image src={branding.logoUrl || "/logo.png"} alt="Satria Cengkara" fill sizes="8rem" className="object-cover" />
               </div>
               <div className="leading-tight">
-                <p className="font-display font-bold text-sm">SATRIA CENGKARA</p>
-                <p className="text-[10px] text-muted-foreground">Paskibra SMKN 1 Kertosono</p>
+                <p className="font-display font-bold text-sm">
+                  {branding.orgName.toUpperCase() || "SATRIA CENGKARA"}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Paskibra {branding.schoolName}</p>
               </div>
             </div>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
-              Membentuk generasi muda yang disiplin, tangguh, dan berintegritas melalui
-              pendidikan baris-berbaris dan pengembangan karakter kepemimpinan.
+              {pages.aboutText}
             </p>
             <div className="mt-5 flex gap-2">
               {socials.map(({ label, href, Icon }) => (
@@ -88,16 +93,16 @@ export function Footer() {
             <ul className="mt-4 space-y-3 text-xs text-muted-foreground">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
-                SMKN 1 Kertosono, Kab. Nganjuk, Jawa Timur
+                {contacts.address}
               </li>
               <li className="flex items-start gap-2.5">
                 <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
-                0812-3456-7890
+                {contacts.phone}
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
-                <a href="mailto:satriacengkara@gmail.com" className="transition-colors hover:text-foreground">
-                  satriacengkara@gmail.com
+                <a href={`mailto:${contacts.email}`} className="transition-colors hover:text-foreground">
+                  {contacts.email}
                 </a>
               </li>
             </ul>
@@ -105,7 +110,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-[11px] text-muted-foreground md:flex-row">
-          <p>© {year} Paskibra Satria Cengkara — SMKN 1 Kertosono</p>
+          <p>© {year} {branding.orgName} — {branding.schoolName}</p>
           <p>
             Dibuat dengan <span className="text-primary">♥</span> oleh Tim Satria Cengkara
           </p>

@@ -41,12 +41,12 @@ export default function AdminDashboard() {
   }, [])
 
   const cards = [
-    { name: "Pengurus", count: stats.pengurus, icon: Users, href: "/admin/pengurus", roles: ["super_admin", "pembina"] },
-    { name: "Galeri", count: stats.galeri, icon: Image, href: "/admin/galeri", roles: ["super_admin", "pembina", "humas"] },
-    { name: "Inventaris", count: stats.inventaris, icon: Package, href: "/admin/inventaris", roles: ["super_admin", "pembina", "sarpras"] },
-    { name: "Artikel", count: stats.artikel, icon: FileText, href: "/admin/artikel", roles: ["super_admin", "pembina", "humas"] },
-    { name: "Keuangan", count: stats.keuangan, icon: DollarSign, href: "/admin/keuangan", roles: ["super_admin", "pembina", "bendahara"] },
-    { name: "Saran", count: stats.saran, icon: MessageSquare, href: "/admin/saran", roles: ["super_admin", "pembina", "humas"] },
+    { name: "Pengurus", count: stats.pengurus, icon: Users, href: "/admin/pengurus", roles: ["super_admin"] },
+    { name: "Galeri", count: stats.galeri, icon: Image, href: "/admin/galeri", roles: ["super_admin", "humas"] },
+    { name: "Inventaris", count: stats.inventaris, icon: Package, href: "/admin/inventaris", roles: ["super_admin"] },
+    { name: "Artikel", count: stats.artikel, icon: FileText, href: "/admin/artikel", roles: ["super_admin", "humas"] },
+    { name: "Keuangan", count: stats.keuangan, icon: DollarSign, href: "/admin/keuangan", roles: ["super_admin", "bendahara"] },
+    { name: "Saran", count: stats.saran, icon: MessageSquare, href: "/admin/saran", roles: ["super_admin", "humas"] },
   ].filter(card => role && card.roles.includes(role))
 
   return (

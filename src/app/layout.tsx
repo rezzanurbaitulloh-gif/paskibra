@@ -3,6 +3,8 @@ import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "next-themes"
 import { AnimatedBackground } from "@/components/animated-background";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import "./globals.css";
 
 const syne = Syne({
@@ -42,11 +44,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${syne.variable} ${plusJakarta.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <AnimatedBackground />
-          <TooltipProvider>{children}</TooltipProvider>
+          <AuthProvider>
+            <AnimatedBackground />
+            <TooltipProvider>{children}</TooltipProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

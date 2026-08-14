@@ -4,14 +4,15 @@ import { useAdmin } from "@/contexts/AdminContext"
 import { ReactNode } from "react"
 
 const allowedRoles: Record<string, string[]> = {
-  "/admin/keuangan": ["super_admin", "pembina", "bendahara"],
-  "/admin/saran": ["super_admin", "pembina", "humas"],
-  "/admin/galeri": ["super_admin", "pembina", "humas"],
-  "/admin/artikel": ["super_admin", "pembina", "humas"],
-  "/admin/inventaris": ["super_admin", "pembina", "sarpras"],
-  "/admin/pengurus": ["super_admin", "pembina"],
-  "/admin/settings": ["super_admin", "pembina", "bendahara", "humas", "sarpras"],
-  "/admin/dashboard": ["super_admin", "pembina", "bendahara", "humas", "sarpras"],
+  "/admin/keuangan": ["super_admin", "bendahara"],
+  "/admin/saran": ["super_admin", "humas"],
+  "/admin/galeri": ["super_admin", "humas"],
+  "/admin/artikel": ["super_admin", "humas"],
+  "/admin/inventaris": ["super_admin"],
+  "/admin/pengurus": ["super_admin"],
+  "/admin/settings": ["super_admin", "bendahara", "humas"],
+  "/admin/users": ["super_admin"],
+  "/admin/dashboard": ["super_admin", "bendahara", "humas"],
 }
 
 export function RequireRole({ path, children }: { path: string; children: ReactNode }) {

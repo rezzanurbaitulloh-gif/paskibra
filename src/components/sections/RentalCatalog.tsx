@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge"
 import { MessageCircle, ArrowRight } from "lucide-react"
 import { SectionHeader } from "./SectionHeader"
 import { cn } from "@/lib/utils"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
-const WA_NUMBER = "6281234567890"
+
 
 interface RentalItem {
   id: string
@@ -21,6 +22,7 @@ const formatIDR = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n)
 
 export function RentalCatalog({ items }: { items: RentalItem[] }) {
+  const waNumber = useSiteSettings().settings.contacts.waNumber || "6281234567890"
   return (
     <section id="penyewaan" className="relative py-24">
       <div className="container mx-auto px-4">
@@ -78,7 +80,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
                     <div className="mt-4 flex items-center justify-between pt-3">
                       <p className="font-display text-sm font-bold text-accent">{formatIDR(item.price)}</p>
                       <a
-                        href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+                        href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                           `Halo Satria Cengkara, saya ingin menyewa ${item.name}`
                         )}`}
                         target="_blank"
@@ -109,7 +111,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
 
         <div className="mt-10 flex justify-center">
           <a
-            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+            href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
               "Halo Satria Cengkara, saya ingin memesan jasa pasukan / kostum. Bisa dibantu?"
             )}`}
             target="_blank"

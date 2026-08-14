@@ -7,6 +7,8 @@ import Link from "next/link"
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ProfileMenu } from "@/components/profile-menu"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 const NAV_LINKS = [
   { label: "Beranda", href: "#beranda" },
@@ -18,13 +20,10 @@ const NAV_LINKS = [
   { label: "Kontak", href: "#kontak" },
 ]
 
-const WORDS = [
-  { text: "SATRIA", gradient: false },
-  { text: "CENGKARA", gradient: true },
-]
-
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const { settings } = useSiteSettings()
+  const brandWords = (settings.branding.orgName || "SATRIA CENGKARA").toUpperCase().split(/\s+/).filter(Boolean)
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
@@ -50,11 +49,13 @@ export function Navbar() {
         >
           <Link href="#beranda" className="flex items-center gap-3">
             <div className="relative h-9 w-9 rounded-full overflow-hidden ring-1 ring-white/15 bg-card">
-              <Image src="/logo.png" alt="Satria Cengkara" fill className="object-cover" />
+              <Image src={settings.branding.logoUrl || "/logo.png"} alt="Satria Cengkara" fill sizes="3rem" className="object-cover" />
             </div>
             <div className="hidden sm:block leading-tight">
-              <p className="font-display font-bold text-sm tracking-wide">SATRIA CENGKARA</p>
-              <p className="text-[10px] text-muted-foreground">Paskibra SMKN 1 Kertosono</p>
+              <p className="font-display font-bold text-sm tracking-wide">
+                {brandWords[0] || "SATRIA CENGKARA"}
+              </p>
+              <p className="text-[10px] text-muted-foreground">Paskibra {settings.branding.schoolName}</p>
             </div>
           </Link>
 
@@ -72,12 +73,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link
-              href="/admin/dashboard"
-              className="hidden md:inline-flex items-center gap-1.5 rounded-lg border border-line px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-white/20 transition-all"
-            >
-              Admin
-            </Link>
+            <ProfileMenu className="hidden md:block" />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
@@ -107,11 +103,11 @@ export function Navbar() {
                 </a>
               ))}
               <Link
-                href="/admin/dashboard"
+                href="/login"
                 onClick={() => setMobileOpen(false)}
                 className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-line text-center hover:bg-soft transition-colors"
               >
-                Login Admin
+                Masuk
               </Link>
             </div>
           </motion.div>
@@ -139,6 +135,15 @@ const wordReveal = {
 export function HeroSection() {
   const { scrollY } = useScroll()
   const bgY = useTransform(scrollY, [0, 600], [0, 120])
+  const { settings } = useSiteSettings()
+  const heroWords = (settings.hero.title || "SATRIA CENGKARA")
+    .toUpperCase()
+    .split(/\s+/)
+    .filter(Boolean)
+  const titleLines = heroWords.length > 1
+    ? heroWords.slice(0, Math.ceil(heroWords.length / 2))
+    : [heroWords[0] || "SATRIA CENGKARA"]
+  const gradientWords = heroWords.slice(Math.ceil(heroWords.length / 2))
 
   return (
     <section id="beranda" className="relative min-h-screen flex flex-col overflow-hidden">
@@ -165,7 +170,7 @@ export function HeroSection() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
           </span>
-          Paskibra • SMKN 1 Kertosono
+          Paskibra • {settings.branding.schoolName}
         </motion.div>
 
         <motion.h1
@@ -174,19 +179,37 @@ export function HeroSection() {
           animate="visible"
           className="mt-8 font-display font-extrabold leading-[0.95] tracking-tight"
         >
-          {WORDS.map((word) => (
-            <span key={word.text} className="block">
-              {word.text.split("").map((char, i) => (
+          {titleLines.map((line) => (
+            <span key={line} className="block">
+              {line.split("").map((char, i) => (
                 <motion.span
                   key={i}
                   variants={wordReveal}
-                  className={cn("inline-block", word.gradient && "text-gradient-red")}
+                  className={cn("inline-block")}
                 >
                   {char}
                 </motion.span>
               ))}
             </span>
           ))}
+          {gradientWords.length > 0 && (
+            <span className="block">
+              {gradientWords.map((word, wi) => (
+                <span key={word}>
+                  {word.split("").map((char, i) => (
+                    <motion.span
+                      key={i}
+                      variants={wordReveal}
+                      className="inline-block text-gradient-red"
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
+                  {wi < gradientWords.length - 1 && <span className="inline-block">&nbsp;</span>}
+                </span>
+              ))}
+            </span>
+          )}
         </motion.h1>
 
         <motion.p
@@ -195,10 +218,7 @@ export function HeroSection() {
           transition={{ delay: 0.9, duration: 0.6 }}
           className="mt-6 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed"
         >
-          Membentuk generasi muda yang <span className="text-foreground">disiplin</span>,{" "}
-          <span className="text-foreground">tangguh</span>, dan{" "}
-          <span className="text-foreground">berintegritas</span> lewat baris-berbaris,
-          kepemimpinan, dan pengabdian kepada bangsa.
+          {settings.hero.subtitle}
         </motion.p>
 
         <motion.div
@@ -211,7 +231,7 @@ export function HeroSection() {
             href="#sekolah"
             className="group inline-flex items-center gap-2 rounded-xl gradient-primary px-7 py-3.5 text-sm font-semibold text-white shadow-glow-red transition-all hover:brightness-110 active:scale-[0.98]"
           >
-            Jelajahi Kami
+            {settings.hero.ctaText || "Jelajahi Kami"}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link

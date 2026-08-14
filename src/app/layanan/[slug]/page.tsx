@@ -6,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
-import { WA_NUMBER, WA_MESSAGE_PREFIX } from "@/lib/constants"
+import { WA_MESSAGE_PREFIX } from "@/lib/constants"
 import { ArrowLeft, Package, BadgeCheck, BadgeX } from "lucide-react"
 
 interface Item {
@@ -19,6 +19,7 @@ interface Item {
   category: string
   description: string | null
   image_url: string | null
+  wa_number?: string | null
 }
 
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID")
@@ -57,7 +58,7 @@ export default function LayananDetailPage() {
     )
   }
 
-  const waLink = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`${WA_MESSAGE_PREFIX} ${item.name}`)}`
+  const waLink = `https://wa.me/${item.wa_number}?text=${encodeURIComponent(`${WA_MESSAGE_PREFIX} ${item.name}`)}`
 
   return (
     <div className="min-h-screen">

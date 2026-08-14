@@ -22,6 +22,7 @@ interface Item {
   category: string
   description: string | null
   image_url: string | null
+  wa_number?: string | null
 }
 
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID")
@@ -34,6 +35,7 @@ const emptyForm = {
   category: "",
   is_available: true,
   image_url: "",
+  wa_number: "6281234567890",
 }
 
 export default function InventarisAdminPage() {
@@ -67,6 +69,7 @@ export default function InventarisAdminPage() {
       category: item.category,
       is_available: item.is_available,
       image_url: item.image_url || "",
+      wa_number: item.wa_number || "",
     })
     setOpen(true)
   }
@@ -85,6 +88,7 @@ export default function InventarisAdminPage() {
       category: form.category,
       is_available: form.is_available,
       image_url: form.image_url,
+      wa_number: form.wa_number,
     }
     if (editing) {
       await supabase.from("inventory").update(payload).eq("id", editing.id)
@@ -201,6 +205,10 @@ export default function InventarisAdminPage() {
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">URL Gambar (opsional)</Label>
                 <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="/images/baju-pdl.svg" className="h-10 border-line bg-soft" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Nomor WhatsApp Penerima Sewa</Label>
+                <Input value={form.wa_number} onChange={(e) => setForm({ ...form, wa_number: e.target.value })} placeholder="6281234567890" className="h-10 border-line bg-soft" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Deskripsi</Label>

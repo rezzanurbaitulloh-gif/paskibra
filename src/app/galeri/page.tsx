@@ -1,5 +1,6 @@
 "use client"
 
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -69,9 +70,10 @@ function VideoEmbed({ item }: { item: GalleryItem }) {
   )
 }
 
-const MotionLink = motion(Link)
+const MotionLink = motion.create(Link)
 
 export default function GaleriPage() {
+  const { settings } = useSiteSettings()
   const [items, setItems] = useState<GalleryItem[]>([])
   const [category, setCategory] = useState("Semua")
   const [loading, setLoading] = useState(true)
@@ -98,8 +100,7 @@ export default function GaleriPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Galeri Kegiatan</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Dokumentasi Satria Cengkara</h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-            Foto dan video kegiatan kami — video TikTok, Instagram Reel, dan YouTube akan otomatis
-            diputar saat di-scroll.
+            {settings.pages.galeriIntro}
           </p>
         </div>
 

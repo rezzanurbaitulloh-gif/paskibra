@@ -1,5 +1,6 @@
 "use client"
 
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -20,6 +21,7 @@ const initials = (name: string) =>
   name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase()
 
 export default function PengurusPage() {
+  const { settings } = useSiteSettings()
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -45,7 +47,7 @@ export default function PengurusPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Struktur Organisasi</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Pengurus Satria Cengkara</h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-            Badan Pengurus Harian dan divisi yang menggerakkan organisasi.
+            {settings.pages.pengurusIntro}
           </p>
         </div>
 

@@ -20,6 +20,7 @@ interface GalleryItem {
   category: string
   media_type: string
   video_url: string | null
+  images?: string[] | null
 }
 
 const CATEGORIES = ["LKBB", "Latihan Rutin", "Pelantikan", "Pengukuhan", "Kegiatan Lain"]

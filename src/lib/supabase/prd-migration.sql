@@ -18,13 +18,13 @@ ALTER TABLE inventory ADD COLUMN IF NOT EXISTS is_available BOOLEAN DEFAULT TRUE
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS image_url TEXT;
 UPDATE inventory SET slug = 'item-' || id WHERE slug IS NULL;
 
--- 3. ADMIN_USERS: multi-role (super_admin / pembina / bendahara / humas / sarpras)
+-- 3. ADMIN_USERS: multi-role (super_admin / bendahara / humas)
 ALTER TABLE admin_users DROP CONSTRAINT IF EXISTS admin_users_role_check;
 ALTER TABLE admin_users ADD CONSTRAINT admin_users_role_check
-  CHECK (role IN ('super_admin', 'pembina', 'bendahara', 'humas', 'sarpras'));
+  CHECK (role IN ('super_admin', 'bendahara', 'humas'));
 UPDATE admin_users SET role = CASE WHEN role = 'superadmin' THEN 'super_admin' ELSE 'super_admin' END WHERE role IN ('admin', 'superadmin');
 ALTER TABLE admin_users ALTER COLUMN role SET DEFAULT 'super_admin';
-UPDATE admin_users SET role = 'super_admin' WHERE role NOT IN ('super_admin', 'pembina', 'bendahara', 'humas', 'sarpras');
+UPDATE admin_users SET role = 'super_admin' WHERE role NOT IN ('super_admin', 'bendahara', 'humas');
 
 -- 4. Fungsi role helper
 CREATE OR REPLACE FUNCTION user_role()

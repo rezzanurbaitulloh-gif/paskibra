@@ -19,7 +19,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        router.push('/admin/login')
+        router.push('/login')
         return
       }
 
@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         setIsAuthenticated(true)
         setRole(adminCheck.role)
       } else {
-        router.push('/admin/login')
+        router.push('/login')
       }
       setIsLoading(false)
     }

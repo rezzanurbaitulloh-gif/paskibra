@@ -4,9 +4,12 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { useDraggableFloat } from "@/hooks/useDraggableFloat"
 
-const WA_NUMBER = "6281234567890"
+
+
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 export function FloatingWhatsApp() {
+  const WA_NUMBER = useSiteSettings().settings.contacts.waNumber || "6281234567890"
   const { pos, onPointerDown, movedRef } = useDraggableFloat("wa", 48, 48)
 
   return (

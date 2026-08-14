@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Users, Image, Package, FileText, Settings, DollarSign, MessageSquare } from "lucide-react"
+import { Home, Users, Image, Package, FileText, Settings, DollarSign, MessageSquare, UserCog } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import Link from "next/link"
@@ -8,14 +8,15 @@ import { usePathname } from "next/navigation"
 import { useAdmin } from "@/contexts/AdminContext"
 
 const allNavItems = [
-  { name: "Dashboard", icon: Home, href: "/admin/dashboard", roles: ["super_admin", "pembina", "bendahara", "humas", "sarpras"] },
-  { name: "Pengurus", icon: Users, href: "/admin/pengurus", roles: ["super_admin", "pembina"] },
-  { name: "Galeri", icon: Image, href: "/admin/galeri", roles: ["super_admin", "pembina", "humas"] },
-  { name: "Keuangan", icon: DollarSign, href: "/admin/keuangan", roles: ["super_admin", "pembina", "bendahara"] },
-  { name: "Inventaris", icon: Package, href: "/admin/inventaris", roles: ["super_admin", "pembina", "sarpras"] },
-  { name: "Artikel", icon: FileText, href: "/admin/artikel", roles: ["super_admin", "pembina", "humas"] },
-  { name: "Saran", icon: MessageSquare, href: "/admin/saran", roles: ["super_admin", "pembina", "humas"] },
-  { name: "Pengaturan", icon: Settings, href: "/admin/settings", roles: ["super_admin", "pembina", "bendahara", "humas", "sarpras"] },
+  { name: "Dashboard", icon: Home, href: "/admin/dashboard", roles: ["super_admin", "bendahara", "humas"] },
+  { name: "Pengguna", icon: UserCog, href: "/admin/users", roles: ["super_admin"] },
+  { name: "Pengurus", icon: Users, href: "/admin/pengurus", roles: ["super_admin"] },
+  { name: "Galeri", icon: Image, href: "/admin/galeri", roles: ["super_admin", "humas"] },
+  { name: "Keuangan", icon: DollarSign, href: "/admin/keuangan", roles: ["super_admin", "bendahara"] },
+  { name: "Inventaris", icon: Package, href: "/admin/inventaris", roles: ["super_admin"] },
+  { name: "Artikel", icon: FileText, href: "/admin/artikel", roles: ["super_admin", "humas"] },
+  { name: "Saran", icon: MessageSquare, href: "/admin/saran", roles: ["super_admin", "humas"] },
+  { name: "Pengaturan", icon: Settings, href: "/admin/settings", roles: ["super_admin", "bendahara", "humas"] },
 ]
 
 export function AdminSidebar() {

@@ -1,5 +1,6 @@
 "use client"
 
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -22,6 +23,7 @@ interface Item {
 const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID")
 
 export default function LayananPage() {
+  const { settings } = useSiteSettings()
   const [items, setItems] = useState<Item[]>([])
   const [category, setCategory] = useState("Semua")
   const [loading, setLoading] = useState(true)
@@ -50,7 +52,7 @@ export default function LayananPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Layanan & Sewa</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Sewa Perlengkapan Paskibra</h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-            Sewa seragam, atribut, dan perlengkapan upacara untuk kebutuhan acara Anda.
+            {settings.pages.layananIntro}
           </p>
         </div>
 

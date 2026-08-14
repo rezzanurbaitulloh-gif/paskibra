@@ -1,5 +1,6 @@
 "use client"
 
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -18,6 +19,7 @@ interface Feedback {
 }
 
 export default function SaranPage() {
+  const { settings } = useSiteSettings()
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -41,7 +43,7 @@ export default function SaranPage() {
         <SectionHeader
           label="Transparan"
           title="Kotak Saran Publik"
-          subtitle="Semua saran yang masuk ditampilkan secara terbuka di halaman ini. Saran yang sudah dibalas admin ditandai khusus."
+          subtitle={settings.pages.saranIntro}
         />
 
         <div className="mx-auto max-w-2xl space-y-8">

@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server"
+import { createClient } from "@supabase/supabase-js"
 import { getAIEndpoints } from "@/lib/ai/providers"
 
-const SYSTEM_PROMPT = `Kamu adalah "Tanya Satria Bot", asisten AI resmi Paskibra Satria Cengkara SMKN 1 Kertosono.
+const FALLBACK_PROMPT = `Kamu adalah "Tanya Satria Bot", asisten AI resmi Paskibra Satria Cengkara SMKN 1 Kertosono.
 Tugasmu:
 - Menjawab pertanyaan tentang Paskibra, SMKN 1 Kertosono, profil sekolah, sejarah, struktur pengurus, galeri, prestasi, penyewaan kostum/atribut, dan kegiatan organisasi.
 - Gunakan bahasa Indonesia yang santun dan ramah, jawaban singkat (maksimal 150 kata) kecuali diminta detail.
@@ -9,6 +10,24 @@ Tugasmu:
 - Jika tidak tahu, jawab jujur dan tawarkan bantuan lain.`
 
 export const runtime = "nodejs"
+
+async function getSystemPrompt(): Promise<string> {
+  try {
+    const client = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+      { auth: { persistSession: false } }
+    )
+    const { data } = await client.from("site_settings").select("value").eq("key", "aiPrompt").maybeSingle()
+    const prompt = data?.value
+    if (typeof prompt === "string" && prompt.trim()) return prompt.trim()
+    if (prompt && typeof prompt === "object") {
+      const p = (prompt as { prompt?: string }).prompt
+      if (typeof p === "string" && p.trim()) return p.trim()
+    }
+  } catch {}
+  return FALLBACK_PROMPT
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +43,8 @@ export async function POST(request: NextRequest) {
 
     const lastError: { message: string; status?: number } = { message: "Semua endpoint AI gagal" }
 
+    const systemPrompt = await getSystemPrompt()
+
     for (const endpoint of getAIEndpoints()) {
       for (const model of endpoint.models) {
         try {
@@ -36,7 +57,7 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({
               model,
               messages: [
-                { role: "system", content: SYSTEM_PROMPT },
+                { role: "system", content: systemPrompt },
                 { role: "user", content: userPrompt },
               ],
               stream: true,

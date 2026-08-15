@@ -11,6 +11,7 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useAdmin } from "@/contexts/AdminContext"
 import { useAuth } from "@/contexts/AuthContext"
+import { useState } from "react"
 
 const ROLE_LABEL: Record<string, string> = {
   super_admin: "Admin",
@@ -22,6 +23,7 @@ export function AdminTopBar() {
   const router = useRouter()
   const { role } = useAdmin()
   const { user } = useAuth()
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -43,17 +45,17 @@ export function AdminTopBar() {
           <Home className="h-4 w-4" /> Halaman Utama
         </Link>
 
-        <Sheet>
+        <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
           <SheetTrigger
             className="md:hidden"
             render={
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Buka menu">
                 <Menu className="h-5 w-5" />
               </Button>
             }
           />
-          <SheetContent side="left" className="w-64 p-0">
-            <AdminSidebar />
+          <SheetContent side="left" className="w-64 p-0" showCloseButton={false}>
+            <AdminSidebar drawer onNavigate={() => setDrawerOpen(false)} />
           </SheetContent>
         </Sheet>
 

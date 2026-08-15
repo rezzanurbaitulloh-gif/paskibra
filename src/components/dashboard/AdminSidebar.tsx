@@ -46,7 +46,7 @@ const ROLE_LABEL: Record<string, string> = {
   humas: "Humas",
 }
 
-export function AdminSidebar() {
+export function AdminSidebar({ drawer = false, onNavigate }: { drawer?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname()
   const { role } = useAdmin()
   const { settings } = useSiteSettings()
@@ -61,7 +61,12 @@ export function AdminSidebar() {
     .filter((g) => g.items.length > 0)
 
   return (
-    <div className="hidden md:flex flex-col w-64 bg-card border-r border-line h-full md:h-screen md:fixed md:left-0 md:top-0">
+    <div
+      className={cn(
+        "flex flex-col w-64 bg-card border-r border-line h-full",
+        drawer ? "md:static md:h-screen" : "hidden md:flex md:h-screen md:fixed md:left-0 md:top-0"
+      )}
+    >
       <div className="flex items-center gap-3 border-b border-line px-4 py-4">
         <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg ring-1 ring-white/15">
           <Image
@@ -91,6 +96,7 @@ export function AdminSidebar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={onNavigate}
                     className={cn(
                       "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                       active

@@ -109,7 +109,10 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="branding" className="w-full">
-        <TabsList className="glass border-line flex-wrap">
+        <TabsList
+          className="glass border-line w-full justify-start overflow-x-auto flex-nowrap rounded-xl [&_button]:shrink-0 [&_button]:flex-none"
+          style={{ scrollbarWidth: "thin" }}
+        >
           <TabsTrigger value="branding">Logo & Branding</TabsTrigger>
           <TabsTrigger value="warna">Warna</TabsTrigger>
           <TabsTrigger value="hero">Hero</TabsTrigger>

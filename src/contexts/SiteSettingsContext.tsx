@@ -78,21 +78,21 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   branding: {
     logoUrl: "/logo.png",
-    schoolLogoUrl: "/logo-icon.png",
+    schoolLogoUrl: "/school-logo.png",
     orgName: "Paskibra Satria Cengkara",
-    schoolName: "SMKN 1 Kertosono",
+    schoolName: "SMK Negeri 1 Kertosono",
   },
   contacts: {
     waNumber: "6281234567890",
-    email: "satriacengkara@gmail.com",
+    email: "smknegeri1kts@gmail.com",
     instagram: "https://www.instagram.com/satria_cengkara",
     tiktok: "https://www.tiktok.com/@satria_cengkara",
-    address: "SMKN 1 Kertosono, Kab. Nganjuk, Jawa Timur",
-    phone: "0812-3456-7890",
+    address: "Jl. Langsep No. 24, Ds. Pelem, Kab. Nganjuk, Jawa Timur",
+    phone: "(0358) 551466",
   },
   pages: {
     aboutText:
-      "Membentuk generasi muda yang disiplin, tangguh, dan berintegritas melalui pendidikan baris-berbaris dan pengembangan karakter kepemimpinan.",
+      "Paskibra Satria Cengkara SMK Negeri 1 Kertosono — membentuk generasi muda yang disiplin, tangguh, dan berintegritas melalui pendidikan baris-berbaris serta pengembangan karakter kepemimpinan.",
     galeriIntro: "Dokumentasi kegiatan Paskibra Satria Cengkara.",
     layananIntro:
       "Penyewaan PBB, atribut, dan keperluan upacara untuk berbagai acara.",
@@ -147,14 +147,14 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
   school: {
     label: "Tentang Sekolah",
-    title: "SMKN 1 Kertosono",
-    subtitle: "Sekolah yang melahirkan Satria Cengkara — calon pemimpin bangsa.",
+    title: "SMK Negeri 1 Kertosono",
+    subtitle: "Sekolah Pencetak Wirausaha — tempat lahirnya Paskibra Satria Cengkara.",
     items: [
-      { title: "Profil Sekolah", content: "SMKN 1 Kertosono adalah sekolah kejuruan unggulan di Kabupaten Nganjuk yang berfokus pada pengembangan kompetensi siswa di bidang teknologi dan industri.", image: "/logo-icon.png" },
-      { title: "Visi & Misi", content: "Menjadi sekolah kejuruan unggul yang menghasilkan lulusan berkompeten, berkarakter, dan siap bersaing di dunia industri global.", image: "" },
-      { title: "Jurusan", content: "TKJ, RPL, TEI, TKR, dan DKV — lima kompetensi keahlian unggulan untuk masa depan.", image: "" },
-      { title: "Lokasi", content: "Jl. Raya Kertosono, Kab. Nganjuk, Jawa Timur.", image: "" },
-      { title: "Ekstrakurikuler", content: "Paskibra, Pramuka, PMR, Futsal, hingga Robotik.", image: "" },
+      { title: "Profil Sekolah", content: "SMK Negeri 1 Kertosono adalah sekolah kejuruan negeri di Kabupaten Nganjuk yang memadukan teknologi dan bisnis, berfokus pada keterampilan praktis serta pengembangan karakter siswa.", image: "/school-logo.png" },
+      { title: "Kurikulum Merdeka", content: "Menerapkan Kurikulum Merdeka dengan pembelajaran berbasis proyek dan kesempatan bekerja langsung bersama perusahaan (Du/Di).", image: "" },
+      { title: "7 Kompetensi Keahlian", content: "Teknik Pemesinan, Teknik Otomasi Industri, Teknik Instalasi Tenaga Listrik, Rekayasa Perangkat Lunak, Desain Produksi Busana, Kuliner, serta Teknik Pendingin dan Tata Udara.", image: "" },
+      { title: "Lokasi & Kontak", content: "Jl. Langsep No. 24, Ds. Pelem, Kab. Nganjuk, Jawa Timur. Telepon (0358) 551466, email smknegeri1kts@gmail.com.", image: "" },
+      { title: "Ekstrakurikuler", content: "Pramuka, PMR, Paskibraka, English Corner, Multimedia, Seni Musik, Seni Tari, Seni Lukis, Basket, Futsal, dan Voli.", image: "" },
     ],
   },
   sectionTitles: {

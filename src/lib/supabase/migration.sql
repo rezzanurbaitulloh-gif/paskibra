@@ -210,6 +210,8 @@ CREATE TABLE IF NOT EXISTS lkbb_updates (
 ALTER TABLE lkbb_updates ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_full_access_lkbb_updates" ON lkbb_updates
   FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "public_read_lkbb_updates" ON lkbb_updates
+  FOR SELECT USING (true);
 
 -- lkbb_documents: Dokumen lomba (juknis, formulir, dll.)
 CREATE TABLE IF NOT EXISTS lkbb_documents (
@@ -222,5 +224,7 @@ CREATE TABLE IF NOT EXISTS lkbb_documents (
 ALTER TABLE lkbb_documents ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_full_access_lkbb_documents" ON lkbb_documents
   FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "public_read_lkbb_documents" ON lkbb_documents
+  FOR SELECT USING (true);
 
 INSERT INTO storage.buckets (id, name, public) VALUES ('documents', 'documents', true) ON CONFLICT (id) DO NOTHING;

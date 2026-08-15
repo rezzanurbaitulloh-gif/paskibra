@@ -10,6 +10,8 @@ import { AIChatWidget } from "@/components/widgets/AIChatWidget"
 import { FloatingWhatsApp } from "@/components/widgets/FloatingWhatsApp"
 import { supabase } from "@/lib/supabase/server"
 
+export const dynamic = "force-dynamic"
+
 export default async function Home() {
   const { data: members } = await supabase.from("structure_members").select("*")
   const { data: achievements } = await supabase.from("gallery").select("*")

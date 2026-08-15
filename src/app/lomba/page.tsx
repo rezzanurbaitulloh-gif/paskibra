@@ -21,7 +21,6 @@ import {
 import { SectionHeader } from "@/components/sections/SectionHeader"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { VideoEmbed } from "@/components/video-embed"
-import { BackHomeButton } from "@/components/back-home-button"
 import { supabase } from "@/lib/supabase/client"
 
 interface UpdateRow {
@@ -121,8 +120,7 @@ export default function LombaPage() {
   }, [])
 
   return (
-    <main className="pt-20">
-      <BackHomeButton />
+    <main className="pt-28">
       <section className="relative py-16 md:py-24">
         <div className="container mx-auto px-4">
           <SectionHeader label={lkbb.label} title={lkbb.title} subtitle={lkbb.subtitle} />

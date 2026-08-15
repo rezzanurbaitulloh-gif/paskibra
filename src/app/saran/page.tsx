@@ -1,7 +1,6 @@
 "use client"
 
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
-import { BackHomeButton } from "@/components/back-home-button"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -64,8 +63,7 @@ export default function SaranPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <BackHomeButton />
-
+  
         <SectionHeader
           label="Transparan"
           title="Kotak Saran Publik"

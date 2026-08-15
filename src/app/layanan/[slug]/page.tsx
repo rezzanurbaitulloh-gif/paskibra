@@ -6,7 +6,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
-import { BackHomeButton } from "@/components/back-home-button"
 import { WA_MESSAGE_PREFIX } from "@/lib/constants"
 import { Package, BadgeCheck, BadgeX } from "lucide-react"
 
@@ -64,8 +63,7 @@ export default function LayananDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <BackHomeButton />
-
+  
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

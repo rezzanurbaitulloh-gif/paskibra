@@ -1,7 +1,6 @@
 "use client"
 
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
-import { BackHomeButton } from "@/components/back-home-button"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
@@ -40,8 +39,7 @@ export default function PengurusPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <BackHomeButton />
-
+  
         <div className="mt-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Struktur Organisasi</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Pengurus Satria Cengkara</h1>

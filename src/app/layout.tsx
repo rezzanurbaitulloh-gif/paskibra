@@ -3,6 +3,7 @@ import { Syne, Plus_Jakarta_Sans } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "next-themes"
 import { AnimatedBackground } from "@/components/animated-background";
+import { Navbar } from "@/components/navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import "./globals.css";
@@ -50,6 +51,7 @@ export default function RootLayout({
           <AuthProvider>
             <SiteSettingsProvider>
               <AnimatedBackground />
+              <Navbar />
               <TooltipProvider>{children}</TooltipProvider>
             </SiteSettingsProvider>
           </AuthProvider>

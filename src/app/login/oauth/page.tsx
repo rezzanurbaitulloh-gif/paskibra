@@ -3,7 +3,6 @@
 import { Suspense } from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { BackHomeButton } from "@/components/back-home-button"
 import { Loader2 } from "lucide-react"
 import { getSessionWithRole } from "@/lib/auth"
 
@@ -31,12 +30,9 @@ function OAuthCallbackInner() {
   }, [router])
 
   return (
-    <div className="relative min-h-screen">
-      <BackHomeButton />
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 px-4">
       <Loader2 className="h-8 w-8 animate-spin text-accent" />
       <p className="text-sm text-muted-foreground">{status}</p>
-    </div>
     </div>
   )
 }

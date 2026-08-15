@@ -122,7 +122,7 @@ export function ImageCropDialog({
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-card shadow-2xl">
+      <div className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl border border-line bg-card shadow-2xl">
         <div className="flex items-center justify-between border-b border-line px-5 py-3">
           <h3 className="font-display font-bold">Sesuaikan Gambar</h3>
           <button
@@ -135,7 +135,7 @@ export function ImageCropDialog({
           </button>
         </div>
 
-        <div className="relative h-72 w-full bg-black/80">
+        <div className="relative h-64 w-full bg-black/80 sm:h-72">
           <Cropper
             image={image}
             crop={crop}

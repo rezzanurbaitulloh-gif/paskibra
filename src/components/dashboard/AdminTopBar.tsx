@@ -39,7 +39,7 @@ export function AdminTopBar() {
       <div className="flex items-center gap-2">
         <Link
           href="/"
-          className="hidden items-center gap-2 rounded-lg border border-line px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground md:inline-flex"
+          className="inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
           title="Kembali ke halaman utama"
         >
           <Home className="h-4 w-4" /> Halaman Utama

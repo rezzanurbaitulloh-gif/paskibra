@@ -128,7 +128,7 @@ export default function GaleriPage() {
             <p className="mt-3 text-sm text-muted-foreground">Belum ada galeri untuk kategori ini.</p>
           </div>
         ) : (
-          <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
+          <div className="mt-10 columns-2 gap-3 sm:gap-4 lg:columns-3 [&>*]:mb-3 sm:[&>*]:mb-4">
             {filtered.map((item, index) => (
               <MotionLink
                 key={item.id}

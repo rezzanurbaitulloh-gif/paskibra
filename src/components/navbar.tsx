@@ -73,15 +73,18 @@ export function Navbar() {
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-soft"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const href = link.href.startsWith("#") && !isHome ? "/" + link.href : link.href
+              return (
+                <a
+                  key={link.href}
+                  href={href}
+                  className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-soft"
+                >
+                  {link.label}
+                </a>
+              )
+            })}
           </div>
 
           <div className="flex items-center gap-2">
@@ -105,16 +108,19 @@ export function Navbar() {
             className="lg:hidden mt-2 glass rounded-2xl p-3"
           >
             <div className="flex flex-col">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-soft rounded-lg transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const href = link.href.startsWith("#") && !isHome ? "/" + link.href : link.href
+                return (
+                  <a
+                    key={link.href}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
+                    className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-soft rounded-lg transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                )
+              })}
               {user ? (
                 <>
                   <Link

@@ -70,9 +70,10 @@ export function useDraggableFloat(key: string, width = 48, height = 48) {
     if (p && movedRef.current) {
       const vw = window.innerWidth
       const vh = window.innerHeight
+      const margin = 20
       const snapped = { ...p }
-      snapped.x = p.x < vw / 2 ? 4 : vw - width - 4
-      if (p.y > vh * 0.75) snapped.y = vh - height - 4
+      snapped.x = p.x < vw / 2 ? margin : vw - width - margin
+      if (p.y > vh * 0.75) snapped.y = vh - height - margin
       setPos(snapped)
       posRef.current = snapped
       savePos(snapped)

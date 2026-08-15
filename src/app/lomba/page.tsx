@@ -162,15 +162,6 @@ export default function LombaPage() {
             ) : (
               <InfoCard icon={Phone} title="Info & Pendaftaran" value={lkbb.contact} delay={0.2} />
             )}
-            <Link
-              href={`https://wa.me/${lkbb.whatsapp.replace(/\D/g, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-center gap-2 rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-black transition-transform hover:-translate-y-0.5"
-            >
-              <MessageCircle className="h-5 w-5" />
-              Daftar via WhatsApp
-            </Link>
           </div>
         </div>
       </section>

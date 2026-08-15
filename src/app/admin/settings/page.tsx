@@ -13,7 +13,7 @@ import { supabase } from "@/lib/supabase/client"
 import { DEFAULT_SETTINGS, type SiteSettings } from "@/contexts/SiteSettingsContext"
 import { ImageUpload } from "@/components/image-upload"
 
-const SETTING_KEYS = ["colors", "hero", "branding", "contacts", "pages", "aiPrompt"]
+const SETTING_KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "aiPrompt"]
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS)
@@ -101,6 +101,7 @@ export default function SettingsPage() {
           <TabsTrigger value="hero">Hero</TabsTrigger>
           <TabsTrigger value="kontak">Kontak & Sosmed</TabsTrigger>
           <TabsTrigger value="halaman">Teks Halaman</TabsTrigger>
+          <TabsTrigger value="background">Background</TabsTrigger>
           <TabsTrigger value="ai">AI Prompt</TabsTrigger>
         </TabsList>
 
@@ -354,6 +355,33 @@ export default function SettingsPage() {
                   />
                 </div>
               ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="background" className="mt-6">
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Gambar Background</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Foto watermark yang tampil di sudut-sudut background seluruh halaman (kanan-atas: pemuda, kiri-bawah: pemudi).
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label>Foto Pemuda (kanan atas)</Label>
+                <ImageUpload
+                  value={settings.backgrounds.watermarkPemuda}
+                  onChange={(url) => updateSetting("backgrounds", "watermarkPemuda", url)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Foto Pemudi (kiri bawah)</Label>
+                <ImageUpload
+                  value={settings.backgrounds.watermarkPemudi}
+                  onChange={(url) => updateSetting("backgrounds", "watermarkPemudi", url)}
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

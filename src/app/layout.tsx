@@ -46,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${syne.variable} ${plusJakarta.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <SiteSettingsProvider>
               <AnimatedBackground />

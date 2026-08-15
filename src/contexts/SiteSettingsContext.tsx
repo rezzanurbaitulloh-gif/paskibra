@@ -27,6 +27,10 @@ export interface SiteSettings {
     saranIntro: string
     pengurusIntro: string
   }
+  backgrounds: {
+    watermarkPemuda: string
+    watermarkPemudi: string
+  }
   aiPrompt: string
 }
 
@@ -62,11 +66,15 @@ export const DEFAULT_SETTINGS: SiteSettings = {
       "Kritik, saran, dan aspirasi Anda sangat berarti bagi kemajuan kami.",
     pengurusIntro: "Struktur kepengurusan Paskibra Satria Cengkara.",
   },
+  backgrounds: {
+    watermarkPemuda: "/watermark-pemuda.jpg",
+    watermarkPemudi: "/watermark-pemudi.jpg",
+  },
   aiPrompt:
     'Kamu adalah "Tanya Satria Bot", asisten AI resmi Paskibra Satria Cengkara SMKN 1 Kertosono.',
 }
 
-const KEYS = ["colors", "hero", "branding", "contacts", "pages", "aiPrompt"] as const
+const KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "aiPrompt"] as const
 
 function deepMerge<T>(base: T, patch: Partial<T>): T {
   const out: any = { ...base }

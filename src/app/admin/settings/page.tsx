@@ -287,6 +287,20 @@ export default function SettingsPage() {
                 <Label>Nomor Telepon (tampilan)</Label>
                 <Input value={settings.contacts.phone} onChange={(e) => updateSetting("contacts", "phone", e.target.value)} placeholder="0812-3456-7890" className="glass border-line" />
               </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>Kontak WhatsApp (nama + nomor — tampil di footer & halaman penyewaan)</Label>
+                <ListEditor
+                  fields={[
+                    { key: "name", label: "Nama", placeholder: "contoh: Kak Afza" },
+                    { key: "number", label: "Nomor WhatsApp", placeholder: "contoh: +62 895-1655-5498" },
+                  ]}
+                  items={settings.contacts.whatsappContacts}
+                  onChange={(items) => setSettings((prev) => ({ ...prev, contacts: { ...prev.contacts, whatsappContacts: items } }))}
+                  itemLabel="Kontak"
+                  addText="Tambah Kontak"
+                  max={4}
+                />
+              </div>
               <div className="space-y-2">
                 <Label>Email</Label>
                 <Input type="email" value={settings.contacts.email} onChange={(e) => updateSetting("contacts", "email", e.target.value)} placeholder="satriacengkara@gmail.com" className="glass border-line" />

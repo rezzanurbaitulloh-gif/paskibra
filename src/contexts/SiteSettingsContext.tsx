@@ -14,6 +14,7 @@ export interface SiteSettings {
   }
   contacts: {
     waNumber: string
+    whatsappContacts: { name: string; number: string }[]
     email: string
     instagram: string
     tiktok: string
@@ -76,6 +77,7 @@ export interface SiteSettings {
     registrationDeadline: string
     contact: string
     whatsapp: string
+    contacts: { name: string; number: string }[]
     rules: { title: string; desc: string }[]
     steps: { title: string; desc: string }[]
     prizes: { title: string; desc: string }[]
@@ -99,7 +101,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     schoolName: "SMK Negeri 1 Kertosono",
   },
   contacts: {
-    waNumber: "6281234567890",
+    waNumber: "6289516555498",
+    whatsappContacts: [
+      { name: "Kak Afza", number: "+62 895-1655-5498" },
+      { name: "Kak Khoirul", number: "+62 823-3848-7105" },
+    ],
     email: "smknegeri1kts@gmail.com",
     instagram: "https://www.instagram.com/satria_cengkara",
     tiktok: "https://www.tiktok.com/@satria_cengkara",
@@ -193,8 +199,12 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     location: "SMK Negeri 1 Kertosono, Jl. Langsep No. 24, Pelem, Nganjuk",
     fee: "Rp 250.000 / tim (maks. 10 anggota)",
     registrationDeadline: "5 Oktober 2026",
-    contact: "(0358) 551466",
-    whatsapp: "6281229549860",
+    contact: "+62 895-2548-0975 (Kak Arzety)",
+    whatsapp: "6289525480975",
+    contacts: [
+      { name: "Kak Arzety", number: "+62 895-2548-0975" },
+      { name: "Kak Banyu", number: "+62 881-0271-83782" },
+    ],
     rules: [
       {
         title: "Peserta",

@@ -455,13 +455,25 @@ function InfoEditor() {
             <Input value={lkbb.registrationDeadline} onChange={(e) => update("registrationDeadline", e.target.value)} className="border-line bg-card" />
           </div>
           <div className="space-y-2">
-            <Label>Kontak Panitia</Label>
-            <Input value={lkbb.contact} onChange={(e) => update("contact", e.target.value)} className="border-line bg-card" />
-          </div>
-          <div className="space-y-2">
-            <Label>WhatsApp (format: 628xxx)</Label>
+            <Label>WhatsApp CTA (format: 628xxx)</Label>
             <Input value={lkbb.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} className="border-line bg-card" />
           </div>
+        </div>
+        <div className="mt-5 space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Kontak Info & Pendaftaran (nomor + nama penanggung jawab)
+          </p>
+          <ListEditor
+            fields={[
+              { key: "name", label: "Nama", placeholder: "contoh: Kak Arzety" },
+              { key: "number", label: "Nomor WhatsApp", placeholder: "contoh: +62 895-2548-0975" },
+            ]}
+            items={lkbb.contacts}
+            onChange={(items) => setLkbb((prev) => ({ ...prev, contacts: items }) as SiteSettings["lkbb"])}
+            itemLabel="Kontak"
+            addText="Tambah Kontak"
+            max={4}
+          />
         </div>
       </Card>
 

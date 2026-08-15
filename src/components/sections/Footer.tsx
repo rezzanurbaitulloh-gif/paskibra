@@ -87,10 +87,26 @@ export function Footer() {
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
                 {contacts.address}
               </li>
-              <li className="flex items-start gap-2.5">
-                <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
-                {contacts.phone}
-              </li>
+              {contacts.whatsappContacts.length > 0 ? (
+                contacts.whatsappContacts.map((c) => (
+                  <li key={c.number} className="flex items-start gap-2.5">
+                    <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+                    <a
+                      href={`https://wa.me/${c.number.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-foreground"
+                    >
+                      {c.name} • {c.number}
+                    </a>
+                  </li>
+                ))
+              ) : (
+                <li className="flex items-start gap-2.5">
+                  <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+                  {contacts.phone}
+                </li>
+              )}
               <li className="flex items-start gap-2.5">
                 <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
                 <a href={`mailto:${contacts.email}`} className="transition-colors hover:text-foreground">

@@ -138,7 +138,30 @@ export default function LombaPage() {
               value={lkbb.registrationDeadline}
               delay={0.15}
             />
-            <InfoCard icon={Phone} title="Info & Pendaftaran" value={lkbb.contact} delay={0.2} />
+            {lkbb.contacts.length > 0 ? (
+              <div className="flex flex-col justify-center gap-2 rounded-2xl border border-line bg-card p-4 card-glow">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Info & Pendaftaran
+                </p>
+                {lkbb.contacts.map((c, ci) => (
+                  <Link
+                    key={c.number}
+                    href={`https://wa.me/${c.number.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-2 rounded-lg border border-line bg-soft px-3 py-2 transition-colors hover:border-accent/50"
+                  >
+                    <Phone className="h-3.5 w-3.5 shrink-0 text-accent" />
+                    <span className="truncate text-xs font-medium text-foreground">
+                      {c.name} • {c.number}
+                    </span>
+                    <MessageCircle className="ml-auto h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <InfoCard icon={Phone} title="Info & Pendaftaran" value={lkbb.contact} delay={0.2} />
+            )}
             <Link
               href={`https://wa.me/${lkbb.whatsapp.replace(/\D/g, "")}`}
               target="_blank"

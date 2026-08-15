@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
-import { MessageCircle, ArrowRight } from "lucide-react"
+import { MessageCircle, ArrowRight, Phone } from "lucide-react"
 import { SectionHeader } from "./SectionHeader"
 import { cn } from "@/lib/utils"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
@@ -23,7 +23,8 @@ const formatIDR = (n: number) =>
 
 export function RentalCatalog({ items }: { items: RentalItem[] }) {
   const { settings } = useSiteSettings()
-  const waNumber = settings.contacts.waNumber || "6281234567890"
+  const contacts = settings.contacts
+  const waNumber = contacts.waNumber || "6281234567890"
   const st = settings.sectionTitles
   return (
     <section id="penyewaan" className="relative py-16 md:py-24">
@@ -111,7 +112,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
           </div>
         )}
 
-        <div className="mt-10 flex justify-center">
+        <div className="mt-10 flex flex-col items-center gap-4">
           <a
             href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
               "Halo Satria Cengkara, saya ingin memesan jasa pasukan / kostum. Bisa dibantu?"
@@ -123,6 +124,25 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
             Pesan Jasa Pasukan Khusus
             <ArrowRight className="h-4 w-4" />
           </a>
+          {contacts.whatsappContacts.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+              <span>Hubungi:</span>
+              {contacts.whatsappContacts.map((c) => (
+                <a
+                  key={c.number}
+                  href={`https://wa.me/${c.number.replace(/\D/g, "")}?text=${encodeURIComponent(
+                    "Halo Satria Cengkara, saya ingin bertanya tentang penyewaan."
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1 font-medium text-foreground transition-colors hover:border-accent/50"
+                >
+                  <Phone className="h-3 w-3 text-accent" />
+                  {c.name} • {c.number}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

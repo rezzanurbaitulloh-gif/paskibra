@@ -51,7 +51,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <TooltipProvider>
         <div className="flex min-h-screen min-w-0">
           <AdminSidebar />
-          <div className="flex-1 flex flex-col md:pl-64">
+          <div className="flex-1 min-w-0 flex flex-col md:pl-64">
             <AdminTopBar />
             <motion.main
               initial={{ opacity: 0, y: 20 }}

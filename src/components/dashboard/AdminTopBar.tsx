@@ -39,10 +39,10 @@ export function AdminTopBar() {
       <div className="flex items-center gap-2">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+          className="inline-flex items-center gap-2 rounded-lg border border-line px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground sm:px-3"
           title="Kembali ke halaman utama"
         >
-          <Home className="h-4 w-4" /> Halaman Utama
+          <Home className="h-4 w-4" /> <span className="hidden sm:inline">Halaman Utama</span>
         </Link>
 
         <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
@@ -59,7 +59,7 @@ export function AdminTopBar() {
           </SheetContent>
         </Sheet>
 
-        <div className="relative hidden sm:block">
+        <div className="relative hidden lg:block">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             placeholder="Cari menu atau perintah..."

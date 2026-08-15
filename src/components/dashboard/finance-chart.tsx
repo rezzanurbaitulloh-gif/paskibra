@@ -1,9 +1,23 @@
 "use client"
 
-import * as React from "react"
-import { fmtIDR } from "@/lib/fmt"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
-const ID_MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
+import { fmtIDR } from "@/lib/fmt"
 
 export interface ChartBar {
   key: string
@@ -11,14 +25,6 @@ export interface ChartBar {
   full: string
   inc: number
   exp: number
-}
-
-function niceMax(v: number) {
-  if (v <= 0) return 100000
-  const exp = Math.pow(10, Math.floor(Math.log10(v)))
-  const f = v / exp
-  const nice = f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10
-  return nice * exp
 }
 
 function fmtShort(v: number) {
@@ -30,153 +36,124 @@ function fmtShort(v: number) {
   return `${s.replace(".", ",")}jt`
 }
 
-function RoundedTopPath(x: number, y: number, w: number, h: number, r: number) {
-  if (h <= 0) return ""
-  const rr = Math.min(r, w / 2, h)
-  return `M${x},${y + h} L${x},${y + rr} Q${x},${y} ${x + rr},${y} L${x + w - rr},${y} Q${x + w},${y} ${x + w},${y + rr} L${x + w},${y + h} Z`
+const chartConfig = {
+  inc: {
+    label: "Pemasukan",
+    color: "#22c55e",
+  },
+  exp: {
+    label: "Pengeluaran",
+    color: "#ef4444",
+  },
+} satisfies ChartConfig
+
+interface FinanceChartProps {
+  bars: ChartBar[]
+  title?: string
+  control?: React.ReactNode
 }
 
-export function FinanceChart({ bars }: { bars: ChartBar[] }) {
-  const wrapRef = React.useRef<HTMLDivElement>(null)
-  const [width, setWidth] = React.useState(0)
-  const [hover, setHover] = React.useState<number | null>(null)
+export function FinanceChart({ bars, title = "Total Keuangan", control }: FinanceChartProps) {
+  const totalInc = bars.reduce((s, b) => s + b.inc, 0)
+  const totalExp = bars.reduce((s, b) => s + b.exp, 0)
+  const balance = totalInc - totalExp
+  const data = bars.map((b) => ({
+    ...b,
+    inc: b.inc > 0 ? b.inc : undefined,
+    exp: b.exp > 0 ? b.exp : undefined,
+  }))
 
-  React.useEffect(() => {
-    const el = wrapRef.current
-    if (!el) return
-    const ro = new ResizeObserver((entries) => {
-      for (const e of entries) setWidth(e.contentRect.width)
-    })
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
-  const Y_W = 48
-  const X_H = 26
-  const PAD_T = 18
-  const H = 250
-  const cw = Math.max(0, width - Y_W - 10)
-  const ch = H - X_H - PAD_T
-
-  const maxVal = niceMax(Math.max(0.01, ...bars.map((b) => Math.max(b.inc, b.exp))))
-  const ticks = [0, 1, 2, 3, 4].map((i) => (maxVal * i) / 4)
-
-  const n = Math.max(1, bars.length)
-  const slot = cw / n
-  const barW = Math.max(8, Math.min(20, slot * 0.3))
-  const gap = 3
-
-  const xTickEvery = n > 31 ? 1 : Math.ceil(n / 7)
-  const xTicks = bars.filter((b, i) => i % xTickEvery === 0 || i === n - 1)
-
-  const active = hover !== null ? bars[hover] : null
-  const hasData = bars.some((b) => b.inc > 0 || b.exp > 0)
-
-  const barY = (v: number) => PAD_T + ch - (v / maxVal) * ch
-  const slotX = (i: number) => i * slot
+  if (bars.length === 0) {
+    return (
+      <Card className="border-line">
+        <CardContent className="flex min-h-48 items-center justify-center py-10 text-sm text-muted-foreground">
+          Belum ada data keuangan pada periode ini.
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <div ref={wrapRef} className="relative mt-4 select-none" role="img" aria-label="Grafik batang pemasukan dan pengeluaran">
-      <svg width="100%" height={H} className="block">
-        {ticks.map((t) => {
-          const y = barY(t)
-          return (
-            <g key={t}>
-              <line x1={Y_W} x2={width} y1={y} y2={y} className="stroke-[#f1f5f9] dark:stroke-slate-800" strokeWidth={1} />
-              <text x={Y_W - 6} y={y + 3} textAnchor="end" className="fill-muted-foreground text-[10px]">
-                {fmtShort(t)}
-              </text>
-            </g>
-          )
-        })}
-
-        {bars.map((b, i) => {
-          const has = b.inc > 0 || b.exp > 0
-          const dim = hover !== null && hover !== i
-          const series = [b.inc > 0, b.exp > 0].filter(Boolean).length
-          const two = series === 2
-          const x0 = slotX(i) + slot / 2 - (two ? barW + gap / 2 : barW / 2)
-          return (
-            <g key={b.key}>
-              {has && (
-                <>
-                  {b.inc > 0 && (
-                    <path
-                      d={RoundedTopPath(x0, barY(b.inc), barW, PAD_T + ch - barY(b.inc), 4)}
-                      fill="#22c55e"
-                      opacity={dim ? 0.45 : 1}
-                      className="transition-opacity"
-                    />
-                  )}
-                  {b.exp > 0 && (
-                    <path
-                      d={RoundedTopPath(x0 + (b.inc > 0 ? barW + gap : 0), barY(b.exp), barW, PAD_T + ch - barY(b.exp), 4)}
-                      fill="#ef4444"
-                      opacity={dim ? 0.45 : 1}
-                      className="transition-opacity"
-                    />
-                  )}
-                </>
-              )}
-              <rect
-                x={slotX(i)}
-                y={PAD_T}
-                width={slot}
-                height={ch}
-                fill="transparent"
-                className="cursor-pointer"
-                onMouseEnter={() => setHover(i)}
-                onMouseLeave={() => setHover(null)}
-                onClick={() => setHover(hover === i ? null : i)}
-              />
-              {has && hover === i && (
-                <rect x={slotX(i) + 1} y={PAD_T} width={slot - 2} height={ch} fill="#0f172a" opacity={0.05} pointerEvents="none" />
-              )}
-            </g>
-          )
-        })}
-
-        {xTicks.map((b, ti) => {
-          const i = bars.findIndex((x) => x.key === b.key)
-          const x = slotX(i) + slot / 2
-          return (
-            <text key={b.key + ti} x={x} y={H - 7} textAnchor="middle" className="fill-muted-foreground text-[10px]">
-              {b.label}
-            </text>
-          )
-        })}
-      </svg>
-
-      {active && (active.inc > 0 || active.exp > 0) && (
-        <div
-          className="pointer-events-none absolute top-0 z-10 w-44 rounded-lg border border-line bg-background/95 px-3 py-2 text-xs shadow-lg backdrop-blur-sm"
-          style={{
-            left: Math.min(Math.max(8, slotX(hover!) + slot / 2 - 88), Math.max(8, width - 184)),
-          }}
-        >
-          <p className="font-display font-bold">{active.full}</p>
-          {active.inc > 0 && (
-            <p className="mt-1 flex items-center justify-between gap-2">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <span className="h-2 w-2 rounded-sm bg-[#22c55e]" /> Pemasukan
-              </span>
-              <span className="font-semibold">{fmtIDR(active.inc)}</span>
-            </p>
-          )}
-          {active.exp > 0 && (
-            <p className="mt-1 flex items-center justify-between gap-2">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <span className="h-2 w-2 rounded-sm bg-[#ef4444]" /> Pengeluaran
-              </span>
-              <span className="font-semibold">{fmtIDR(active.exp)}</span>
-            </p>
-          )}
+    <Card className="border-line">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
+        <div>
+          <CardTitle className="font-display">{title}</CardTitle>
+          <CardDescription>Pemasukan vs Pengeluaran</CardDescription>
         </div>
-      )}
-
-      {!hasData && (
-        <p className="absolute inset-x-0 top-0 pt-24 text-center text-xs text-muted-foreground">Belum ada data keuangan.</p>
-      )}
-    </div>
+        <div className="flex items-center gap-3">
+          {control}
+          <div className="hidden items-center gap-4 rounded-xl border border-line bg-soft px-4 py-2 md:flex">
+          <div>
+            <p className="text-[10px] text-muted-foreground">Selisih</p>
+            <p className={`font-display text-lg font-bold ${balance >= 0 ? "text-green-500" : "text-red-500"}`}>
+              {balance >= 0 ? "+" : "-"}
+              {fmtIDR(Math.abs(balance))}
+            </p>
+          </div>
+          <div className="h-8 w-px bg-line" />
+          <div>
+            <p className="text-[10px] text-muted-foreground">Total Masuk</p>
+            <p className="font-display text-sm font-bold text-green-500">{fmtIDR(totalInc)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-muted-foreground">Total Keluar</p>
+            <p className="font-display text-sm font-bold text-red-500">{fmtIDR(totalExp)}</p>
+          </div>
+        </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="mt-2 min-h-[240px] w-full">
+          <BarChart accessibilityLayer data={data} barGap={6}>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={10}
+              minTickGap={24}
+              className="text-xs"
+            />
+            <YAxis
+              width={46}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(v: number) => fmtShort(v)}
+            />
+            <ChartTooltip
+              cursor={{ fill: "hsl(var(--muted))", opacity: 0.5 }}
+              content={
+                <ChartTooltipContent
+                  indicator="dot"
+                  formatter={(value, name) => {
+                    const v = Number(value)
+                    if (v === 0) return null
+                    const isInc = name === "inc"
+                    return (
+                      <div className="flex w-full flex-1 items-center justify-between gap-4">
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: isInc ? "#22c55e" : "#ef4444" }}
+                          />
+                          {isInc ? "Pemasukan" : "Pengeluaran"}
+                        </span>
+                        <span className="font-semibold tabular-nums">{fmtIDR(v)}</span>
+                      </div>
+                    )
+                  }}
+                  labelFormatter={(_, payload) =>
+                    (payload?.[0]?.payload as ChartBar | undefined)?.full || ""
+                  }
+                />
+              }
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar dataKey="inc" fill="var(--color-inc)" radius={[8, 8, 0, 0]} barSize={20} />
+            <Bar dataKey="exp" fill="var(--color-exp)" radius={[8, 8, 0, 0]} barSize={20} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   )
 }

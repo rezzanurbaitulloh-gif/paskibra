@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
-import { MessageCircle, ArrowRight, Phone } from "lucide-react"
+import { MessageCircle, Phone } from "lucide-react"
 import { SectionHeader } from "./SectionHeader"
 import { cn } from "@/lib/utils"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
@@ -113,17 +113,6 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
         )}
 
         <div className="mt-10 flex flex-col items-center gap-4">
-          <a
-            href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
-              "Halo Satria Cengkara, saya ingin memesan jasa pasukan / kostum. Bisa dibantu?"
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl border border-line bg-soft px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-white/20 hover:bg-white/[0.07]"
-          >
-            Pesan Jasa Pasukan Khusus
-            <ArrowRight className="h-4 w-4" />
-          </a>
           {contacts.whatsappContacts.length > 0 && (
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
               <span>Hubungi:</span>

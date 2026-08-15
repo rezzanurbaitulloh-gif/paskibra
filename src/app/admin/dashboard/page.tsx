@@ -14,7 +14,6 @@ import {
   ArrowUpRight,
   Download,
   TrendingUp,
-  TrendingDown,
   Sparkles,
   DollarSign,
   FileText,
@@ -210,14 +209,6 @@ export default function AdminDashboard() {
     .filter((r) => r.payment_status !== "belum")
     .reduce((sum, r) => sum + (Number(r.amount) || 0), 0)
 
-  const monthKey = new Date().toLocaleDateString("en-CA").slice(0, 7)
-  const monthIncome = finRowsAll
-    .filter((r) => r.type === "income" && String(r.date).startsWith(monthKey))
-    .reduce((sum, r) => sum + Number(r.amount), 0)
-  const monthExpense = finRowsAll
-    .filter((r) => r.type === "expense" && String(r.date).startsWith(monthKey))
-    .reduce((sum, r) => sum + Number(r.amount), 0)
-
   const chart = (() => {
     const now = new Date()
     if (finPeriod === "all") {
@@ -243,21 +234,26 @@ export default function AdminDashboard() {
       return { title: "Semua Periode", bars: Array.from(map.values()) }
     }
     if (finPeriod === "30hari") {
+      const first = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
       const bars: { key: string; label: string; full: string; inc: number; exp: number }[] = []
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)
-        const day = d.getDate()
+      for (let w = 0; w < 5; w++) {
+        const s = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7)
+        const e = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7 + 6)
+        const effE = e > now ? now : e
         bars.push({
-          key: d.toLocaleDateString("en-CA"),
-          label: `${day} ${MONTHS[d.getMonth()]}`,
-          full: d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
+          key: `w${w}`,
+          label: `Minggu ${w + 1}`,
+          full: `${s.getDate()}\u2013${effE.getDate()} ${MONTHS[effE.getMonth()]} ${effE.getFullYear()}`,
           inc: 0,
           exp: 0,
         })
       }
+      const firstKey = first.toLocaleDateString("en-CA")
       for (const r of finRowsAll) {
-        const idx = bars.findIndex((m) => m.key === String(r.date).slice(0, 10))
-        if (idx >= 0) {
+        const idx = Math.floor(
+          (Date.parse(String(r.date).slice(0, 10)) - Date.parse(firstKey)) / 86400000 / 7
+        )
+        if (idx >= 0 && idx < 5) {
           if (r.type === "income") bars[idx].inc += Number(r.amount)
           else bars[idx].exp += Number(r.amount)
         }
@@ -266,22 +262,26 @@ export default function AdminDashboard() {
     }
     const [y, m] = finPeriod.split("-").map(Number)
     const days = new Date(y, m, 0).getDate()
+    const fullM = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][m - 1]
+    const weeks = Math.ceil(days / 7)
     const bars: { key: string; label: string; full: string; inc: number; exp: number }[] = []
-    for (let d = 1; d <= days; d++) {
-      const key = `${finPeriod}-${String(d).padStart(2, "0")}`
+    for (let w = 0; w < weeks; w++) {
+      const sd = w * 7 + 1
+      const ed = Math.min(days, (w + 1) * 7)
       bars.push({
-        key,
-        label: `${d} ${MONTHS[m - 1]}`,
-        full: `${d} ${["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][m - 1]} ${y}`,
+        key: `${finPeriod}-w${w}`,
+        label: `Minggu ${w + 1}`,
+        full: `${sd}\u2013${ed} ${fullM} ${y}`,
         inc: 0,
         exp: 0,
       })
     }
     for (const r of finRowsAll) {
-      const idx = bars.findIndex((b) => b.key === String(r.date).slice(0, 10))
-      if (idx >= 0) {
-        if (r.type === "income") bars[idx].inc += Number(r.amount)
-        else bars[idx].exp += Number(r.amount)
+      const d = Number(String(r.date).slice(8, 10))
+      const w = Math.floor((d - 1) / 7)
+      if (String(r.date).startsWith(finPeriod) && w >= 0 && w < weeks) {
+        if (r.type === "income") bars[w].inc += Number(r.amount)
+        else bars[w].exp += Number(r.amount)
       }
     }
     return { title: MONTHS[m - 1] + " " + y, bars }
@@ -452,48 +452,21 @@ export default function AdminDashboard() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card className="p-5">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h3 className="font-display text-sm font-bold">Keuangan — {chart.title}</h3>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Pemasukan vs Pengeluaran</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <MonthPicker
-                value={finPeriod}
-                onChange={setFinPeriod}
-                placeholder="30 Hari Terakhir"
-                presets={[
-                  { value: "30hari", label: "30 Hari Terakhir" },
-                  { value: "all", label: "Semua Periode" },
-                ]}
-              />
-              <div className="hidden items-center gap-3 text-[10px] text-muted-foreground sm:flex">
-                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-[#22c55e]" /> Pemasukan</span>
-                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-[#ef4444]" /> Pengeluaran</span>
-              </div>
-            </div>
-          </div>
-          {chart.bars.length === 0 ? (
-            <p className="py-14 text-center text-xs text-muted-foreground">Belum ada data keuangan pada periode ini.</p>
-          ) : (
-            <FinanceChart bars={chart.bars} />
-          )}
-          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4">
-            <div>
-              <p className="text-[10px] text-muted-foreground">Masuk bulan ini</p>
-              <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-green-500">
-                {fmtIDR(monthIncome)} <TrendingUp className="h-3.5 w-3.5" />
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] text-muted-foreground">Keluar bulan ini</p>
-              <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-red-500">
-                {fmtIDR(monthExpense)} <TrendingDown className="h-3.5 w-3.5" />
-              </p>
-            </div>
-          </div>
-        </Card>
+        <FinanceChart
+          bars={chart.bars}
+          title={chart.title}
+          control={
+            <MonthPicker
+              value={finPeriod}
+              onChange={setFinPeriod}
+              placeholder="30 Hari Terakhir"
+              presets={[
+                { value: "30hari", label: "30 Hari Terakhir" },
+                { value: "all", label: "Semua Periode" },
+              ]}
+            />
+          }
+        />
 
         <Card className="p-5">
           <div className="flex items-center justify-between">

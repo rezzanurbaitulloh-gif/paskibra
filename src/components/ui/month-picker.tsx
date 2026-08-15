@@ -16,20 +16,22 @@ interface MonthPickerProps {
   onChange: (value: string) => void
   placeholder?: string
   className?: string
+  presets?: { value: string; label: string }[]
 }
 
-export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", className }: MonthPickerProps) {
+export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", className, presets }: MonthPickerProps) {
   const [open, setOpen] = React.useState(false)
   const [view, setView] = React.useState(() => {
     const n = new Date()
     return { y: n.getFullYear(), m: n.getMonth() }
   })
 
-  const valueMonth = value ? Number(value.slice(5, 7)) : null
+  const valueMonth = value && /^\d{4}-\d{2}$/.test(value) ? Number(value.slice(5, 7)) : null
+  const activePreset = presets?.find((p) => p.value === value)
 
   React.useEffect(() => {
-    if (open && value) {
-      setView({ y: Number(value.slice(0, 4)), m: valueMonth! - 1 })
+    if (open && valueMonth && value) {
+      setView({ y: Number(value.slice(0, 4)), m: valueMonth - 1 })
     }
   }, [open, value, valueMonth])
 
@@ -66,9 +68,9 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
       >
         <span className="flex items-center gap-2">
           <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground" />
-          {value ? `${MONTHS[valueMonth! - 1]} ${value.slice(0, 4)}` : placeholder}
+          {activePreset ? activePreset.label : valueMonth && value ? `${MONTHS[valueMonth - 1]} ${value.slice(0, 4)}` : placeholder}
         </span>
-        {value && (
+        {value && !activePreset && (
           <span
             role="button"
             aria-label="Reset bulan"
@@ -135,6 +137,27 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
         <p className="border-t border-line pt-2 text-center text-[10px] text-muted-foreground">
           Pilih hari untuk memfilter bulan tersebut
         </p>
+        {presets && (
+          <div className="flex flex-wrap gap-1 border-t border-line pt-2">
+            {presets.map((p) => (
+              <button
+                key={p.value}
+                onClick={() => {
+                  onChange(p.value)
+                  setOpen(false)
+                }}
+                className={cn(
+                  "rounded-md px-2 py-1 text-[10px] font-medium transition-colors",
+                  value === p.value
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-soft text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   )

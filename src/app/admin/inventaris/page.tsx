@@ -142,53 +142,74 @@ export default function InventarisAdminPage() {
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items
-              .filter((it) => it.name.toLowerCase().includes(search.toLowerCase()))
-              .filter((it) => fCat === "all" || it.category === fCat)
-              .map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.04 }}
-                className="overflow-hidden rounded-2xl border border-line bg-card card-glow"
-              >
-                {item.image_url && (
-                  <div className="w-full overflow-hidden bg-soft">
-                    <img src={item.image_url} alt={item.name} className="h-auto w-full object-cover" />
-                  </div>
-                )}
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="rounded-md border border-line bg-soft px-2 py-1 text-[10px] font-medium text-accent">
-                      {item.category}
-                    </span>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} aria-label="Hapus">
-                        <Trash2 className="h-4 w-4 text-red-400" />
-                      </Button>
-                    </div>
-                  </div>
-                  <h3 className="mt-3 font-display text-sm font-bold">{item.name}</h3>
-                  <p className="mt-1 font-display text-sm font-bold text-accent">{fmt(Number(item.price))}<span className="text-[10px] font-normal text-muted-foreground">/sewa</span></p>
-                  {item.description && (
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
-                  )}
-                  <div className="mt-3 flex items-center gap-3 text-[11px]">
-                    <span className={item.stock > 0 ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
-                      Stok: {item.stock}
-                    </span>
-                    <span className={item.is_available ? "font-semibold text-green-400" : "font-semibold text-red-400"}>
-                      {item.is_available ? "Tersedia" : "Tidak Tersedia"}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+          <div className="overflow-hidden rounded-2xl border border-line bg-card">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <th className="px-4 py-3">Aset</th>
+                    <th className="px-4 py-3">Kategori</th>
+                    <th className="px-4 py-3">Harga Sewa</th>
+                    <th className="px-4 py-3">Stok</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items
+                    .filter((it) => it.name.toLowerCase().includes(search.toLowerCase()))
+                    .filter((it) => fCat === "all" || it.category === fCat)
+                    .map((item, index) => (
+                    <tr key={item.id} className="border-b border-line/50 last:border-0 hover:bg-soft/50">
+                      <td className="px-4 py-2.5">
+                        <div className="flex items-center gap-3">
+                          {item.image_url && (
+                            <div className="flex h-11 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-soft">
+                              <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="truncate font-medium">{item.name}</p>
+                            {item.description && (
+                              <p className="line-clamp-1 text-[11px] text-muted-foreground">{item.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <span className="rounded-full border border-line bg-soft px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs font-semibold text-accent">
+                        {fmt(Number(item.price))}
+                        <span className="text-[10px] font-normal text-muted-foreground">/sewa</span>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs">
+                        <span className={item.stock > 0 ? "font-semibold text-green-500" : "font-semibold text-red-500"}>
+                          {item.stock}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <span className={item.is_available ? "font-semibold text-green-500" : "font-semibold text-red-500"}>
+                          {item.is_available ? "Tersedia" : "Tidak Tersedia"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} aria-label="Hapus">
+                            <Trash2 className="h-4 w-4 text-red-400" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
           </>
         )}

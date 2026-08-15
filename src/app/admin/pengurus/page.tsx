@@ -31,7 +31,8 @@ export default function StructureManagement() {
   const [importing, setImporting] = useState(false)
   const [currentMember, setCurrentMember] = useState<Member | null>(null)
   const [search, setSearch] = useState("")
-  const [mode, setMode] = useState("nama-a")
+  const [filterCol, setFilterCol] = useState("nama")
+  const [filterVal, setFilterVal] = useState("")
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -50,13 +51,21 @@ export default function StructureManagement() {
       a.localeCompare(b, "id")
     )
 
+  const colValues = distinct(
+    filterCol === "nama" ? "name" : (filterCol as keyof Member)
+  )
+  const topVal = colValues[0] || ""
+  const botVal = colValues[colValues.length - 1] || ""
+
   const filtered = members
     .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
     .filter((m) => {
-      if (mode.startsWith("k:")) return (m.kelas || "") === mode.slice(2)
-      if (mode.startsWith("g:")) return m.generation === mode.slice(2)
-      if (mode.startsWith("d:")) return m.division === mode.slice(2)
-      if (mode.startsWith("j:")) return m.position === mode.slice(2)
+      if (!filterVal) return true
+      if (filterCol === "nama") return m.name === filterVal
+      if (filterCol === "kelas") return (m.kelas || "") === filterVal
+      if (filterCol === "generasi") return m.generation === filterVal
+      if (filterCol === "divisi") return m.division === filterVal
+      if (filterCol === "jabatan") return m.position === filterVal
       return true
     })
     .sort((a, b) => {
@@ -65,9 +74,7 @@ export default function StructureManagement() {
         const n = g.replace(/\D/g, "")
         return n ? Number(n) : 0
       }
-      switch (mode) {
-        case "nama-z":
-          return cmp(b.name, a.name)
+      switch (filterCol) {
         case "kelas":
           return cmp(a.kelas || "", b.kelas || "")
         case "generasi":
@@ -187,27 +194,34 @@ export default function StructureManagement() {
             placeholder="Cari nama anggota..."
             className="h-9 w-full border-line bg-soft text-sm sm:w-56"
           />
-          <Select value={mode} onValueChange={(v) => setMode(v ?? "nama-a")}>
-            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-64"><SelectValue /></SelectTrigger>
+          <Select
+            value={filterCol}
+            onValueChange={(v) => {
+              setFilterCol(v ?? "nama")
+              setFilterVal("")
+            }}
+          >
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-44"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="nama-a">Urutkan: Nama (A-Z)</SelectItem>
-              <SelectItem value="nama-z">Urutkan: Nama (Z-A)</SelectItem>
-              <SelectItem value="kelas">Urutkan: Kelas / Jurusan</SelectItem>
-              <SelectItem value="generasi">Urutkan: Generasi</SelectItem>
-              <SelectItem value="divisi">Urutkan: Divisi</SelectItem>
-              <SelectItem value="jabatan">Urutkan: Jabatan</SelectItem>
-              {distinct("kelas").map((k) => (
-                <SelectItem key={`k:${k}`} value={`k:${k}`}>Kelas: {k}</SelectItem>
-              ))}
-              {distinct("generation").map((g) => (
-                <SelectItem key={`g:${g}`} value={`g:${g}`}>Generasi: {g}</SelectItem>
-              ))}
-              {distinct("division").map((d) => (
-                <SelectItem key={`d:${d}`} value={`d:${d}`}>Divisi: {d}</SelectItem>
-              ))}
-              {distinct("position").map((p) => (
-                <SelectItem key={`j:${p}`} value={`j:${p}`}>Jabatan: {p}</SelectItem>
-              ))}
+              <SelectItem value="nama">Nama</SelectItem>
+              <SelectItem value="jabatan">Jabatan</SelectItem>
+              <SelectItem value="divisi">Divisi</SelectItem>
+              <SelectItem value="generasi">Generasi</SelectItem>
+              <SelectItem value="kelas">Kelas / Jurusan</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterVal} onValueChange={(v) => setFilterVal(v ?? "")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-56">
+              <SelectValue placeholder={filterCol === "nama" ? "Semua Nama" : "Semua Nilai"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Semua</SelectItem>
+              {topVal && (
+                <SelectItem value={topVal} className="truncate">{topVal}</SelectItem>
+              )}
+              {botVal && botVal !== topVal && (
+                <SelectItem value={botVal} className="truncate">{botVal}</SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>

@@ -24,6 +24,8 @@ import {
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { MonthPicker } from "@/components/ui/month-picker"
+import { FinanceChart } from "@/components/dashboard/finance-chart"
+import { fmtIDR } from "@/lib/fmt"
 import { useAdmin } from "@/contexts/AdminContext"
 import { BendaharaView } from "./bendahara-view"
 import { HumasView } from "./humas-view"
@@ -50,9 +52,6 @@ interface ArtikelRow {
   slug: string
   created_at: string
 }
-
-const fmtIDR = (n: number) =>
-  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n)
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
@@ -222,12 +221,20 @@ export default function AdminDashboard() {
   const chart = (() => {
     const now = new Date()
     if (finPeriod === "all") {
-      const map = new Map<string, { key: string; label: string; inc: number; exp: number }>()
+      const map = new Map<string, { key: string; label: string; full: string; inc: number; exp: number }>()
+      const fullMonths = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
       for (const r of finRowsAll) {
         const mk = String(r.date).slice(0, 7)
         if (!map.has(mk)) {
           const [y, m] = mk.split("-").map(Number)
-          map.set(mk, { key: mk, label: MONTHS[m - 1], inc: 0, exp: 0 })
+          const years = Array.from(new Set(finRowsAll.map((x) => String(x.date).slice(0, 4))))
+          map.set(mk, {
+            key: mk,
+            label: years.length > 1 && m === 1 ? `${MONTHS[m - 1]} '${String(y).slice(2)}` : MONTHS[m - 1],
+            full: `${fullMonths[m - 1]} ${y}`,
+            inc: 0,
+            exp: 0,
+          })
         }
         const cur = map.get(mk)!
         if (r.type === "income") cur.inc += Number(r.amount)
@@ -236,10 +243,17 @@ export default function AdminDashboard() {
       return { title: "Semua Periode", bars: Array.from(map.values()) }
     }
     if (finPeriod === "30hari") {
-      const bars: { key: string; label: string; inc: number; exp: number }[] = []
+      const bars: { key: string; label: string; full: string; inc: number; exp: number }[] = []
       for (let i = 29; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)
-        bars.push({ key: d.toLocaleDateString("en-CA"), label: String(d.getDate()), inc: 0, exp: 0 })
+        const day = d.getDate()
+        bars.push({
+          key: d.toLocaleDateString("en-CA"),
+          label: `${day} ${MONTHS[d.getMonth()]}`,
+          full: d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
+          inc: 0,
+          exp: 0,
+        })
       }
       for (const r of finRowsAll) {
         const idx = bars.findIndex((m) => m.key === String(r.date).slice(0, 10))
@@ -252,10 +266,16 @@ export default function AdminDashboard() {
     }
     const [y, m] = finPeriod.split("-").map(Number)
     const days = new Date(y, m, 0).getDate()
-    const bars: { key: string; label: string; inc: number; exp: number }[] = []
+    const bars: { key: string; label: string; full: string; inc: number; exp: number }[] = []
     for (let d = 1; d <= days; d++) {
       const key = `${finPeriod}-${String(d).padStart(2, "0")}`
-      bars.push({ key, label: String(d), inc: 0, exp: 0 })
+      bars.push({
+        key,
+        label: `${d} ${MONTHS[m - 1]}`,
+        full: `${d} ${["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][m - 1]} ${y}`,
+        inc: 0,
+        exp: 0,
+      })
     }
     for (const r of finRowsAll) {
       const idx = bars.findIndex((b) => b.key === String(r.date).slice(0, 10))
@@ -267,7 +287,6 @@ export default function AdminDashboard() {
     return { title: MONTHS[m - 1] + " " + y, bars }
   })()
 
-  const maxDay = Math.max(1, ...chart.bars.map((m) => Math.max(m.inc, m.exp)))
   const maxCat = Math.max(1, ...galCategories.map((c) => c.count))
   const maxGen = Math.max(1, ...genData.map((g) => g.count))
   const maxYear = Math.max(1, ...yearData.map((y) => y.count))
@@ -440,54 +459,25 @@ export default function AdminDashboard() {
               <p className="mt-0.5 text-[11px] text-muted-foreground">Pemasukan vs Pengeluaran</p>
             </div>
             <div className="flex items-center gap-3">
-              <select
-                value={finPeriod}
-                onChange={(e) => setFinPeriod(e.target.value)}
-                className="h-9 rounded-lg border border-line bg-card px-2 text-xs"
-                aria-label="Pilih periode keuangan"
-              >
-                <option value="30hari">30 Hari Terakhir</option>
-                <option value="all">Semua Periode</option>
-              </select>
               <MonthPicker
-                value={finPeriod.startsWith("20") ? finPeriod : ""}
-                onChange={(v) => setFinPeriod(v || "30hari")}
-                placeholder="Pilih Bulan"
+                value={finPeriod}
+                onChange={setFinPeriod}
+                placeholder="30 Hari Terakhir"
+                presets={[
+                  { value: "30hari", label: "30 Hari Terakhir" },
+                  { value: "all", label: "Semua Periode" },
+                ]}
               />
               <div className="hidden items-center gap-3 text-[10px] text-muted-foreground sm:flex">
-                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-primary" /> Masuk</span>
-                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-foreground/20" /> Keluar</span>
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-[#22c55e]" /> Pemasukan</span>
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-[#ef4444]" /> Pengeluaran</span>
               </div>
             </div>
           </div>
           {chart.bars.length === 0 ? (
             <p className="py-14 text-center text-xs text-muted-foreground">Belum ada data keuangan pada periode ini.</p>
           ) : (
-            <div className="mt-5 flex h-40 gap-[3px]">
-              {chart.bars.map((m, i) => (
-                <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
-                  <div className="flex w-full flex-1 items-end justify-center gap-[2px]">
-                    <div
-                      className="w-[45%] max-w-2 rounded-t-sm bg-primary/80 transition-all"
-                      style={{ height: `${Math.max(2, (m.inc / maxDay) * 100)}%` }}
-                      title={`${m.key} — Masuk: ${fmtIDR(m.inc)}`}
-                    />
-                    <div
-                      className="w-[45%] max-w-2 rounded-t-sm bg-foreground/20 transition-all"
-                      style={{ height: `${Math.max(2, (m.exp / maxDay) * 100)}%` }}
-                      title={`${m.key} — Keluar: ${fmtIDR(m.exp)}`}
-                    />
-                  </div>
-                  <span className="text-[8px] leading-none text-muted-foreground">
-                    {finPeriod === "all"
-                      ? m.label
-                      : i % 5 === 0 || i === chart.bars.length - 1
-                        ? m.label
-                        : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <FinanceChart bars={chart.bars} />
           )}
           <div className="mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4">
             <div>
@@ -498,7 +488,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground">Keluar bulan ini</p>
-              <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-red-400">
+              <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-red-500">
                 {fmtIDR(monthExpense)} <TrendingDown className="h-3.5 w-3.5" />
               </p>
             </div>

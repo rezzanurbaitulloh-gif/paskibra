@@ -23,6 +23,7 @@ interface GalleryItem {
   video_url: string | null
   images?: string[] | null
   videos?: string[] | null
+  created_at?: string
 }
 
 const CATEGORIES = ["LKBB", "Latihan Rutin", "Pengukuhan", "Kegiatan Lain"]
@@ -146,58 +147,68 @@ export default function GaleriAdminPage() {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items
-            .filter((it) => it.title.toLowerCase().includes(search.toLowerCase()))
-            .filter((it) => fCat === "all" || it.category === fCat)
-            .map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.04 }}
-              className="overflow-hidden rounded-2xl border border-line bg-card"
-            >
-              <div className="flex min-h-32 items-center justify-center overflow-hidden bg-soft">
-                {item.media_type === "video_embed" ? (
-                  <div className="flex w-full flex-col items-center justify-center gap-1.5 py-10">
-                    <Video className="h-6 w-6 text-accent" />
-                    <span className="text-[10px] text-muted-foreground">Video</span>
-                  </div>
-                ) : item.image_url ? (
-                  <img src={item.image_url} alt={item.title} className="h-auto w-full object-cover" />
-                ) : (
-                  <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                )}
-              </div>
-              <div className="flex items-start justify-between gap-2 p-4">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{item.title}</p>
-                  <p className="mt-0.5 text-[10px] text-muted-foreground">{item.category}</p>
-                  <p className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <ImageIcon className="h-3 w-3" />
-                      {(item.images?.length || 0) + (item.image_url ? 1 : 0)} foto
-                    </span>
-                    {item.videos && item.videos.length > 0 && (
-                      <span className="inline-flex items-center gap-1">
-                        <Video className="h-3 w-3" />
-                        {item.videos.length} video
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="flex shrink-0 gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} aria-label="Hapus">
-                    <Trash2 className="h-4 w-4 text-red-400" />
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+        <div className="overflow-hidden rounded-2xl border border-line bg-card">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-line text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-3">Media</th>
+                  <th className="px-4 py-3">Kategori</th>
+                  <th className="px-4 py-3">Konten</th>
+                  <th className="px-4 py-3">Tanggal</th>
+                  <th className="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items
+                  .filter((it) => it.title.toLowerCase().includes(search.toLowerCase()))
+                  .filter((it) => fCat === "all" || it.category === fCat)
+                  .map((item, index) => (
+                    <tr key={item.id} className="border-b border-line/50 last:border-0 hover:bg-soft/50">
+                      <td className="px-4 py-2.5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-11 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-soft">
+                            {item.media_type === "video_embed" ? (
+                              <Video className="h-4 w-4 text-accent" />
+                            ) : item.image_url ? (
+                              <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
+                            ) : (
+                              <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </div>
+                          <span className="max-w-48 truncate font-medium">{item.title}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <span className="rounded-full border border-line bg-soft px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground">
+                        {(item.images?.length || 0) + (item.image_url ? 1 : 0)} foto
+                        {item.videos && item.videos.length > 0 && `, ${item.videos.length} video`}
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground">
+                        {item.created_at ? new Date(item.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "-"}
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} aria-label="Hapus">
+                            <Trash2 className="h-4 w-4 text-red-400" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+            {items.length === 0 && (
+              <p className="py-10 text-center text-sm text-muted-foreground">Belum ada media.</p>
+            )}
+          </div>
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>

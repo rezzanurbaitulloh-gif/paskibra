@@ -48,8 +48,7 @@ const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID")
 
 export default function KeuanganPage() {
   const [records, setRecords] = useState<FinancialRecord[]>([])
-  const [monthKey, setMonthKey] = useState<string>("")
-  const [period, setPeriod] = useState<string>("all")
+  const [fTime, setFTime] = useState<string>("all")
   const [rows, setRows] = useState<Row[]>([])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -71,15 +70,16 @@ export default function KeuanganPage() {
   useEffect(() => { fetchRecords() }, [])
 
   const filtered = useMemo(() => {
+    const isPeriod = fTime !== "all" && !/^\d{4}-\d{2}$/.test(fTime)
     const cutoff = new Date()
-    if (period !== "all") cutoff.setDate(cutoff.getDate() - Number(period))
+    if (isPeriod) cutoff.setDate(cutoff.getDate() - Number(fTime))
     return records.filter((r) => {
       if (!r.date) return false
-      if (period !== "all" && r.date < cutoff.toLocaleDateString("en-CA")) return false
-      if (monthKey && !r.date.startsWith(monthKey)) return false
+      if (isPeriod && r.date < cutoff.toLocaleDateString("en-CA")) return false
+      if (!isPeriod && fTime !== "all" && !r.date.startsWith(fTime)) return false
       return true
     })
-  }, [records, monthKey, period])
+  }, [records, fTime])
 
   const totalIncome = filtered.filter((r) => r.type === "income").reduce((s, r) => s + Number(r.amount), 0)
   const totalExpense = filtered.filter((r) => r.type === "expense").reduce((s, r) => s + Number(r.amount), 0)
@@ -176,7 +176,11 @@ export default function KeuanganPage() {
     ws["!cols"] = [{ wch: 12 }, { wch: 40 }, { wch: 22 }, { wch: 12 }, { wch: 15 }]
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, "Rekap Keuangan")
-    const label = monthKey ? monthKey : period !== "all" ? `periode-${period}hari` : "semua"
+    const label = /^\d{4}-\d{2}$/.test(fTime)
+      ? fTime
+      : fTime !== "all"
+        ? `periode-${fTime}hari`
+        : "semua"
     XLSX.writeFile(wb, `rekap-keuangan-${label}.xlsx`)
   }
 
@@ -223,27 +227,19 @@ export default function KeuanganPage() {
           </div>
         </div>
 
-        {/* Filter periode/bulan/tahun */}
+        {/* Filter waktu: kalender + preset */}
         <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-card p-4">
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <Select value={period} onValueChange={(v) => setPeriod(v ?? "all")}>
-            <SelectTrigger className="w-44 border-line bg-soft">
-              <SelectValue placeholder="Semua Waktu" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Waktu</SelectItem>
-              <SelectItem value="7">7 Hari Terakhir</SelectItem>
-              <SelectItem value="30">30 Hari Terakhir</SelectItem>
-              <SelectItem value="90">90 Hari Terakhir</SelectItem>
-            </SelectContent>
-          </Select>
           <MonthPicker
-            value={monthKey}
-            onChange={(v) => {
-              setMonthKey(v)
-              if (v) setPeriod("all")
-            }}
-            placeholder="Pilih Bulan"
+            value={fTime}
+            onChange={setFTime}
+            placeholder="Semua Waktu"
+            presets={[
+              { value: "all", label: "Semua Waktu" },
+              { value: "7", label: "7 Hari Terakhir" },
+              { value: "30", label: "30 Hari Terakhir" },
+              { value: "90", label: "90 Hari Terakhir" },
+            ]}
           />
         </div>
 

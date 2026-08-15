@@ -125,7 +125,7 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
                 onClick={() => pick(day)}
                 className={cn(
                   "flex h-7 items-center justify-center rounded-md text-xs transition-colors hover:bg-soft hover:text-foreground",
-                  isSelected && "bg-primary font-bold text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+                  isSelected && "bg-foreground font-bold text-background hover:bg-foreground hover:text-background",
                   isToday && !isSelected && "ring-1 ring-primary"
                 )}
               >
@@ -149,7 +149,7 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
                 className={cn(
                   "rounded-md px-2 py-1 text-[10px] font-medium transition-colors",
                   value === p.value
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-foreground text-background"
                     : "bg-soft text-muted-foreground hover:text-foreground"
                 )}
               >

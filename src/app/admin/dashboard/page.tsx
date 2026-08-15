@@ -211,6 +211,30 @@ export default function AdminDashboard() {
 
   const chart = (() => {
     const now = new Date()
+    const first = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
+    const bars30: { key: string; label: string; full: string; inc: number; exp: number }[] = []
+    for (let w = 0; w < 5; w++) {
+      const s = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7)
+      const e = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7 + 6)
+      const effE = e > now ? now : e
+      bars30.push({
+        key: `w${w}`,
+        label: `Minggu ${w + 1}`,
+        full: `${s.getDate()}\u2013${effE.getDate()} ${MONTHS[effE.getMonth()]} ${effE.getFullYear()}`,
+        inc: 0,
+        exp: 0,
+      })
+    }
+    const firstKey = first.toLocaleDateString("en-CA")
+    for (const r of finRowsAll) {
+      const idx = Math.floor(
+        (Date.parse(String(r.date).slice(0, 10)) - Date.parse(firstKey)) / 86400000 / 7
+      )
+      if (idx >= 0 && idx < 5) {
+        if (r.type === "income") bars30[idx].inc += Number(r.amount)
+        else bars30[idx].exp += Number(r.amount)
+      }
+    }
     if (finPeriod === "all") {
       const map = new Map<string, { key: string; label: string; full: string; inc: number; exp: number }>()
       const fullMonths = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
@@ -234,57 +258,36 @@ export default function AdminDashboard() {
       return { title: "Semua Periode", bars: Array.from(map.values()) }
     }
     if (finPeriod === "30hari") {
-      const first = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29)
+      return { title: "30 Hari Terakhir", bars: bars30 }
+    }
+    if (/^\d{4}-\d{2}$/.test(finPeriod)) {
+      const [y, m] = finPeriod.split("-").map(Number)
+      const days = new Date(y, m, 0).getDate()
+      const fullM = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][m - 1]
+      const weeks = Math.ceil(days / 7)
       const bars: { key: string; label: string; full: string; inc: number; exp: number }[] = []
-      for (let w = 0; w < 5; w++) {
-        const s = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7)
-        const e = new Date(first.getFullYear(), first.getMonth(), first.getDate() + w * 7 + 6)
-        const effE = e > now ? now : e
+      for (let w = 0; w < weeks; w++) {
+        const sd = w * 7 + 1
+        const ed = Math.min(days, (w + 1) * 7)
         bars.push({
-          key: `w${w}`,
+          key: `${finPeriod}-w${w}`,
           label: `Minggu ${w + 1}`,
-          full: `${s.getDate()}\u2013${effE.getDate()} ${MONTHS[effE.getMonth()]} ${effE.getFullYear()}`,
+          full: `${sd}\u2013${ed} ${fullM} ${y}`,
           inc: 0,
           exp: 0,
         })
       }
-      const firstKey = first.toLocaleDateString("en-CA")
       for (const r of finRowsAll) {
-        const idx = Math.floor(
-          (Date.parse(String(r.date).slice(0, 10)) - Date.parse(firstKey)) / 86400000 / 7
-        )
-        if (idx >= 0 && idx < 5) {
-          if (r.type === "income") bars[idx].inc += Number(r.amount)
-          else bars[idx].exp += Number(r.amount)
+        const d = Number(String(r.date).slice(8, 10))
+        const w = Math.floor((d - 1) / 7)
+        if (String(r.date).startsWith(finPeriod) && w >= 0 && w < weeks) {
+          if (r.type === "income") bars[w].inc += Number(r.amount)
+          else bars[w].exp += Number(r.amount)
         }
       }
-      return { title: "30 Hari Terakhir", bars }
+      return { title: MONTHS[m - 1] + " " + y, bars }
     }
-    const [y, m] = finPeriod.split("-").map(Number)
-    const days = new Date(y, m, 0).getDate()
-    const fullM = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][m - 1]
-    const weeks = Math.ceil(days / 7)
-    const bars: { key: string; label: string; full: string; inc: number; exp: number }[] = []
-    for (let w = 0; w < weeks; w++) {
-      const sd = w * 7 + 1
-      const ed = Math.min(days, (w + 1) * 7)
-      bars.push({
-        key: `${finPeriod}-w${w}`,
-        label: `Minggu ${w + 1}`,
-        full: `${sd}\u2013${ed} ${fullM} ${y}`,
-        inc: 0,
-        exp: 0,
-      })
-    }
-    for (const r of finRowsAll) {
-      const d = Number(String(r.date).slice(8, 10))
-      const w = Math.floor((d - 1) / 7)
-      if (String(r.date).startsWith(finPeriod) && w >= 0 && w < weeks) {
-        if (r.type === "income") bars[w].inc += Number(r.amount)
-        else bars[w].exp += Number(r.amount)
-      }
-    }
-    return { title: MONTHS[m - 1] + " " + y, bars }
+    return { title: "30 Hari Terakhir", bars: bars30 }
   })()
 
   const maxCat = Math.max(1, ...galCategories.map((c) => c.count))

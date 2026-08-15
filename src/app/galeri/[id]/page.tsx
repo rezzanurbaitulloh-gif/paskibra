@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { supabase } from "@/lib/supabase/server"
 import { ArrowLeft, Calendar, FolderOpen, Inbox } from "lucide-react"
 import { GalleryDetailClient } from "@/components/gallery-detail-client"
+import { BackHomeButton } from "@/components/back-home-button"
 
 export const dynamic = "force-dynamic"
 
@@ -45,6 +46,7 @@ export default async function GaleriDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="min-h-screen">
+      <BackHomeButton />
       <div className="container mx-auto px-4 pt-28 pb-16">
         <Link
           href="/galeri"

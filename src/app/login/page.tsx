@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
+import { BackHomeButton } from "@/components/back-home-button"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { signInWithGoogle, getStaffRole } from "@/lib/auth"
 import { supabase } from "@/lib/supabase/client"
@@ -66,6 +67,8 @@ function LoginForm() {
   }
 
   return (
+    <div className="relative min-h-screen">
+      <BackHomeButton />
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 pointer-events-none" />
       <motion.div
@@ -170,6 +173,7 @@ function LoginForm() {
           </CardContent>
         </Card>
       </motion.div>
+    </div>
     </div>
   )
 }

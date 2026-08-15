@@ -21,6 +21,7 @@ import {
 import { SectionHeader } from "@/components/sections/SectionHeader"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { VideoEmbed } from "@/components/video-embed"
+import { BackHomeButton } from "@/components/back-home-button"
 import { supabase } from "@/lib/supabase/client"
 
 interface UpdateRow {
@@ -121,6 +122,7 @@ export default function LombaPage() {
 
   return (
     <main className="pt-20">
+      <BackHomeButton />
       <section className="relative py-16 md:py-24">
         <div className="container mx-auto px-4">
           <SectionHeader label={lkbb.label} title={lkbb.title} subtitle={lkbb.subtitle} />
@@ -128,7 +130,7 @@ export default function LombaPage() {
             {lkbb.intro}
           </p>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <InfoCard icon={CalendarDays} title="Tanggal" value={lkbb.date} delay={0} />
             <InfoCard icon={MapPin} title="Lokasi" value={lkbb.location} delay={0.05} />
             <InfoCard icon={Wallet} title="Biaya" value={lkbb.fee} delay={0.1} />
@@ -139,25 +141,37 @@ export default function LombaPage() {
               delay={0.15}
             />
             {lkbb.contacts.length > 0 ? (
-              <div className="flex flex-col justify-center gap-2 rounded-2xl border border-line bg-card p-4 card-glow">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  Info & Pendaftaran
-                </p>
-                {lkbb.contacts.map((c, ci) => (
-                  <Link
-                    key={c.number}
-                    href={`https://wa.me/${c.number.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center gap-2 rounded-lg border border-line bg-soft px-3 py-2 transition-colors hover:border-accent/50"
-                  >
-                    <Phone className="h-3.5 w-3.5 shrink-0 text-accent" />
-                    <span className="truncate text-xs font-medium text-foreground">
-                      {c.name} • {c.number}
-                    </span>
-                    <MessageCircle className="ml-auto h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
-                  </Link>
-                ))}
+              <div className="flex flex-col justify-center gap-2 rounded-2xl border border-line bg-card p-4 card-glow sm:col-span-2 lg:col-span-4">
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 shrink-0 text-accent" />
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Info & Pendaftaran
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {lkbb.contacts.map((c, ci) => (
+                    <Link
+                      key={c.number}
+                      href={`https://wa.me/${c.number.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center gap-2 rounded-lg border border-line bg-soft px-3 py-2.5 transition-colors hover:border-accent/50"
+                    >
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-black">
+                        {c.name.replace(/[^a-zA-Z]/g, "").charAt(0).toUpperCase()}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-xs font-semibold text-foreground">
+                          {c.name}
+                        </span>
+                        <span className="block truncate text-[10px] text-muted-foreground">
+                          {c.number}
+                        </span>
+                      </span>
+                      <MessageCircle className="ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
+                    </Link>
+                  ))}
+                </div>
               </div>
             ) : (
               <InfoCard icon={Phone} title="Info & Pendaftaran" value={lkbb.contact} delay={0.2} />

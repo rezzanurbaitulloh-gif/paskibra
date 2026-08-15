@@ -6,8 +6,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
+import { BackHomeButton } from "@/components/back-home-button"
 import { WA_MESSAGE_PREFIX } from "@/lib/constants"
-import { ArrowLeft, Package, BadgeCheck, BadgeX } from "lucide-react"
+import { Package, BadgeCheck, BadgeX } from "lucide-react"
 
 interface Item {
   id: string
@@ -63,9 +64,7 @@ export default function LayananDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <Link href="/layanan" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="h-3.5 w-3.5" /> Semua Layanan
-        </Link>
+        <BackHomeButton />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

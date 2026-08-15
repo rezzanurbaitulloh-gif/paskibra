@@ -19,7 +19,7 @@ export function BackHomeButton() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2">
+    <div className="fixed left-4 top-4 z-40 flex items-center gap-2">
       <button
         onClick={handleBack}
         className="flex h-11 items-center gap-2 rounded-full border border-line bg-card/90 px-4 text-xs font-semibold text-foreground shadow-lg shadow-black/20 backdrop-blur transition-all hover:border-accent/50 active:scale-95"

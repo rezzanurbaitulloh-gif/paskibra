@@ -1,13 +1,14 @@
 "use client"
 
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
+import { BackHomeButton } from "@/components/back-home-button"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase/client"
 import { FeedbackForm } from "@/components/sections/FeedbackForm"
 import { SectionHeader } from "@/components/sections/SectionHeader"
-import { CheckCircle2, Inbox, ArrowLeft, ThumbsUp, ThumbsDown } from "lucide-react"
+import { CheckCircle2, Inbox, ThumbsUp, ThumbsDown } from "lucide-react"
 
 interface Feedback {
   id: string
@@ -63,9 +64,7 @@ export default function SaranPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <Link href="/#beranda" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Beranda
-        </Link>
+        <BackHomeButton />
 
         <SectionHeader
           label="Transparan"

@@ -8,8 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Loader2, LayoutDashboard, CheckCircle2 } from "lucide-react"
+import { Loader2, LayoutDashboard, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
+import { BackHomeButton } from "@/components/back-home-button"
 import { useAuth } from "@/contexts/AuthContext"
 
 export default function AccountPage() {
@@ -84,12 +85,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto max-w-md px-4 pt-28 pb-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Beranda
-        </Link>
+        <BackHomeButton />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

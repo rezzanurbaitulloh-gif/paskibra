@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 import { supabase } from "@/lib/supabase/server"
-import { ArrowLeft, Calendar, FolderOpen, Inbox } from "lucide-react"
+import { Calendar, FolderOpen, Inbox } from "lucide-react"
 import { GalleryDetailClient } from "@/components/gallery-detail-client"
 import { BackHomeButton } from "@/components/back-home-button"
 
@@ -48,12 +48,7 @@ export default async function GaleriDetailPage({ params }: { params: Promise<{ i
     <div className="min-h-screen">
       <BackHomeButton />
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <Link
-          href="/galeri"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Galeri
-        </Link>
+        <BackHomeButton />
 
         <div className="mx-auto mt-8 max-w-4xl">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-soft px-3 py-1 text-[11px] font-medium text-accent">

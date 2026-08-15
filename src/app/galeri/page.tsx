@@ -1,13 +1,14 @@
 "use client"
 
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
+import { BackHomeButton } from "@/components/back-home-button"
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import { supabase } from "@/lib/supabase/client"
 import { embedFromUrl } from "@/lib/embed"
-import { ArrowLeft, Play, Inbox } from "lucide-react"
+import { Play, Inbox } from "lucide-react"
 
 interface GalleryItem {
   id: string
@@ -93,9 +94,7 @@ export default function GaleriPage() {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
-        <Link href="/#beranda" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Beranda
-        </Link>
+        <BackHomeButton />
 
         <div className="mt-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Galeri Kegiatan</p>

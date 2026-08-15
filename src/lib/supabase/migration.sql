@@ -197,3 +197,30 @@ CREATE TABLE IF NOT EXISTS lkbb_participants (
 ALTER TABLE lkbb_participants ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_full_access_lkbb" ON lkbb_participants
   FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- lkbb_updates: Pembaruan/berita perkembangan lomba
+CREATE TABLE IF NOT EXISTS lkbb_updates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  image_url TEXT DEFAULT '',
+  video_url TEXT DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE lkbb_updates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "admin_full_access_lkbb_updates" ON lkbb_updates
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- lkbb_documents: Dokumen lomba (juknis, formulir, dll.)
+CREATE TABLE IF NOT EXISTS lkbb_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  file_url TEXT NOT NULL,
+  file_name TEXT DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE lkbb_documents ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "admin_full_access_lkbb_documents" ON lkbb_documents
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+INSERT INTO storage.buckets (id, name, public) VALUES ('documents', 'documents', true) ON CONFLICT (id) DO NOTHING;

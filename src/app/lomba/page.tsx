@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import {
   CalendarDays,
@@ -14,10 +15,30 @@ import {
   FileText,
   ListChecks,
   Image as ImageIcon,
+  Download,
+  Newspaper,
 } from "lucide-react"
 import { SectionHeader } from "@/components/sections/SectionHeader"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { VideoEmbed } from "@/components/video-embed"
+import { supabase } from "@/lib/supabase/client"
+
+interface UpdateRow {
+  id: string
+  title: string
+  description: string
+  image_url: string
+  video_url: string
+  created_at: string
+}
+
+interface DocumentRow {
+  id: string
+  title: string
+  file_url: string
+  file_name: string
+  created_at: string
+}
 
 function InfoCard({
   icon: Icon,
@@ -86,6 +107,17 @@ export default function LombaPage() {
   const lkbb = settings.lkbb
   const images = lkbb.media.filter((m) => m.type === "image")
   const videos = lkbb.media.filter((m) => m.type === "video")
+  const [updates, setUpdates] = useState<UpdateRow[]>([])
+  const [docs, setDocs] = useState<DocumentRow[]>([])
+
+  useEffect(() => {
+    supabase.from("lkbb_updates").select("*").order("created_at", { ascending: false }).then(({ data }) => {
+      setUpdates(data || [])
+    })
+    supabase.from("lkbb_documents").select("*").order("created_at", { ascending: false }).then(({ data }) => {
+      setDocs(data || [])
+    })
+  }, [])
 
   return (
     <main className="pt-20">
@@ -154,6 +186,101 @@ export default function LombaPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {updates.length > 0 && (
+        <section className="relative py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <SectionHeader
+              label="Pembaruan"
+              title="Perkembangan Lomba"
+              subtitle="Informasi terbaru seputar persiapan dan jalannya lomba."
+            />
+            <div className="mx-auto max-w-3xl space-y-6">
+              {updates.map((u, i) => (
+                <motion.article
+                  key={u.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  className="overflow-hidden rounded-2xl border border-line bg-card card-glow"
+                >
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      <Newspaper className="h-3.5 w-3.5 text-accent" />
+                      {new Date(u.created_at).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </div>
+                    {u.title && (
+                      <h3 className="mt-2 font-display text-base font-bold md:text-lg">{u.title}</h3>
+                    )}
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {u.description}
+                    </p>
+                  </div>
+                  {u.image_url && (
+                    <div className="relative aspect-[16/9] w-full bg-soft">
+                      <Image
+                        src={u.image_url}
+                        alt={u.title || "Pembaruan lomba"}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 768px"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  {u.video_url && (
+                    <VideoEmbed
+                      url={u.video_url}
+                      title={u.title || `Video pembaruan ${i + 1}`}
+                      className="aspect-video w-full rounded-none bg-black"
+                    />
+                  )}
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {docs.length > 0 && (
+        <section className="relative py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <SectionHeader
+              label="Dokumen"
+              title="Unduh Dokumen Lomba"
+              subtitle="Juknis, formulir pendaftaran, dan dokumen pendukung lainnya."
+            />
+            <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
+              {docs.map((d, i) => (
+                <motion.a
+                  key={d.id}
+                  href={d.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: i * 0.04 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  className="group flex items-center gap-3 rounded-2xl border border-line bg-card p-4 card-glow transition-colors hover:border-accent/40"
+                >
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line bg-soft">
+                    <FileText className="h-5 w-5 text-accent" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{d.title}</p>
+                    <p className="truncate text-[10px] text-muted-foreground">{d.file_name}</p>
+                  </div>
+                  <Download className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
+                </motion.a>
+              ))}
             </div>
           </div>
         </section>

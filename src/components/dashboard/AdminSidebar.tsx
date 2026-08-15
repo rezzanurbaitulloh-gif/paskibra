@@ -26,7 +26,7 @@ const navGroups: { label: string; items: { name: string; icon: typeof Home; href
   {
     label: "Operasional",
     items: [
-      { name: "Peserta LKBB", icon: Trophy, href: "/admin/lomba", roles: ["super_admin", "bendahara"] },
+      { name: "Peserta LKBB", icon: Trophy, href: "/admin/lomba", roles: ["super_admin", "bendahara", "humas"] },
       { name: "Keuangan", icon: DollarSign, href: "/admin/keuangan", roles: ["super_admin", "bendahara"] },
       { name: "Inventaris", icon: Package, href: "/admin/inventaris", roles: ["super_admin"] },
       { name: "Saran", icon: MessageSquare, href: "/admin/saran", roles: ["super_admin", "humas"] },

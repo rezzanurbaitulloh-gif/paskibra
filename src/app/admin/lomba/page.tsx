@@ -30,6 +30,10 @@ import {
   LayoutGrid,
   Rows3,
   Search,
+  Megaphone,
+  FileText,
+  Upload,
+  Download,
 } from "lucide-react"
 
 interface Participant {
@@ -603,14 +607,316 @@ function InfoEditor() {
   )
 }
 
-export default function LombaAdmin() {
-  const [tab, setTab] = useState<"info" | "peserta">("peserta")
+interface UpdateRow {
+  id: string
+  title: string
+  description: string
+  image_url: string
+  video_url: string
+  created_at: string
+}
+
+interface DocumentRow {
+  id: string
+  title: string
+  file_url: string
+  file_name: string
+  created_at: string
+}
+
+function UpdatesManager() {
+  const [updates, setUpdates] = useState<UpdateRow[]>([])
+  const [open, setOpen] = useState(false)
+  const [current, setCurrent] = useState<UpdateRow | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [form, setForm] = useState({ title: "", description: "", image_url: "", video_url: "" })
+
+  useEffect(() => {
+    fetchAll()
+  }, [])
+
+  const fetchAll = async () => {
+    const { data } = await supabase
+      .from("lkbb_updates")
+      .select("*")
+      .order("created_at", { ascending: false })
+    setUpdates(data || [])
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!form.description.trim()) return
+    if (current) {
+      await supabase.from("lkbb_updates").update(form).eq("id", current.id)
+    } else {
+      await supabase.from("lkbb_updates").insert(form)
+    }
+    fetchAll()
+    setOpen(false)
+  }
+
+  const handleEdit = (u: UpdateRow) => {
+    setCurrent(u)
+    setForm({ title: u.title, description: u.description, image_url: u.image_url || "", video_url: u.video_url || "" })
+    setOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("lkbb_updates").delete().eq("id", id)
+    fetchAll()
+  }
+
+  const fmtDate = (d: string) =>
+    new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
 
   return (
-    <RequireRole path="/admin/keuangan">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Pembaruan & keberlanjutan informasi lomba. Setiap update wajib memiliki deskripsi.
+        </p>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger
+            render={
+              <Button className="gradient-primary h-9">
+                <Plus className="mr-1.5 h-4 w-4" /> Tambah Update
+              </Button>
+            }
+          />
+          <DialogContent className="glass border-line max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-display">{current ? "Edit Update" : "Tambah Update"}</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="upd_title">Judul Update</Label>
+                <Input
+                  id="upd_title"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder="contoh: Technical Meeting H-1"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="upd_desc" className="flex items-center gap-1">
+                  Deskripsi <span className="text-red-400">*</span>
+                </Label>
+                <Textarea
+                  id="upd_desc"
+                  rows={4}
+                  required
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  className="resize-none border-line bg-card"
+                  placeholder="Isi informasi pembaruan lomba…"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Gambar (opsional)</Label>
+                <ImageUpload
+                  value={form.image_url}
+                  onChange={(url) => setForm({ ...form, image_url: url })}
+                  aspect={16 / 9}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Link Video (opsional, autoplay saat terlihat)</Label>
+                <Input
+                  value={form.video_url}
+                  onChange={(e) => setForm({ ...form, video_url: e.target.value })}
+                  placeholder="https://youtube.com/… atau https://tiktok.com/…"
+                  className="border-line bg-card"
+                />
+              </div>
+              <Button type="submit" className="gradient-primary w-full">
+                Simpan
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {updates.length === 0 ? (
+        <Card className="glass border-line p-10 text-center text-sm text-muted-foreground">
+          Belum ada pembaruan lomba.
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {updates.map((u) => (
+            <Card key={u.id} className="glass border-line p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="font-display text-sm font-bold">
+                    {u.title || <span className="text-muted-foreground">(tanpa judul)</span>}
+                  </h3>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground">{fmtDate(u.created_at)}</p>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(u)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(u.id)}>
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{u.description}</p>
+              {(u.image_url || u.video_url) && (
+                <p className="mt-2 text-[10px] text-muted-foreground">
+                  {u.image_url && "Gambar"} {u.image_url && u.video_url && " + "} {u.video_url && "Video autoplay"}
+                </p>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DocumentsManager() {
+  const [docs, setDocs] = useState<DocumentRow[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    fetchAll()
+  }, [])
+
+  const fetchAll = async () => {
+    const { data } = await supabase
+      .from("lkbb_documents")
+      .select("*")
+      .order("created_at", { ascending: false })
+    setDocs(data || [])
+  }
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+    setError("")
+    setUploading(true)
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch("/api/upload-document", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+        body: fd,
+      })
+      const data = await res.json()
+      if (!res.ok || !data.url) throw new Error(data.error || "Upload gagal")
+      const { error } = await supabase.from("lkbb_documents").insert({
+        title: file.name.replace(/\.[^.]+$/, ""),
+        file_url: data.url,
+        file_name: data.fileName || file.name,
+      })
+      if (error) throw new Error(error.message)
+      fetchAll()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload gagal")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRename = async (id: string, title: string) => {
+    const trimmed = title.trim()
+    if (!trimmed) return
+    await supabase.from("lkbb_documents").update({ title: trimmed }).eq("id", id)
+    fetchAll()
+  }
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("lkbb_documents").delete().eq("id", id)
+    fetchAll()
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-muted-foreground">
+          Unggah juknis, formulir, atau dokumen lomba lain (PDF/Word/Excel, maks. 20MB).
+        </p>
+        <label
+          className={cn(
+            "inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-accent px-4 text-xs font-bold text-black transition-opacity",
+            uploading && "pointer-events-none opacity-60"
+          )}
+        >
+          <Upload className="h-4 w-4" />
+          {uploading ? "Mengunggah…" : "Upload Dokumen"}
+          <input type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
+        </label>
+      </div>
+
+      {error && <p className="text-xs text-red-400">{error}</p>}
+
+      {docs.length === 0 ? (
+        <Card className="glass border-line p-10 text-center text-sm text-muted-foreground">
+          Belum ada dokumen terunggah.
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {docs.map((d) => (
+            <Card key={d.id} className="glass border-line p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-soft">
+                    <FileText className="h-4 w-4 text-accent" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{d.title}</p>
+                    <p className="truncate text-[10px] text-muted-foreground">
+                      {d.file_name || "dokumen"} • {new Date(d.created_at).toLocaleDateString("id-ID")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    value={d.title}
+                    onChange={(e) =>
+                      setDocs((prev) => prev.map((x) => (x.id === d.id ? { ...x, title: e.target.value } : x)))
+                    }
+                    onBlur={() => handleRename(d.id, d.title)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                    className="h-8 w-full rounded-lg border border-line bg-card px-2.5 text-xs outline-none focus:border-ring sm:w-48"
+                    title="Nama tampilan dokumen (edit & tekan Enter)"
+                  />
+                  <a
+                    href={d.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-line text-muted-foreground transition-colors hover:text-foreground"
+                    title="Unduh"
+                  >
+                    <Download className="h-4 w-4" />
+                  </a>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(d.id)}>
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function LombaAdmin() {
+  const [tab, setTab] = useState<"peserta" | "info" | "updates" | "docs">("peserta")
+
+  return (
+    <RequireRole path="/admin/lomba">
       <div className="space-y-6">
-        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Peserta LKBB</h1>
-        <div className="flex gap-2">
+        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen LKBB</h1>
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             className={cn("border-line", tab === "peserta" && "bg-accent text-black border-accent")}
@@ -625,8 +931,30 @@ export default function LombaAdmin() {
           >
             <Edit className="mr-1.5 h-4 w-4" /> Info Lomba
           </Button>
+          <Button
+            variant="outline"
+            className={cn("border-line", tab === "updates" && "bg-accent text-black border-accent")}
+            onClick={() => setTab("updates")}
+          >
+            <Megaphone className="mr-1.5 h-4 w-4" /> Pembaruan
+          </Button>
+          <Button
+            variant="outline"
+            className={cn("border-line", tab === "docs" && "bg-accent text-black border-accent")}
+            onClick={() => setTab("docs")}
+          >
+            <FileText className="mr-1.5 h-4 w-4" /> Dokumen
+          </Button>
         </div>
-        {tab === "peserta" ? <ParticipantsManager /> : <InfoEditor />}
+        {tab === "peserta" ? (
+          <ParticipantsManager />
+        ) : tab === "info" ? (
+          <InfoEditor />
+        ) : tab === "updates" ? (
+          <UpdatesManager />
+        ) : (
+          <DocumentsManager />
+        )}
       </div>
     </RequireRole>
   )

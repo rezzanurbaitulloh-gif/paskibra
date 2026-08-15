@@ -28,12 +28,14 @@ export function ImageUpload({
   label = "Upload Gambar",
   className = "",
   aspect = null,
+  hideHint = false,
 }: {
   value: string
   onChange: (url: string) => void
   label?: string
   className?: string
   aspect?: number | null
+  hideHint?: boolean
 }) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
@@ -101,9 +103,11 @@ export function ImageUpload({
         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crop className="h-4 w-4" />}
         {uploading ? "Mengunggah..." : label}
       </button>
-      <p className="mt-1 text-[10px] text-muted-foreground">
-        Foto akan dibuka untuk disesuaikan (crop) sebelum diunggah.
-      </p>
+      {!hideHint && (
+        <p className="mt-1 text-[10px] text-muted-foreground">
+          Foto akan dibuka untuk disesuaikan (crop) sebelum diunggah.
+        </p>
+      )}
       <input
         ref={ref}
         type="file"

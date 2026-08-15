@@ -22,9 +22,11 @@ interface GalleryItem {
   media_type: string
   video_url: string | null
   images?: string[] | null
+  videos?: string[] | null
 }
 
 const CATEGORIES = ["LKBB", "Latihan Rutin", "Pelantikan", "Pengukuhan", "Kegiatan Lain"]
+const MAX_EXTRA = 8
 
 export default function GaleriAdminPage() {
   const [items, setItems] = useState<GalleryItem[]>([])
@@ -34,10 +36,9 @@ export default function GaleriAdminPage() {
     title: "",
     description: "",
     category: "Kegiatan Lain",
-    media_type: "image" as "image" | "video_embed",
     image_url: "",
-    extra_images: "",
-    video_url: "",
+    extraImages: [] as string[],
+    videos: [] as string[],
   })
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function GaleriAdminPage() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ title: "", description: "", category: "Kegiatan Lain", media_type: "image", image_url: "", extra_images: "", video_url: "" })
+    setForm({ title: "", description: "", category: "Kegiatan Lain", image_url: "", extraImages: [], videos: [] })
     setOpen(true)
   }
 
@@ -61,26 +62,30 @@ export default function GaleriAdminPage() {
       title: item.title,
       description: item.description || "",
       category: item.category,
-      media_type: item.media_type === "video_embed" ? "video_embed" : "image",
       image_url: item.image_url || "",
-      extra_images: (item.images || []).join(", "),
-      video_url: item.video_url || "",
+      extraImages: item.images || [],
+      videos: item.videos && item.videos.length > 0
+        ? item.videos
+        : item.video_url
+          ? [item.video_url]
+          : [],
     })
     setOpen(true)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const images = form.extraImages.filter(Boolean)
+    const videos = form.videos.map((v) => v.trim()).filter(Boolean)
     const payload = {
       title: form.title,
       description: form.description,
       category: form.category,
-      media_type: form.media_type,
-      image_url: form.media_type === "image" ? form.image_url : null,
-      images: form.media_type === "image"
-        ? form.extra_images.split(",").map((u) => u.trim()).filter(Boolean)
-        : [],
-      video_url: form.media_type === "video_embed" ? form.video_url : null,
+      image_url: form.image_url || null,
+      images,
+      videos,
+      video_url: videos[0] || null,
+      media_type: !form.image_url && videos.length > 0 ? "video_embed" : "image",
     }
     if (editing) {
       await supabase.from("gallery").update(payload).eq("id", editing.id)
@@ -94,6 +99,19 @@ export default function GaleriAdminPage() {
   const handleDelete = async (id: string) => {
     await supabase.from("gallery").delete().eq("id", id)
     fetchItems()
+  }
+
+  const addExtraImage = async (file: File) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const fd = new FormData()
+    fd.append("file", file)
+    const res = await fetch("/api/upload", { method: "POST", headers: { Authorization: `Bearer ${session?.access_token}` }, body: fd })
+    const data = await res.json()
+    if (res.ok && data.url) {
+      setForm((f) => ({ ...f, extraImages: [...f.extraImages, data.url] }))
+    } else {
+      alert(data.error || "Upload gagal")
+    }
   }
 
   return (
@@ -119,7 +137,7 @@ export default function GaleriAdminPage() {
                 {item.media_type === "video_embed" ? (
                   <div className="flex h-full w-full flex-col items-center justify-center gap-1.5">
                     <Video className="h-6 w-6 text-accent" />
-                    <span className="text-[10px] text-muted-foreground">Video Embed</span>
+                    <span className="text-[10px] text-muted-foreground">Video</span>
                   </div>
                 ) : item.image_url ? (
                   <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
@@ -131,11 +149,18 @@ export default function GaleriAdminPage() {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{item.title}</p>
                   <p className="mt-0.5 text-[10px] text-muted-foreground">{item.category}</p>
-                  {item.media_type === "video_embed" && item.video_url && (
-                    <p className="mt-1 flex items-center gap-1 truncate text-[10px] text-muted-foreground">
-                      <Link2 className="h-3 w-3 shrink-0" /> {item.video_url}
-                    </p>
-                  )}
+                  <p className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <ImageIcon className="h-3 w-3" />
+                      {(item.images?.length || 0) + (item.image_url ? 1 : 0)} foto
+                    </span>
+                    {item.videos && item.videos.length > 0 && (
+                      <span className="inline-flex items-center gap-1">
+                        <Video className="h-3 w-3" />
+                        {item.videos.length} video
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <div className="flex shrink-0 gap-1">
                   <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit">
@@ -176,99 +201,87 @@ export default function GaleriAdminPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Jenis Media</Label>
-                  <Select value={form.media_type} onValueChange={(v) => setForm({ ...form, media_type: v as "image" | "video_embed" })}>
-                    <SelectTrigger className="h-10 border-line bg-soft"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="image">Foto</SelectItem>
-                      <SelectItem value="video_embed">Video (TikTok/IG/YouTube)</SelectItem>
-                    </SelectContent>
-                  </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Gambar Utama</Label>
+                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} aspect={4 / 3} />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">
+                  Foto Lainnya ({form.extraImages.length}/{MAX_EXTRA}, opsional)
+                </Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {form.extraImages.map((u, i) => (
+                    <div key={u + i} className="relative h-20 overflow-hidden rounded-lg border border-line bg-soft">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={u} alt="" className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, extraImages: f.extraImages.filter((x) => x !== u) }))}
+                        className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
+                        aria-label="Hapus"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {form.extraImages.length < MAX_EXTRA && (
+                    <ImageUpload
+                      value=""
+                      label="Tambah Foto"
+                      className="h-20 [&_button]:h-full [&_button]:border-dashed [&_button]:text-[10px]"
+                      aspect={4 / 3}
+                      hideHint
+                      onChange={(url) => setForm((f) => ({ ...f, extraImages: [...f.extraImages, url] }))}
+                    />
+                  )}
                 </div>
               </div>
 
-              {form.media_type === "image" ? (
-                <>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Gambar Utama</Label>
-                    <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} aspect={4 / 3} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Foto Lainnya (opsional)</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {form.extra_images
-                        .split(",")
-                        .map((u) => u.trim())
-                        .filter(Boolean)
-                        .map((u, i) => (
-                          <div key={i} className="relative h-20 overflow-hidden rounded-lg border border-line bg-soft">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={u} alt="" className="h-full w-full object-cover" />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setForm({
-                                  ...form,
-                                  extra_images: form.extra_images
-                                    .split(",")
-                                    .map((x) => x.trim())
-                                    .filter((x) => x && x !== u)
-                                    .join(", "),
-                                })
-                              }
-                              className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
-                              aria-label="Hapus"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </button>
-                          </div>
-                        ))}
-                      {form.extra_images
-                        .split(",")
-                        .map((u) => u.trim())
-                        .filter(Boolean).length < 8 && (
-                        <button
-                          type="button"
-                          className="flex h-20 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
-                          onClick={() => {
-                            const input = document.createElement("input")
-                            input.type = "file"
-                            input.accept = "image/png,image/jpeg,image/webp,image/gif"
-                            input.onchange = async () => {
-                              const file = input.files?.[0]
-                              if (!file) return
-                              const { data: { session } } = await supabase.auth.getSession()
-                              const fd = new FormData()
-                              fd.append("file", file)
-                              const res = await fetch("/api/upload", { method: "POST", headers: { Authorization: `Bearer ${session?.access_token}` }, body: fd })
-                              const data = await res.json()
-                              if (res.ok && data.url) {
-                                const list = form.extra_images.split(",").map((x) => x.trim()).filter(Boolean)
-                                setForm({ ...form, extra_images: [...list, data.url].join(", ") })
-                              } else {
-                                alert(data.error || "Upload gagal")
-                              }
-                            }
-                            input.click()
-                          }}
-                        >
-                          <Plus className="h-4 w-4" />
-                          <span className="text-[10px]">Tambah Foto</span>
-                        </button>
-                      )}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">
+                  Link Video ({form.videos.length}, opsional — TikTok / IG Reel / YouTube)
+                </Label>
+                <div className="space-y-2">
+                  {form.videos.map((v, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          value={v}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, videos: f.videos.map((x, j) => (j === i ? e.target.value : x)) }))
+                          }
+                          placeholder="https://www.tiktok.com/@user/video/123..."
+                          className="h-10 border-line bg-soft pl-9"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setForm((f) => ({ ...f, videos: f.videos.filter((_, j) => j !== i) }))}
+                        aria-label="Hapus video"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-400" />
+                      </Button>
                     </div>
-                  </div>
-                </>
-              ) : (
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Link Video (TikTok / Instagram Reel / YouTube)</Label>
-                  <Input value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} required placeholder="https://www.tiktok.com/@user/video/123..." className="h-10 border-line bg-soft" />
-                  <p className="text-[10px] text-muted-foreground">
-                    Sistem otomatis mengubahnya menjadi player embedded yang autoplay saat di-scroll.
-                  </p>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-line text-xs text-muted-foreground"
+                    onClick={() => setForm((f) => ({ ...f, videos: [...f.videos, ""] }))}
+                  >
+                    <Plus className="mr-2 h-3.5 w-3.5" /> Tambah Link Video
+                  </Button>
                 </div>
-              )}
+                <p className="text-[10px] text-muted-foreground">
+                  Video akan tampil di halaman detail galeri dan diputar otomatis (autoplay) saat dibuka.
+                </p>
+              </div>
 
               <Button type="submit" className="w-full gradient-primary text-white">
                 {editing ? "Simpan" : "Tambah"}

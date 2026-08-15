@@ -30,6 +30,12 @@ export default async function GaleriDetailPage({ params }: { params: Promise<{ i
     .limit(3)
 
   const images = [item.image_url, ...(item.images || [])].filter((u): u is string => Boolean(u))
+  const videos =
+    item.videos && item.videos.length > 0
+      ? item.videos
+      : item.video_url
+        ? [item.video_url]
+        : []
   const date = new Date(item.created_at)
   const dateLabel = date.toLocaleDateString("id-ID", {
     day: "numeric",
@@ -64,7 +70,7 @@ export default async function GaleriDetailPage({ params }: { params: Promise<{ i
             </p>
           )}
 
-          <GalleryDetailClient item={item} images={images} />
+          <GalleryDetailClient item={item} images={images} videos={videos} />
         </div>
 
         {related && related.length > 0 && (

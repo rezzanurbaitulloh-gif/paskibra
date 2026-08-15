@@ -41,6 +41,12 @@ CREATE TABLE IF NOT EXISTS gallery (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS media_type TEXT DEFAULT 'image';
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS embed_code TEXT;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS video_url TEXT;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS images TEXT[] DEFAULT '{}';
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS videos TEXT[] DEFAULT '{}';
+
 -- rentals: Store rental items and services
 CREATE TABLE IF NOT EXISTS rentals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

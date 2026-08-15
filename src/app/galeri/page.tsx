@@ -18,6 +18,7 @@ interface GalleryItem {
   media_type: string
   video_url: string | null
   images: string[] | null
+  videos: string[] | null
   created_at: string
 }
 
@@ -154,6 +155,11 @@ export default function GaleriPage() {
                     {item.images && item.images.length > 0 && (
                       <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
                         +{item.images.length} foto
+                      </span>
+                    )}
+                    {item.videos && item.videos.length > 0 && (
+                      <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                        +{item.videos.length} video
                       </span>
                     )}
                   </div>

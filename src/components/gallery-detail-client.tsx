@@ -4,16 +4,24 @@ import { useRef, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { embedFromUrl } from "@/lib/embed"
-import { Play, X } from "lucide-react"
+import { Play, X, Film } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface GalleryItem {
   id: string
   title: string
   media_type: string
   video_url: string | null
+  videos?: string[] | null
 }
 
-function VideoEmbed({ item }: { item: GalleryItem }) {
+interface Media {
+  type: "image" | "video"
+  src?: string
+  url?: string
+}
+
+function VideoEmbed({ url, title }: { url: string; title: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const [inView, setInView] = useState(false)
 
@@ -30,7 +38,7 @@ function VideoEmbed({ item }: { item: GalleryItem }) {
     observer.current.observe(el)
   }
 
-  const embed = embedFromUrl(item.video_url || "")
+  const embed = embedFromUrl(url)
   if (!embed) {
     return (
       <div className="flex aspect-video items-center justify-center rounded-2xl bg-soft">
@@ -45,9 +53,9 @@ function VideoEmbed({ item }: { item: GalleryItem }) {
         <iframe
           src={embed.embedUrl}
           className="h-full w-full"
-          allow="autoplay; encrypted-media; picture-in-picture"
+          allow="autoplay; encrypted-media; picture-in-picture; web-share"
           allowFullScreen
-          title={item.title}
+          title={title}
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-soft">
@@ -61,30 +69,48 @@ function VideoEmbed({ item }: { item: GalleryItem }) {
 export function GalleryDetailClient({
   item,
   images,
+  videos,
 }: {
   item: GalleryItem
   images: string[]
+  videos: string[]
 }) {
   const [active, setActive] = useState(0)
   const [lightbox, setLightbox] = useState<string | null>(null)
 
-  if (item.media_type === "video_embed") {
-    return <div className="mt-8"><VideoEmbed item={item} /></div>
+  const mediaList: Media[] = [
+    ...images.map((src): Media => ({ type: "image", src })),
+    ...videos.map((url): Media => ({ type: "video", url })),
+  ]
+  if (item.media_type === "video_embed" && mediaList.length > 1) {
+    const firstVideo = mediaList.findIndex((m) => m.type === "video")
+    if (firstVideo > 0) {
+      const [v] = mediaList.splice(firstVideo, 1)
+      mediaList.unshift(v)
+    }
   }
 
-  const current = images[active] || ""
+  if (mediaList.length === 0) {
+    return (
+      <div className="mt-8 flex aspect-video items-center justify-center rounded-2xl bg-soft">
+        <p className="text-xs text-muted-foreground">Belum ada media</p>
+      </div>
+    )
+  }
+
+  const current = mediaList[Math.min(active, mediaList.length - 1)]
 
   return (
     <div className="mt-8">
       <div className="overflow-hidden rounded-2xl border border-line bg-card">
-        {current ? (
+        {current.type === "image" ? (
           <button
-            onClick={() => setLightbox(current)}
+            onClick={() => setLightbox(current.src || "")}
             className="block w-full cursor-zoom-in"
             aria-label="Perbesar foto"
           >
             <Image
-              src={current}
+              src={current.src || ""}
               alt={item.title}
               width={1200}
               height={800}
@@ -93,34 +119,40 @@ export function GalleryDetailClient({
             />
           </button>
         ) : (
-          <div className="flex aspect-video items-center justify-center bg-soft">
-            <p className="text-xs text-muted-foreground">Belum ada foto</p>
-          </div>
+          <VideoEmbed url={current.url || ""} title={item.title} />
         )}
       </div>
 
-      {images.length > 1 && (
+      {mediaList.length > 1 && (
         <div className="mt-4">
           <p className="text-xs font-medium text-muted-foreground">
-            Foto Lainnya ({images.length})
+            Media Lainnya ({mediaList.length})
           </p>
           <div className="mt-2 flex gap-3 overflow-x-auto pb-2">
-            {images.map((src, i) => (
+            {mediaList.map((m, i) => (
               <button
-                key={src + i}
+                key={(m.src ?? m.url ?? "") + i}
                 onClick={() => setActive(i)}
-                className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
+                className={cn(
+                  "relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition-all",
                   i === active ? "border-accent" : "border-line opacity-60 hover:opacity-100"
-                }`}
-                aria-label={`Foto ${i + 1}`}
+                )}
+                aria-label={`Media ${i + 1}`}
               >
-                <Image
-                  src={src}
-                  alt=""
-                  width={224}
-                  height={160}
-                  className="h-full w-full object-cover"
-                />
+                {m.type === "image" ? (
+                  <Image
+                    src={m.src ?? ""}
+                    alt=""
+                    width={224}
+                    height={160}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-soft">
+                    <Film className="h-5 w-5 text-accent" />
+                    <span className="text-[9px] text-muted-foreground">Video</span>
+                  </div>
+                )}
               </button>
             ))}
           </div>

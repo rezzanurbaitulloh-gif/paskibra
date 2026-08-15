@@ -25,7 +25,7 @@ interface GalleryItem {
   videos?: string[] | null
 }
 
-const CATEGORIES = ["LKBB", "Latihan Rutin", "Pelantikan", "Pengukuhan", "Kegiatan Lain"]
+const CATEGORIES = ["LKBB", "Latihan Rutin", "Pengukuhan", "Kegiatan Lain"]
 const MAX_EXTRA = 8
 
 export default function GaleriAdminPage() {

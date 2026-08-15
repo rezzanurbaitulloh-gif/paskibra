@@ -22,7 +22,7 @@ interface GalleryItem {
   created_at: string
 }
 
-const CATEGORIES = ["Semua", "LKBB", "Latihan Rutin", "Pelantikan", "Pengukuhan", "Kegiatan Lain"]
+const CATEGORIES = ["Semua", "LKBB", "Latihan Rutin", "Pengukuhan", "Kegiatan Lain"]
 
 function VideoEmbed({ item }: { item: GalleryItem }) {
   const ref = useRef<HTMLDivElement>(null)

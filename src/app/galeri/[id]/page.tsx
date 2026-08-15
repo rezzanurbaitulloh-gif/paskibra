@@ -10,7 +10,6 @@ export const dynamic = "force-dynamic"
 const CATEGORY_IMAGES: Record<string, string> = {
   LKBB: "/images/lkbb.svg",
   "Latihan Rutin": "/images/latihan.svg",
-  Pelantikan: "/images/pelantikan.svg",
   Pengukuhan: "/images/pengukuhan.svg",
   "Kegiatan Lain": "/images/kegiatan.svg",
 }

@@ -6,7 +6,7 @@ import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 export function AnimatedBackground() {
   const { settings } = useSiteSettings()
-  const { watermarkPemuda, watermarkPemudi } = settings.backgrounds
+  const { watermarkPemuda, watermarkPemudi, watermarkOpacity } = settings.backgrounds
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
@@ -27,7 +27,8 @@ export function AnimatedBackground() {
               <motion.img
                 src={watermarkPemuda}
                 alt=""
-                className="h-full w-full rounded-full object-cover opacity-[0.14] grayscale-[35%] ring-1 ring-line dark:opacity-[0.10]"
+                className="h-full w-full rounded-full object-cover grayscale-[35%] ring-1 ring-line"
+                style={{ opacity: watermarkOpacity / 100 }}
                 animate={{ y: [0, -18, 0], rotate: [-3, 3, -3] }}
                 transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
               />
@@ -44,7 +45,8 @@ export function AnimatedBackground() {
               <motion.img
                 src={watermarkPemudi}
                 alt=""
-                className="h-full w-full rounded-full object-cover opacity-[0.09] grayscale-[45%] ring-1 ring-line dark:opacity-[0.07]"
+                className="h-full w-full rounded-full object-cover grayscale-[45%] ring-1 ring-line"
+                style={{ opacity: watermarkOpacity / 100 }}
                 animate={{ y: [0, 16, 0], rotate: [3, -3, 3], scale: [1, 1.03, 1] }}
                 transition={{ duration: 17, repeat: Infinity, ease: "easeInOut" }}
               />

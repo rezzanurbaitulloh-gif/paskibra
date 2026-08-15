@@ -55,6 +55,41 @@ const fmtIDR = (n: number) =>
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
+function LiveClock() {
+  const [now, setNow] = useState(new Date())
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(t)
+  }, [])
+
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+  let tzAbbr = tz
+  try {
+    const sample = new Intl.DateTimeFormat("id-ID", { timeZone: tz, timeZoneName: "short" }).format(now)
+    tzAbbr = sample.replace(/[\d.,\s]+$/g, "") || tz
+  } catch {
+    /* biarkan nama zona */
+  }
+
+  const time = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })
+  const date = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-line bg-card px-3 py-2">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+      </span>
+      <div className="leading-tight">
+        <p className="font-display text-sm font-bold tabular-nums tracking-tight">{time}</p>
+        <p className="text-[10px] text-muted-foreground">
+          {date} • {tzAbbr}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminDashboard() {
   const { role } = useAdmin()
   if (role === "bendahara") return <BendaharaView />
@@ -65,10 +100,10 @@ export default function AdminDashboard() {
   const [deltas, setDeltas] = useState<Record<string, number>>({})
   const [sarans, setSarans] = useState<SaranRow[]>([])
   const [artikels, setArtikels] = useState<ArtikelRow[]>([])
-  const [finSummary, setFinSummary] = useState<{ income: number; expense: number; monthly: { m: string; inc: number; exp: number }[] }>({
+  const [finSummary, setFinSummary] = useState<{ income: number; expense: number; daily: { key: string; label: string; inc: number; exp: number }[] }>({
     income: 0,
     expense: 0,
-    monthly: [],
+    daily: [],
   })
   const [galCategories, setGalCategories] = useState<{ name: string; count: number }[]>([])
   const [genData, setGenData] = useState<{ name: string; count: number }[]>([])
@@ -151,26 +186,27 @@ export default function AdminDashboard() {
         }
 
       if (finRows) {
-        const monthly: { m: string; inc: number; exp: number }[] = []
-        for (let i = 5; i >= 0; i--) {
-          const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-          monthly.push({ m: MONTHS[d.getMonth()], inc: 0, exp: 0 })
+        const daily: { key: string; label: string; inc: number; exp: number }[] = []
+        const todayKey = now.toLocaleDateString("en-CA")
+        for (let i = 29; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)
+          daily.push({ key: d.toLocaleDateString("en-CA"), label: String(d.getDate()), inc: 0, exp: 0 })
         }
         let income = 0
         let expense = 0
         for (const r of finRows as { date: string; type: string; amount: number }[]) {
-          const d = new Date(r.date)
-          const idx = monthly.findIndex((m) => m.m === MONTHS[d.getMonth()] && d.getFullYear() === now.getFullYear())
+          const key = String(r.date).slice(0, 10)
+          const idx = daily.findIndex((m) => m.key === key)
           if (idx >= 0) {
-            if (r.type === "income") monthly[idx].inc += Number(r.amount)
-            else monthly[idx].exp += Number(r.amount)
+            if (r.type === "income") daily[idx].inc += Number(r.amount)
+            else daily[idx].exp += Number(r.amount)
           }
-          if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) {
+          if (key === todayKey) {
             if (r.type === "income") income += Number(r.amount)
             else expense += Number(r.amount)
           }
         }
-        setFinSummary({ income, expense, monthly })
+        setFinSummary({ income, expense, daily })
       }
 
       setLkbbRows(lkbbRows || [])
@@ -178,7 +214,9 @@ export default function AdminDashboard() {
     load()
   }, [])
 
-  const name = (user?.email?.split("@")[0] || "Admin").replace(/[._-]/g, " ")
+  const name =
+    user?.user_metadata?.name?.trim() ||
+    (user?.email?.split("@")[0] || "Admin").replace(/[._-]/g, " ")
   const today = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
 
   const statCards: Stat[] = [
@@ -195,7 +233,7 @@ export default function AdminDashboard() {
     .filter((r) => r.payment_status !== "belum")
     .reduce((sum, r) => sum + (Number(r.amount) || 0), 0)
 
-  const maxMonth = Math.max(1, ...finSummary.monthly.map((m) => Math.max(m.inc, m.exp)))
+  const maxDay = Math.max(1, ...finSummary.daily.map((m) => Math.max(m.inc, m.exp)))
   const maxCat = Math.max(1, ...galCategories.map((c) => c.count))
   const maxGen = Math.max(1, ...genData.map((g) => g.count))
   const maxYear = Math.max(1, ...yearData.map((y) => y.count))
@@ -210,10 +248,8 @@ export default function AdminDashboard() {
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">{today} — Ringkasan kegiatan Paskibra Satria Cengkara.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="rounded-lg border border-line bg-card px-3 py-2 text-xs font-medium">
-            Bulan {MONTHS[new Date().getMonth()]}
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <LiveClock />
           <Button variant="outline" size="sm" className="h-9">
             <Download className="mr-1.5 h-3.5 w-3.5" /> Unduh
           </Button>
@@ -366,7 +402,7 @@ export default function AdminDashboard() {
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-display text-sm font-bold">Keuangan 6 Bulan Terakhir</h3>
+              <h3 className="font-display text-sm font-bold">Keuangan 30 Hari Terakhir</h3>
               <p className="mt-0.5 text-[11px] text-muted-foreground">Pemasukan vs Pengeluaran</p>
             </div>
             <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
@@ -374,22 +410,24 @@ export default function AdminDashboard() {
               <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-foreground/20" /> Keluar</span>
             </div>
           </div>
-          <div className="mt-5 flex h-40 items-end gap-3">
-            {finSummary.monthly.map((m) => (
-              <div key={m.m} className="flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex w-full flex-1 items-end justify-center gap-1">
+          <div className="mt-5 flex h-40 items-end gap-[3px]">
+            {finSummary.daily.map((m, i) => (
+              <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
+                <div className="flex w-full flex-1 items-end justify-center gap-[2px]">
                   <div
-                    className="w-3 rounded-t-md bg-primary/80 transition-all"
-                    style={{ height: `${Math.max(2, (m.inc / maxMonth) * 100)}%` }}
-                    title={`Masuk: ${fmtIDR(m.inc)}`}
+                    className="w-[45%] max-w-2 rounded-t-sm bg-primary/80 transition-all"
+                    style={{ height: `${Math.max(2, (m.inc / maxDay) * 100)}%` }}
+                    title={`${m.key} — Masuk: ${fmtIDR(m.inc)}`}
                   />
                   <div
-                    className="w-3 rounded-t-md bg-foreground/20 transition-all"
-                    style={{ height: `${Math.max(2, (m.exp / maxMonth) * 100)}%` }}
-                    title={`Keluar: ${fmtIDR(m.exp)}`}
+                    className="w-[45%] max-w-2 rounded-t-sm bg-foreground/20 transition-all"
+                    style={{ height: `${Math.max(2, (m.exp / maxDay) * 100)}%` }}
+                    title={`${m.key} — Keluar: ${fmtIDR(m.exp)}`}
                   />
                 </div>
-                <span className="text-[10px] text-muted-foreground">{m.m}</span>
+                <span className="text-[8px] leading-none text-muted-foreground">
+                  {i % 5 === 0 || i === finSummary.daily.length - 1 ? m.label : ""}
+                </span>
               </div>
             ))}
           </div>

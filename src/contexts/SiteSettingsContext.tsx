@@ -4,13 +4,21 @@ import { createContext, useContext, ReactNode, useState, useEffect, useCallback 
 import { supabase } from "@/lib/supabase/client"
 
 export interface SiteSettings {
-  colors: { primary: string; secondary: string; accent: string; background: string }
+  colors: {
+    primary: string
+    secondary: string
+    accent: string
+    background: string
+    foreground: string
+  }
   hero: { title: string; subtitle: string; ctaText: string }
   branding: {
     logoUrl: string
     schoolLogoUrl: string
     orgName: string
     schoolName: string
+    fontSans: string
+    fontDisplay: string
   }
   contacts: {
     waNumber: string
@@ -31,6 +39,10 @@ export interface SiteSettings {
   backgrounds: {
     watermarkPemuda: string
     watermarkPemudi: string
+    heroBackground: string
+    heroImageOpacity: number
+    heroLogoOpacity: number
+    watermarkOpacity: number
   }
   nav: {
     links: { label: string; href: string }[]
@@ -87,7 +99,7 @@ export interface SiteSettings {
 }
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  colors: { primary: "#E53935", secondary: "#1E88E5", accent: "#FFD700", background: "#0A0A0C" },
+  colors: { primary: "#E53935", secondary: "#1E88E5", accent: "#FFD700", background: "#0A0A0C", foreground: "#0f172a" },
   hero: {
     title: "SATRIA CENGKARA",
     subtitle:
@@ -99,6 +111,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     schoolLogoUrl: "/school-logo.png",
     orgName: "Paskibra Satria Cengkara",
     schoolName: "SMK Negeri 1 Kertosono",
+    fontSans: "plus-jakarta",
+    fontDisplay: "plus-jakarta",
   },
   contacts: {
     waNumber: "6289516555498",
@@ -125,6 +139,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   backgrounds: {
     watermarkPemuda: "/watermark-pemuda.jpg",
     watermarkPemudi: "/watermark-pemudi.jpg",
+    heroBackground: "",
+    heroImageOpacity: 100,
+    heroLogoOpacity: 5,
+    watermarkOpacity: 14,
   },
   nav: {
     links: [
@@ -280,6 +298,24 @@ function deepMerge<T>(base: T, patch: Partial<T>): T {
   return out as T
 }
 
+export const FONT_OPTIONS = [
+  { key: "plus-jakarta", label: "Plus Jakarta Sans" },
+  { key: "inter", label: "Inter" },
+  { key: "poppins", label: "Poppins" },
+  { key: "montserrat", label: "Montserrat" },
+  { key: "lato", label: "Lato" },
+  { key: "dm-sans", label: "DM Sans" },
+] as const
+
+export const FONT_VARS: Record<string, string> = {
+  "plus-jakarta": "var(--font-pjs)",
+  inter: "var(--font-inter)",
+  poppins: "var(--font-poppins)",
+  montserrat: "var(--font-montserrat)",
+  lato: "var(--font-lato)",
+  "dm-sans": "var(--font-dmsans)",
+}
+
 interface SiteSettingsState {
   settings: SiteSettings
   loading: boolean
@@ -321,12 +357,15 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   }, [refresh])
 
   useEffect(() => {
-    const { colors } = settings
+    const { colors, branding } = settings
     const root = document.documentElement
     root.style.setProperty("--primary", colors.primary)
     root.style.setProperty("--secondary", colors.secondary)
     root.style.setProperty("--accent", colors.accent)
-  }, [settings.colors])
+    root.style.setProperty("--foreground", colors.foreground)
+    root.style.setProperty("--font-sans", FONT_VARS[branding.fontSans] || "var(--font-pjs)")
+    root.style.setProperty("--font-display", FONT_VARS[branding.fontDisplay] || "var(--font-pjs)")
+  }, [settings.colors, settings.branding.fontSans, settings.branding.fontDisplay])
 
   return (
     <SiteSettingsContext.Provider value={{ settings, loading, refresh }}>

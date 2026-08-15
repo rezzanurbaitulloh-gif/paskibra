@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import {
+  Plus_Jakarta_Sans,
+  Inter,
+  Poppins,
+  Montserrat,
+  Lato,
+  DM_Sans,
+} from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "next-themes"
 import { AnimatedBackground } from "@/components/animated-background";
@@ -11,8 +18,48 @@ import "./globals.css";
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-sans",
+  variable: "--font-pjs",
   display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-inter",
+  display: "swap",
+  preload: false,
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  display: "swap",
+  preload: false,
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-montserrat",
+  display: "swap",
+  preload: false,
+});
+
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-lato",
+  display: "swap",
+  preload: false,
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-dmsans",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -41,7 +88,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={`${plusJakarta.variable} antialiased`}>
+      <body
+        className={`${plusJakarta.variable} ${inter.variable} ${poppins.variable} ${montserrat.variable} ${lato.variable} ${dmSans.variable} antialiased`}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <SiteSettingsProvider>

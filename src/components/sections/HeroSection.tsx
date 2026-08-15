@@ -43,16 +43,32 @@ export function HeroSection({ realStats }: { realStats?: { value: string; label:
         <div className="absolute inset-0 bg-radial-glow" />
         <div className="absolute -top-40 -right-40 h-[480px] w-[480px] rounded-full bg-secondary/10 blur-[140px]" />
         <div className="absolute -bottom-40 -left-40 h-[480px] w-[480px] rounded-full bg-primary/10 blur-[140px]" />
-        <div className="relative h-full w-full">
-          <Image
-            src={settings.branding.logoUrl || "/logo.png"}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-contain opacity-[0.05] dark:opacity-[0.06]"
-          />
-        </div>
+        {settings.backgrounds.heroBackground ? (
+          <div className="relative h-full w-full">
+            <Image
+              src={settings.backgrounds.heroBackground}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              style={{ opacity: settings.backgrounds.heroImageOpacity / 100 }}
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/55" />
+          </div>
+        ) : (
+          <div className="relative h-full w-full">
+            <Image
+              src={settings.branding.logoUrl || "/logo.png"}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              style={{ opacity: settings.backgrounds.heroLogoOpacity / 100 }}
+              className="object-contain"
+            />
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
       </motion.div>
 

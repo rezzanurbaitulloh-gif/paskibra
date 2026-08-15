@@ -25,7 +25,7 @@ import {
   Check,
 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
-import { DEFAULT_SETTINGS, type SiteSettings } from "@/contexts/SiteSettingsContext"
+import { DEFAULT_SETTINGS, FONT_OPTIONS, type SiteSettings } from "@/contexts/SiteSettingsContext"
 import { ImageUpload } from "@/components/image-upload"
 import { ListEditor, type ListField } from "@/components/admin/ListEditor"
 
@@ -103,7 +103,7 @@ export default function SettingsPage() {
   const updateSetting = <G extends keyof SiteSettings>(
     group: G,
     field: string,
-    value: string
+    value: string | number
   ) => {
     setSettings((prev) => ({
       ...prev,
@@ -161,6 +161,38 @@ export default function SettingsPage() {
                 <Textarea value={settings.pages.aboutText} onChange={(e) => updateSetting("pages", "aboutText", e.target.value)} rows={6} className="glass border-line resize-none" />
               </CardContent>
             </Card>
+            <Card className="glass border-line lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="font-display">Font & Tampilan Teks</CardTitle>
+                <p className="text-sm text-muted-foreground">Pilih jenis font untuk seluruh teks website. Angka memakai bentuk tabular agar tidak membingungkan.</p>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Font Teks Utama (isi)</Label>
+                  <select
+                    value={settings.branding.fontSans}
+                    onChange={(e) => updateSetting("branding", "fontSans", e.target.value)}
+                    className="h-10 w-full rounded-lg border border-line bg-card px-3 text-sm"
+                  >
+                    {FONT_OPTIONS.map((f) => (
+                      <option key={f.key} value={f.key}>{f.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Font Judul (display)</Label>
+                  <select
+                    value={settings.branding.fontDisplay}
+                    onChange={(e) => updateSetting("branding", "fontDisplay", e.target.value)}
+                    className="h-10 w-full rounded-lg border border-line bg-card px-3 text-sm"
+                  >
+                    {FONT_OPTIONS.map((f) => (
+                      <option key={f.key} value={f.key}>{f.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )
 
@@ -191,7 +223,9 @@ export default function SettingsPage() {
                             {value}
                           </span>
                         </div>
-                        <Label className="mt-2 block text-xs capitalize">{key}</Label>
+                        <Label className="mt-2 block text-xs capitalize">
+                          {key === "foreground" ? "Warna Teks" : key}
+                        </Label>
                         <Input value={value} onChange={(e) => updateSetting("colors", key, e.target.value)} className="mt-1.5 h-8 border-line bg-card font-mono text-xs" />
                       </div>
                     ))}
@@ -518,6 +552,31 @@ export default function SettingsPage() {
               <p className="text-sm text-muted-foreground">Foto watermark yang tampil di sudut-sudut background seluruh halaman (kanan-atas: pemuda, kiri-bawah: pemudi).</p>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label>Background Hero Halaman Utama</Label>
+                <ImageUpload value={settings.backgrounds.heroBackground} onChange={(url) => updateSetting("backgrounds", "heroBackground", url)} label="Upload Foto Background" />
+                <p className="text-[11px] text-muted-foreground">
+                  Foto tampil full-width di belakang judul. Biarkan kosong untuk memakai logo sebagai
+                  background. Klik X pada preview untuk menghapus foto.
+                </p>
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center gap-3">
+                    <span className="w-40 shrink-0 text-xs text-muted-foreground">Opacity Foto Hero</span>
+                    <input type="range" min={0} max={100} value={settings.backgrounds.heroImageOpacity} onChange={(e) => updateSetting("backgrounds", "heroImageOpacity", Number(e.target.value))} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-soft accent-[var(--primary)]" />
+                    <span className="w-9 shrink-0 text-right text-xs tabular-nums text-muted-foreground">{settings.backgrounds.heroImageOpacity}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-40 shrink-0 text-xs text-muted-foreground">Opacity Logo Hero</span>
+                    <input type="range" min={0} max={100} value={settings.backgrounds.heroLogoOpacity} onChange={(e) => updateSetting("backgrounds", "heroLogoOpacity", Number(e.target.value))} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-soft accent-[var(--primary)]" />
+                    <span className="w-9 shrink-0 text-right text-xs tabular-nums text-muted-foreground">{settings.backgrounds.heroLogoOpacity}%</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-40 shrink-0 text-xs text-muted-foreground">Opacity Watermark</span>
+                    <input type="range" min={0} max={100} value={settings.backgrounds.watermarkOpacity} onChange={(e) => updateSetting("backgrounds", "watermarkOpacity", Number(e.target.value))} className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-soft accent-[var(--primary)]" />
+                    <span className="w-9 shrink-0 text-right text-xs tabular-nums text-muted-foreground">{settings.backgrounds.watermarkOpacity}%</span>
+                  </div>
+                </div>
+              </div>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Foto Pemuda (kanan atas)</Label>

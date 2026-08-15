@@ -79,9 +79,7 @@ export default function AccountPage() {
     )
   }
 
-  const roleLabel = isStaff
-    ? { super_admin: "Admin", bendahara: "Bendahara", humas: "Humas" }[role!]
-    : "Pengguna Biasa"
+  const displayName = (user?.user_metadata?.name as string) || user?.email || ""
 
   return (
     <div className="min-h-screen">
@@ -106,8 +104,8 @@ export default function AccountPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between rounded-xl border border-line bg-soft px-4 py-3">
-                <span className="text-xs text-muted-foreground">Role</span>
-                <span className="text-xs font-semibold">{roleLabel}</span>
+                <span className="text-xs text-muted-foreground">Nama Tampilan</span>
+                <span className="max-w-[60%] truncate text-xs font-semibold">{displayName}</span>
               </div>
 
               <form onSubmit={handleName} className="space-y-3">

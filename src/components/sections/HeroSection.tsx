@@ -8,6 +8,7 @@ import { Menu, X, ArrowRight, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ProfileMenu } from "@/components/profile-menu"
+import { useAuth } from "@/contexts/AuthContext"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 const NAV_LINKS = [
@@ -22,6 +23,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const { user } = useAuth()
   const { settings } = useSiteSettings()
   const brandWords = (settings.branding.orgName || "SATRIA CENGKARA").toUpperCase().split(/\s+/).filter(Boolean)
   const navLinks = settings.nav.links.length > 0 ? settings.nav.links : NAV_LINKS
@@ -74,7 +76,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <ProfileMenu className="hidden md:block" />
+            <ProfileMenu />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
@@ -103,13 +105,32 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-line text-center hover:bg-soft transition-colors"
-              >
-                Masuk
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/akun"
+                    onClick={() => setMobileOpen(false)}
+                    className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-line text-center hover:bg-soft transition-colors"
+                  >
+                    Pengaturan Akun
+                  </Link>
+                  <Link
+                    href="/admin/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="mt-2 px-3 py-2.5 text-sm rounded-lg border border-line text-center hover:bg-soft transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="mt-2 px-3 py-2.5 text-sm rounded-lg gradient-primary text-center text-white transition-colors"
+                >
+                  Masuk
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

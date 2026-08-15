@@ -49,7 +49,6 @@ export function ProfileMenu({ className = "" }: { className?: string }) {
 
   const displayName = (user.user_metadata?.name as string) || user.email || ""
   const initial = (displayName || "U").charAt(0).toUpperCase()
-  const label = isStaff ? (ROLE_LABEL[role!] || "Pengurus") : "Pengguna"
 
   return (
     <div ref={ref} className={`relative ${className}`}>
@@ -65,7 +64,9 @@ export function ProfileMenu({ className = "" }: { className?: string }) {
         >
           {initial}
         </span>
-        <span className="hidden max-w-[110px] truncate text-xs font-medium sm:block">{label}</span>
+        <span className="hidden max-w-[110px] truncate text-xs font-medium sm:block">
+          {displayName}
+        </span>
         <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
@@ -73,7 +74,12 @@ export function ProfileMenu({ className = "" }: { className?: string }) {
         <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-card shadow-xl shadow-black/20">
           <div className="border-b border-line px-4 py-3">
             <p className="truncate text-xs font-semibold">{displayName}</p>
-            <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{label} • {user.email}</p>
+            <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{user.email}</p>
+            {isStaff && (
+              <p className="mt-1 inline-block rounded-full bg-soft px-2 py-0.5 text-[9px] font-medium capitalize text-muted-foreground">
+                {ROLE_LABEL[role!] || role}
+              </p>
+            )}
           </div>
           <div className="p-1.5">
             {isStaff && (

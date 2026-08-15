@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     "Organisasi Paskibra Satria Cengkara SMKN 1 Kertosono. Disiplin, tangguh, berintegritas.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icons/icon-192x192.png",
-    apple: "/icons/icon-192x192.png",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
   appleWebApp: {
     capable: true,
@@ -48,8 +48,10 @@ export default function RootLayout({
       <body className={`${syne.variable} ${plusJakarta.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <AuthProvider>
-            <AnimatedBackground />
-            <TooltipProvider>{children}</TooltipProvider>
+            <SiteSettingsProvider>
+              <AnimatedBackground />
+              <TooltipProvider>{children}</TooltipProvider>
+            </SiteSettingsProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

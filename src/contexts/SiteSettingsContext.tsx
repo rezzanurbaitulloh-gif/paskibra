@@ -127,7 +127,6 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--primary", colors.primary)
     root.style.setProperty("--secondary", colors.secondary)
     root.style.setProperty("--accent", colors.accent)
-    root.style.setProperty("--background", colors.background)
   }, [settings.colors])
 
   return (

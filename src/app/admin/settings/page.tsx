@@ -264,24 +264,26 @@ export default function SettingsPage() {
                 <CardTitle className="font-display">Palet Warna</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {Object.entries(settings.colors).map(([key, value]) => (
-                  <div key={key} className="flex items-center gap-4">
-                    <Label className="w-28 capitalize">{key}</Label>
-                    <div className="relative">
-                      <input
-                        type="color"
+                {Object.entries(settings.colors)
+                  .filter(([key]) => key !== "background")
+                  .map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-4">
+                      <Label className="w-28 capitalize">{key}</Label>
+                      <div className="relative">
+                        <input
+                          type="color"
+                          value={value}
+                          onChange={(e) => updateSetting("colors", key, e.target.value)}
+                          className="w-12 h-10 rounded cursor-pointer border border-line bg-transparent"
+                        />
+                      </div>
+                      <Input
                         value={value}
                         onChange={(e) => updateSetting("colors", key, e.target.value)}
-                        className="w-12 h-10 rounded cursor-pointer border border-line bg-transparent"
+                        className="glass border-line max-w-[160px] font-mono"
                       />
                     </div>
-                    <Input
-                      value={value}
-                      onChange={(e) => updateSetting("colors", key, e.target.value)}
-                      className="glass border-line max-w-[160px] font-mono"
-                    />
-                  </div>
-                ))}
+                  ))}
               </CardContent>
             </Card>
 
@@ -292,7 +294,7 @@ export default function SettingsPage() {
               <CardContent>
                 <div
                   className="rounded-xl p-8 border border-line min-h-[220px] flex flex-col items-center justify-center gap-4 transition-colors duration-300"
-                  style={{ backgroundColor: settings.colors.background }}
+                  style={{ backgroundColor: "var(--background)" }}
                 >
                   <span
                     className="font-display font-bold text-3xl transition-colors"

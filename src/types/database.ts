@@ -212,22 +212,37 @@ export type Database = {
       feedbacks: {
         Row: {
           id: string
-          name: string | null
+          sender_name: string | null
           message: string
+          admin_reply: string | null
+          replied_at: string | null
+          replied_by: string | null
+          likes: number
+          dislikes: number
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
-          name?: string | null
+          sender_name?: string | null
           message: string
+          admin_reply?: string | null
+          replied_at?: string | null
+          replied_by?: string | null
+          likes?: number
+          dislikes?: number
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          name?: string | null
+          sender_name?: string | null
           message?: string
+          admin_reply?: string | null
+          replied_at?: string | null
+          replied_by?: string | null
+          likes?: number
+          dislikes?: number
           created_at?: string
           updated_at?: string
         }

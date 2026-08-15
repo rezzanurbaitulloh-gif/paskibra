@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Send, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { SectionHeader } from "./SectionHeader"
+import { SaranTicker } from "./SaranTicker"
 
 export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
   const [name, setName] = useState("")
@@ -16,6 +17,7 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState("")
+  const [tickerKey, setTickerKey] = useState(0)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -34,6 +36,7 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
       setSent(true)
       setName("")
       setMessage("")
+      setTickerKey((k) => k + 1)
       onSubmitted?.()
       setTimeout(() => setSent(false), 4000)
     }
@@ -108,6 +111,8 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
             )}
           </div>
         </motion.div>
+
+        <SaranTicker refreshKey={tickerKey} />
       </div>
     </section>
   )

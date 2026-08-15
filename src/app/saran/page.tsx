@@ -7,7 +7,7 @@ import Link from "next/link"
 import { supabase } from "@/lib/supabase/client"
 import { FeedbackForm } from "@/components/sections/FeedbackForm"
 import { SectionHeader } from "@/components/sections/SectionHeader"
-import { CheckCircle2, Inbox, ArrowLeft } from "lucide-react"
+import { CheckCircle2, Inbox, ArrowLeft, ThumbsUp, ThumbsDown } from "lucide-react"
 
 interface Feedback {
   id: string
@@ -15,13 +15,18 @@ interface Feedback {
   message: string
   admin_reply: string | null
   replied_at: string | null
+  likes: number
+  dislikes: number
   created_at: string
 }
+
+const VOTE_KEY = "saran-votes"
 
 export default function SaranPage() {
   const { settings } = useSiteSettings()
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading] = useState(true)
+  const [voted, setVoted] = useState<Record<string, "like" | "dislike">>({})
 
   const fetchFeedbacks = async () => {
     const { data } = await supabase.from("feedbacks").select("*").order("created_at", { ascending: false })
@@ -30,8 +35,30 @@ export default function SaranPage() {
   }
 
   useEffect(() => {
+    try {
+      setVoted(JSON.parse(localStorage.getItem(VOTE_KEY) || "{}"))
+    } catch {
+      setVoted({})
+    }
     fetchFeedbacks()
   }, [])
+
+  const vote = async (id: string, type: "like" | "dislike") => {
+    if (voted[id]) return
+    setVoted((prev) => {
+      const next = { ...prev, [id]: type }
+      localStorage.setItem(VOTE_KEY, JSON.stringify(next))
+      return next
+    })
+    setFeedbacks((prev) =>
+      prev.map((fb) =>
+        fb.id === id
+          ? { ...fb, likes: fb.likes + (type === "like" ? 1 : 0), dislikes: fb.dislikes + (type === "dislike" ? 1 : 0) }
+          : fb
+      )
+    )
+    await supabase.rpc("vote_feedback", { p_id: id, p_vote: type })
+  }
 
   return (
     <div className="min-h-screen">
@@ -75,6 +102,32 @@ export default function SaranPage() {
                       </p>
                     </div>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{fb.message}</p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        onClick={() => vote(fb.id, "like")}
+                        disabled={!!voted[fb.id]}
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+                          voted[fb.id] === "like"
+                            ? "border-green-500/50 bg-green-500/10 text-green-400"
+                            : "border-line text-muted-foreground hover:text-green-400"
+                        }`}
+                      >
+                        <ThumbsUp className="h-3.5 w-3.5" />
+                        {fb.likes}
+                      </button>
+                      <button
+                        onClick={() => vote(fb.id, "dislike")}
+                        disabled={!!voted[fb.id]}
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+                          voted[fb.id] === "dislike"
+                            ? "border-red-500/50 bg-red-500/10 text-red-400"
+                            : "border-line text-muted-foreground hover:text-red-400"
+                        }`}
+                      >
+                        <ThumbsDown className="h-3.5 w-3.5" />
+                        {fb.dislikes}
+                      </button>
+                    </div>
                     {fb.admin_reply && (
                       <div className="mt-4 rounded-xl border border-line bg-soft p-4">
                         <div className="flex items-center gap-1.5 text-[11px] font-medium text-green-500">

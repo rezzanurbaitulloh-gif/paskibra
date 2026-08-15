@@ -81,6 +81,8 @@ CREATE TABLE IF NOT EXISTS feedbacks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT,
   message TEXT NOT NULL,
+  likes INT NOT NULL DEFAULT 0,
+  dislikes INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -124,6 +126,19 @@ CREATE POLICY "public_read_rentals" ON rentals
 
 CREATE POLICY "public_read_feedbacks" ON feedbacks
   FOR SELECT USING (true);
+
+-- Public like/dislike voting (safe: only increments counters)
+CREATE OR REPLACE FUNCTION public.vote_feedback(p_id uuid, p_vote text)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF p_vote = 'like' THEN
+    UPDATE feedbacks SET likes = likes + 1, updated_at = now() WHERE id = p_id;
+  ELSIF p_vote = 'dislike' THEN
+    UPDATE feedbacks SET dislikes = dislikes + 1, updated_at = now() WHERE id = p_id;
+  END IF;
+END $$;
+REVOKE ALL ON FUNCTION public.vote_feedback(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.vote_feedback(uuid, text) TO anon, authenticated;
 
 CREATE POLICY "public_read_articles" ON articles
   FOR SELECT USING (true);

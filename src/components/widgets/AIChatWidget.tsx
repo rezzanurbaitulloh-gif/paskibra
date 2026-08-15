@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Bot, Send, X, MessageSquare } from "lucide-react"
 import { streamResponse } from "@/services/aiService"
 import { useDraggableFloat } from "@/hooks/useDraggableFloat"
+import { renderMarkdown } from "@/lib/markdown"
 
 interface Message {
   id: string
@@ -176,10 +177,16 @@ export function AIChatWidget() {
                         className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                           message.role === "user"
                             ? "bg-white text-black"
-                            : "border border-line bg-soft"
+                            : "border border-line bg-soft [&_code]:text-[12px] [&_strong]:font-bold"
                         }`}
                       >
-                        {message.content || (message.role === "assistant" ? "…" : "")}
+                        {message.role === "assistant" ? (
+                          <span
+                            dangerouslySetInnerHTML={{ __html: renderMarkdown(message.content) || "…" }}
+                          />
+                        ) : (
+                          message.content
+                        )}
                       </div>
                     </div>
                   ))

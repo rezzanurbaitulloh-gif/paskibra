@@ -65,6 +65,22 @@ export interface SiteSettings {
     saranLabel: string
     saranTitle: string
   }
+  lkbb: {
+    label: string
+    title: string
+    subtitle: string
+    intro: string
+    date: string
+    location: string
+    fee: string
+    registrationDeadline: string
+    contact: string
+    whatsapp: string
+    rules: { title: string; desc: string }[]
+    steps: { title: string; desc: string }[]
+    prizes: { title: string; desc: string }[]
+    media: { type: "image" | "video"; url: string }[]
+  }
   aiPrompt: string
 }
 
@@ -167,11 +183,79 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     saranLabel: "Suara Anda",
     saranTitle: "Kotak Saran & Masukan",
   },
+  lkbb: {
+    label: "Lomba & LKBB",
+    title: "Lomba PBB / LKBB",
+    subtitle: "Adu keterampilan baris-berbaris dan kecepatan bertindak.",
+    intro:
+      "Paskibra Satria Cengkara menggelar Lomba Baris-Berbaris untuk tingkat SMP/MTs se-Kabupaten Nganjuk. Daftarkan sekolahmu sekarang!",
+    date: "12-13 Oktober 2026",
+    location: "SMK Negeri 1 Kertosono, Jl. Langsep No. 24, Pelem, Nganjuk",
+    fee: "Rp 250.000 / tim (maks. 10 anggota)",
+    registrationDeadline: "5 Oktober 2026",
+    contact: "(0358) 551466",
+    whatsapp: "6281229549860",
+    rules: [
+      {
+        title: "Peserta",
+        desc: "Siswa aktif SMP/MTs/sederajat se-Kabupaten Nganjuk, maksimal 10 anggota per tim + 2 pelatih.",
+      },
+      {
+        title: "Wajib Hadir",
+        desc: "Registrasi ulang dilakukan 1 jam sebelum lomba dimulai di ruang panitia.",
+      },
+      {
+        title: "Atribut",
+        desc: "Setiap tim wajib memakai seragam sekolah masing-masing dan atribut Paskibra lengkap.",
+      },
+      {
+        title: "Penilaian",
+        desc: "Penilaian meliputi keseragaman baris, ketepatan aba-aba, kekompakan, dan penampilan.",
+      },
+    ],
+    steps: [
+      {
+        title: "Isi Formulir",
+        desc: "Isi formulir pendaftaran dengan nama sekolah dan kontak penanggung jawab.",
+      },
+      {
+        title: "Transfer Biaya",
+        desc: "Bayar biaya pendaftaran via transfer (DP minimal 50%, pelunasan sebelum H-1).",
+      },
+      {
+        title: "Konfirmasi",
+        desc: "Kirim bukti transfer ke panitia melalui WhatsApp untuk konfirmasi.",
+      },
+      {
+        title: "Ikut Lomba",
+        desc: "Datang tepat waktu dan ikuti technical meeting pada H-1.",
+      },
+    ],
+    prizes: [
+      {
+        title: "Juara 1",
+        desc: "Piala Bergilir + Uang Pembinaan Rp 1.000.000 + Sertifikat",
+      },
+      {
+        title: "Juara 2",
+        desc: "Piala Tetap + Uang Pembinaan Rp 750.000 + Sertifikat",
+      },
+      {
+        title: "Juara 3",
+        desc: "Piala Tetap + Uang Pembinaan Rp 500.000 + Sertifikat",
+      },
+      {
+        title: "Juara Harapan",
+        desc: "Uang Pembinaan Rp 250.000 + Sertifikat",
+      },
+    ],
+    media: [],
+  },
   aiPrompt:
     'Kamu adalah "Tanya Satria Bot", asisten AI resmi Paskibra Satria Cengkara SMKN 1 Kertosono.',
 }
 
-const KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "nav", "heroExtras", "history", "philosophy", "school", "sectionTitles", "aiPrompt"] as const
+const KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "nav", "heroExtras", "history", "philosophy", "school", "sectionTitles", "lkbb", "aiPrompt"] as const
 
 function deepMerge<T>(base: T, patch: Partial<T>): T {
   const out: any = { ...base }

@@ -1,11 +1,11 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { embedFromUrl } from "@/lib/embed"
-import { Play, X, Film } from "lucide-react"
+import { X, Film } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { VideoEmbed } from "@/components/video-embed"
 
 interface GalleryItem {
   id: string
@@ -19,51 +19,6 @@ interface Media {
   type: "image" | "video"
   src?: string
   url?: string
-}
-
-function VideoEmbed({ url, title }: { url: string; title: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
-
-  const observer = useRef<IntersectionObserver | null>(null)
-  const onMount = (el: HTMLDivElement | null) => {
-    if (!el) return
-    if (observer.current) observer.current.disconnect()
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) setInView(true)
-      },
-      { threshold: 0.4 }
-    )
-    observer.current.observe(el)
-  }
-
-  const embed = embedFromUrl(url)
-  if (!embed) {
-    return (
-      <div className="flex aspect-video items-center justify-center rounded-2xl bg-soft">
-        <p className="text-xs text-muted-foreground">Link video tidak valid</p>
-      </div>
-    )
-  }
-
-  return (
-    <div ref={onMount} className="aspect-video w-full overflow-hidden rounded-2xl bg-black">
-      {inView ? (
-        <iframe
-          src={embed.embedUrl}
-          className="h-full w-full"
-          allow="autoplay; encrypted-media; picture-in-picture; web-share"
-          allowFullScreen
-          title={title}
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center bg-soft">
-          <Play className="h-8 w-8 text-muted-foreground" />
-        </div>
-      )}
-    </div>
-  )
 }
 
 export function GalleryDetailClient({

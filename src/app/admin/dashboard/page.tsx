@@ -19,6 +19,7 @@ import {
   DollarSign,
   FileText,
   ArrowRight,
+  Trophy,
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -72,6 +73,7 @@ export default function AdminDashboard() {
   const [galCategories, setGalCategories] = useState<{ name: string; count: number }[]>([])
   const [genData, setGenData] = useState<{ name: string; count: number }[]>([])
   const [yearData, setYearData] = useState<{ year: string; count: number }[]>([])
+  const [lkbbRows, setLkbbRows] = useState<{ school_name: string; payment_status: string; amount: number; created_at: string }[]>([])
 
   useEffect(() => {
     const load = async () => {
@@ -92,6 +94,7 @@ export default function AdminDashboard() {
         { data: artikelRows },
         { data: finRows },
         { data: genRows },
+        { data: lkbbRows },
       ] = await Promise.all([
         supabase.from("structure_members").select("id", { count: "exact", head: true }),
         supabase.from("structure_members").select("id", { count: "exact", head: true }).gte("created_at", firstOfMonth),
@@ -105,6 +108,7 @@ export default function AdminDashboard() {
         supabase.from("articles").select("id, title, slug, created_at").order("created_at", { ascending: false }).limit(5),
         supabase.from("financial_records").select("date, type, amount").gte("date", sixMonthsAgo.slice(0, 10)),
         supabase.from("structure_members").select("generation"),
+        supabase.from("lkbb_participants").select("school_name, payment_status, amount, created_at").order("created_at", { ascending: false }).limit(5),
       ])
 
       if (!em && !emm) setDeltas((d) => ({ ...d, members: monthMembers || 0 }))
@@ -168,6 +172,8 @@ export default function AdminDashboard() {
         }
         setFinSummary({ income, expense, monthly })
       }
+
+      setLkbbRows(lkbbRows || [])
     }
     load()
   }, [])
@@ -181,6 +187,13 @@ export default function AdminDashboard() {
     { label: "Inventaris", value: stats.inventaris || 0, delta: 0, icon: Package, href: "/admin/inventaris" },
     { label: "Saran Masuk", value: stats.saran || 0, delta: deltas.saran || 0, icon: MessageSquare, href: "/admin/saran" },
   ]
+
+  const lkbbTotal = lkbbRows.length
+  const lkbbDp = lkbbRows.filter((r) => r.payment_status === "dp").length
+  const lkbbLunas = lkbbRows.filter((r) => r.payment_status === "lunas").length
+  const lkbbTransfer = lkbbRows
+    .filter((r) => r.payment_status !== "belum")
+    .reduce((sum, r) => sum + (Number(r.amount) || 0), 0)
 
   const maxMonth = Math.max(1, ...finSummary.monthly.map((m) => Math.max(m.inc, m.exp)))
   const maxCat = Math.max(1, ...galCategories.map((c) => c.count))
@@ -270,6 +283,83 @@ export default function AdminDashboard() {
           </Card>
         ))}
       </div>
+
+      {/* LKBB */}
+      <Card className="p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="h-4 w-4 text-accent" />
+            <h3 className="font-display text-sm font-bold">Peserta Lomba LKBB</h3>
+          </div>
+          <Link
+            href="/admin/lomba"
+            className="flex items-center gap-0.5 text-xs font-medium text-foreground opacity-60 transition-opacity hover:opacity-100"
+          >
+            Kelola Peserta <ArrowUpRight className="h-3 w-3" />
+          </Link>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="rounded-xl border border-line bg-soft/50 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Total Terdaftar
+            </p>
+            <p className="mt-1.5 font-display text-xl font-bold">{lkbbTotal}</p>
+          </div>
+          <div className="rounded-xl border border-line bg-soft/50 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500">DP</p>
+            <p className="mt-1.5 font-display text-xl font-bold">{lkbbDp}</p>
+          </div>
+          <div className="rounded-xl border border-line bg-soft/50 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500">
+              Lunas
+            </p>
+            <p className="mt-1.5 font-display text-xl font-bold">{lkbbLunas}</p>
+          </div>
+          <div className="rounded-xl border border-line bg-soft/50 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Total Transfer Masuk
+            </p>
+            <p className="mt-1.5 font-display text-xl font-bold text-emerald-500">
+              {"Rp " + lkbbTransfer.toLocaleString("id-ID")}
+            </p>
+          </div>
+        </div>
+        {lkbbRows.length > 0 ? (
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {lkbbRows.map((r) => (
+              <div
+                key={r.school_name + r.created_at}
+                className="flex items-center justify-between gap-2 rounded-lg border border-line bg-soft/50 px-3 py-2.5"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-semibold">{r.school_name}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {new Date(r.created_at).toLocaleDateString("id-ID")}
+                  </p>
+                </div>
+                <span
+                  className={cn(
+                    "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    r.payment_status === "lunas" && "bg-emerald-500/15 text-emerald-500",
+                    r.payment_status === "dp" && "bg-amber-500/15 text-amber-500",
+                    r.payment_status === "belum" && "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {r.payment_status === "lunas"
+                    ? "Lunas"
+                    : r.payment_status === "dp"
+                      ? "DP"
+                      : "Belum"}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-xs text-muted-foreground">
+            Belum ada peserta terdaftar. Tambahkan di menu <b>Lomba LKBB</b>.
+          </p>
+        )}
+      </Card>
 
       {/* Charts row */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

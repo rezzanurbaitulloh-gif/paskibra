@@ -181,3 +181,19 @@ CREATE POLICY "admin_full_access" ON feedbacks
 
 CREATE POLICY "admin_full_access" ON articles
   FOR ALL USING (auth.role() = 'authenticated');
+
+-- lkbb_participants: Peserta pendaftaran lomba/LKBB
+CREATE TABLE IF NOT EXISTS lkbb_participants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  school_name TEXT NOT NULL,
+  contact TEXT DEFAULT '',
+  category TEXT DEFAULT '',
+  payment_status TEXT NOT NULL DEFAULT 'belum',
+  amount NUMERIC DEFAULT 0,
+  notes TEXT DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE lkbb_participants ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "admin_full_access_lkbb" ON lkbb_participants
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());

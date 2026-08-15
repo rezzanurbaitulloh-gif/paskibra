@@ -119,14 +119,14 @@ export default function UsersAdminPage() {
   return (
     <RequireRole path="/admin/users">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold">Manajemen Pengguna</h1>
+            <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Pengguna</h1>
             <p className="mt-1 text-xs text-muted-foreground">
               Semua akun yang pernah masuk (termasuk Google). Hanya admin yang dapat mengelola.
             </p>
           </div>
-          <Button onClick={() => setShowAdd(!showAdd)} className="gradient-primary text-white">
+          <Button onClick={() => setShowAdd(!showAdd)} className="gradient-primary text-white sm:w-auto w-full">
             <Plus className="mr-2 h-4 w-4" /> Tambah Akun
           </Button>
         </div>
@@ -194,7 +194,7 @@ export default function UsersAdminPage() {
         ) : (
           <div className="overflow-hidden rounded-2xl border border-line bg-card">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-line text-[11px] uppercase tracking-wider text-muted-foreground">
                     <th className="px-4 py-3">Email</th>

@@ -181,13 +181,13 @@ export default function KeuanganPage() {
   return (
     <RequireRole path="/admin/keuangan">
       <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-3xl font-bold">Keuangan</h1>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <h1 className="font-display text-2xl font-bold md:text-3xl">Keuangan</h1>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" className="border-line" onClick={exportExcel} disabled={filtered.length === 0}>
               <Download className="mr-2 h-4 w-4" /> Export Excel
             </Button>
-            <Button onClick={() => setShowForm(true)} className="gradient-primary text-white">
+            <Button onClick={() => setShowForm(true)} className="gradient-primary text-white flex-1 sm:flex-none">
               <Plus className="mr-2 h-4 w-4" /> Tambah Catatan Kas
             </Button>
           </div>
@@ -415,7 +415,7 @@ export default function KeuanganPage() {
 
         {/* Riwayat */}
         <div className="overflow-x-auto rounded-2xl border border-line bg-card">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b border-line text-left text-xs text-muted-foreground">
                 <th className="p-4 font-medium">Tanggal</th>

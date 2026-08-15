@@ -67,8 +67,8 @@ export default function StructureManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="font-display text-3xl font-bold">Manajemen Pengurus</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Pengurus</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger
             render={

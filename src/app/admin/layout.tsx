@@ -49,7 +49,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <AdminProvider>
       <TooltipProvider>
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen min-w-0">
           <AdminSidebar />
           <div className="flex-1 flex flex-col md:pl-64">
             <AdminTopBar />
@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex-1 p-6 overflow-auto"
+              className="flex-1 min-w-0 p-4 overflow-x-hidden md:p-6"
             >
               {children}
             </motion.main>

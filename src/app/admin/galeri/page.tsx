@@ -99,9 +99,9 @@ export default function GaleriAdminPage() {
   return (
     <RequireRole path="/admin/galeri">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="font-display text-3xl font-bold">Galeri</h1>
-          <Button onClick={openCreate} className="gradient-primary text-white">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="font-display text-2xl font-bold md:text-3xl">Galeri</h1>
+          <Button onClick={openCreate} className="gradient-primary text-white w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" /> Tambah Media
           </Button>
         </div>

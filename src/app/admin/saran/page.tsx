@@ -51,7 +51,7 @@ export default function SaranPage() {
   return (
     <RequireRole path="/admin/saran">
       <div className="space-y-6">
-        <h1 className="font-display text-3xl font-bold">Kotak Saran</h1>
+        <h1 className="font-display text-2xl font-bold md:text-3xl">Kotak Saran</h1>
 
         {loading ? (
           <p className="text-muted-foreground">Memuat...</p>

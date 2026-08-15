@@ -100,9 +100,9 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="font-display text-3xl font-bold">CMS & Pengaturan Situs</h1>
-        <Button onClick={handleSave} disabled={saving} className="gradient-primary">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <h1 className="font-display text-2xl font-bold md:text-3xl">CMS & Pengaturan Situs</h1>
+        <Button onClick={handleSave} disabled={saving} className="gradient-primary w-full sm:w-auto">
           {saved ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           {saving ? "Menyimpan..." : saved ? "Tersimpan!" : "Simpan Semua"}
         </Button>

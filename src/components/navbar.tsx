@@ -105,7 +105,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
-            className="lg:hidden mt-2 glass rounded-2xl p-3"
+            className="lg:hidden mt-2 rounded-2xl border border-line bg-background p-3 shadow-xl"
           >
             <div className="flex flex-col">
               {navLinks.map((link) => {

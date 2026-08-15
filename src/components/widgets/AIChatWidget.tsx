@@ -8,6 +8,7 @@ import { Bot, Send, X, MessageSquare } from "lucide-react"
 import { streamResponse } from "@/services/aiService"
 import { useDraggableFloat } from "@/hooks/useDraggableFloat"
 import { renderMarkdown } from "@/lib/markdown"
+import { cn } from "@/lib/utils"
 
 interface Message {
   id: string
@@ -101,7 +102,10 @@ export function AIChatWidget() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.7 }}
             transition={{ duration: 0.25 }}
-            className={btn.pos ? "fixed z-[60]" : "fixed bottom-5 right-5 z-[60]"}
+            className={cn(
+              btn.pos ? "fixed z-[60]" : "fixed bottom-5 right-5 z-[60]",
+              !btn.dragging && "transition-[left,top] duration-300 ease-out"
+            )}
             style={btn.pos ? { left: btn.pos.x, top: btn.pos.y } : undefined}
             onPointerDown={btn.onPointerDown}
             title="Tahan & geser untuk memindahkan"
@@ -128,7 +132,7 @@ export function AIChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.25 }}
-            className="fixed z-[70]"
+            className={cn("fixed z-[70]", !panel.dragging && "transition-[left,top] duration-300 ease-out")}
             style={panelStyle}
           >
             <div className="flex h-[440px] max-h-[70vh] w-[360px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-2xl border border-line bg-card shadow-2xl shadow-black/50 backdrop-blur-xl">

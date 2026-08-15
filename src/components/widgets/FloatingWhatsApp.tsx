@@ -3,21 +3,22 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { useDraggableFloat } from "@/hooks/useDraggableFloat"
-
-
-
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
+import { cn } from "@/lib/utils"
 
 export function FloatingWhatsApp() {
   const WA_NUMBER = useSiteSettings().settings.contacts.waNumber || "6281234567890"
-  const { pos, onPointerDown, movedRef } = useDraggableFloat("wa", 48, 48)
+  const { pos, dragging, onPointerDown, movedRef } = useDraggableFloat("wa", 48, 48)
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, delay: 1.2 }}
-      className={pos ? "fixed z-[60]" : "fixed bottom-5 left-5 z-[60]"}
+      className={cn(
+        pos ? "fixed z-[60]" : "fixed bottom-5 left-5 z-[60]",
+        !dragging && "transition-[left,top] duration-300 ease-out"
+      )}
       style={pos ? { left: pos.x, top: pos.y } : undefined}
       onPointerDown={onPointerDown}
       title="Tahan & geser untuk memindahkan"

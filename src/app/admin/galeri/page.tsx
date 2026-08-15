@@ -241,7 +241,7 @@ export default function GaleriAdminPage() {
 
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">
-                  Link Video ({form.videos.length}, opsional — TikTok / IG Reel / YouTube)
+                  Link Video ({form.videos.length}, opsional — YouTube disarankan, bisa TikTok / IG Reel)
                 </Label>
                 <div className="space-y-2">
                   {form.videos.map((v, i) => (

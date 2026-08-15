@@ -558,8 +558,9 @@ function InfoEditor() {
           </Button>
         </div>
         <p className="mb-4 text-xs text-muted-foreground">
-          Video (YouTube/TikTok) akan <span className="text-accent">autoplay</span> di halaman publik saat
-          terlihat layar, tanpa perlu diklik. Semua video dapat diputar otomatis sekaligus.
+          <span className="text-accent">Gunakan link YouTube</span> agar video tampil &amp; autoplay di halaman
+          publik. Instagram &amp; TikTok tampil sebagai embed interaktif — pemutaran kadang harus diklik dan
+          bisa membuka aplikasi/platform saat di HP.
         </p>
         <div className="space-y-4">
           {lkbb.media.map((m, i) => (
@@ -753,13 +754,17 @@ function UpdatesManager() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Link Video (opsional, autoplay saat terlihat)</Label>
+                <Label>Link Video (opsional)</Label>
                 <Input
                   value={form.video_url}
                   onChange={(e) => setForm({ ...form, video_url: e.target.value })}
-                  placeholder="https://youtube.com/… atau https://tiktok.com/…"
+                  placeholder="https://youtube.com/… (disarankan), TikTok / IG Reel juga didukung"
                   className="border-line bg-card"
                 />
+                <p className="text-[10px] text-muted-foreground">
+                  Link YouTube paling stabil &amp; autoplay. TikTok/IG tampil sebagai embed (klik untuk memutar,
+                  di HP bisa membuka aplikasinya).
+                </p>
               </div>
               <Button type="submit" className="gradient-primary w-full">
                 Simpan

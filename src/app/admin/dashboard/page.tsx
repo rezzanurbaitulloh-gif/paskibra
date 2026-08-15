@@ -100,11 +100,8 @@ export default function AdminDashboard() {
   const [deltas, setDeltas] = useState<Record<string, number>>({})
   const [sarans, setSarans] = useState<SaranRow[]>([])
   const [artikels, setArtikels] = useState<ArtikelRow[]>([])
-  const [finSummary, setFinSummary] = useState<{ income: number; expense: number; daily: { key: string; label: string; inc: number; exp: number }[] }>({
-    income: 0,
-    expense: 0,
-    daily: [],
-  })
+  const [finRowsAll, setFinRowsAll] = useState<{ date: string; type: string; amount: number }[]>([])
+  const [finPeriod, setFinPeriod] = useState("30hari")
   const [galCategories, setGalCategories] = useState<{ name: string; count: number }[]>([])
   const [genData, setGenData] = useState<{ name: string; count: number }[]>([])
   const [yearData, setYearData] = useState<{ year: string; count: number }[]>([])
@@ -141,7 +138,7 @@ export default function AdminDashboard() {
         supabase.from("gallery").select("category"),
         supabase.from("feedbacks").select("id, sender_name, message, created_at, admin_reply").order("created_at", { ascending: false }).limit(5),
         supabase.from("articles").select("id, title, slug, created_at").order("created_at", { ascending: false }).limit(5),
-        supabase.from("financial_records").select("date, type, amount").gte("date", sixMonthsAgo.slice(0, 10)),
+        supabase.from("financial_records").select("date, type, amount").order("date", { ascending: false }),
         supabase.from("structure_members").select("generation"),
         supabase.from("lkbb_participants").select("school_name, payment_status, amount, created_at").order("created_at", { ascending: false }).limit(5),
       ])
@@ -186,27 +183,7 @@ export default function AdminDashboard() {
         }
 
       if (finRows) {
-        const daily: { key: string; label: string; inc: number; exp: number }[] = []
-        const todayKey = now.toLocaleDateString("en-CA")
-        for (let i = 29; i >= 0; i--) {
-          const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)
-          daily.push({ key: d.toLocaleDateString("en-CA"), label: String(d.getDate()), inc: 0, exp: 0 })
-        }
-        let income = 0
-        let expense = 0
-        for (const r of finRows as { date: string; type: string; amount: number }[]) {
-          const key = String(r.date).slice(0, 10)
-          const idx = daily.findIndex((m) => m.key === key)
-          if (idx >= 0) {
-            if (r.type === "income") daily[idx].inc += Number(r.amount)
-            else daily[idx].exp += Number(r.amount)
-          }
-          if (key === todayKey) {
-            if (r.type === "income") income += Number(r.amount)
-            else expense += Number(r.amount)
-          }
-        }
-        setFinSummary({ income, expense, daily })
+        setFinRowsAll(finRows as { date: string; type: string; amount: number }[])
       }
 
       setLkbbRows(lkbbRows || [])
@@ -233,7 +210,67 @@ export default function AdminDashboard() {
     .filter((r) => r.payment_status !== "belum")
     .reduce((sum, r) => sum + (Number(r.amount) || 0), 0)
 
-  const maxDay = Math.max(1, ...finSummary.daily.map((m) => Math.max(m.inc, m.exp)))
+  const monthKey = new Date().toLocaleDateString("en-CA").slice(0, 7)
+  const monthIncome = finRowsAll
+    .filter((r) => r.type === "income" && String(r.date).startsWith(monthKey))
+    .reduce((sum, r) => sum + Number(r.amount), 0)
+  const monthExpense = finRowsAll
+    .filter((r) => r.type === "expense" && String(r.date).startsWith(monthKey))
+    .reduce((sum, r) => sum + Number(r.amount), 0)
+
+  const monthOptions = Array.from(
+    new Set(finRowsAll.map((r) => String(r.date).slice(0, 7)))
+  ).sort((a, b) => b.localeCompare(a))
+
+  const chart = (() => {
+    const now = new Date()
+    if (finPeriod === "all") {
+      const map = new Map<string, { key: string; label: string; inc: number; exp: number }>()
+      for (const r of finRowsAll) {
+        const mk = String(r.date).slice(0, 7)
+        if (!map.has(mk)) {
+          const [y, m] = mk.split("-").map(Number)
+          map.set(mk, { key: mk, label: MONTHS[m - 1], inc: 0, exp: 0 })
+        }
+        const cur = map.get(mk)!
+        if (r.type === "income") cur.inc += Number(r.amount)
+        else cur.exp += Number(r.amount)
+      }
+      return { title: "Semua Periode", bars: Array.from(map.values()) }
+    }
+    if (finPeriod === "30hari") {
+      const bars: { key: string; label: string; inc: number; exp: number }[] = []
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)
+        bars.push({ key: d.toLocaleDateString("en-CA"), label: String(d.getDate()), inc: 0, exp: 0 })
+      }
+      for (const r of finRowsAll) {
+        const idx = bars.findIndex((m) => m.key === String(r.date).slice(0, 10))
+        if (idx >= 0) {
+          if (r.type === "income") bars[idx].inc += Number(r.amount)
+          else bars[idx].exp += Number(r.amount)
+        }
+      }
+      return { title: "30 Hari Terakhir", bars }
+    }
+    const [y, m] = finPeriod.split("-").map(Number)
+    const days = new Date(y, m, 0).getDate()
+    const bars: { key: string; label: string; inc: number; exp: number }[] = []
+    for (let d = 1; d <= days; d++) {
+      const key = `${finPeriod}-${String(d).padStart(2, "0")}`
+      bars.push({ key, label: String(d), inc: 0, exp: 0 })
+    }
+    for (const r of finRowsAll) {
+      const idx = bars.findIndex((b) => b.key === String(r.date).slice(0, 10))
+      if (idx >= 0) {
+        if (r.type === "income") bars[idx].inc += Number(r.amount)
+        else bars[idx].exp += Number(r.amount)
+      }
+    }
+    return { title: MONTHS[m - 1] + " " + y, bars }
+  })()
+
+  const maxDay = Math.max(1, ...chart.bars.map((m) => Math.max(m.inc, m.exp)))
   const maxCat = Math.max(1, ...galCategories.map((c) => c.count))
   const maxGen = Math.max(1, ...genData.map((g) => g.count))
   const maxYear = Math.max(1, ...yearData.map((y) => y.count))
@@ -400,48 +437,75 @@ export default function AdminDashboard() {
       {/* Charts row */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card className="p-5">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="font-display text-sm font-bold">Keuangan 30 Hari Terakhir</h3>
+              <h3 className="font-display text-sm font-bold">Keuangan — {chart.title}</h3>
               <p className="mt-0.5 text-[11px] text-muted-foreground">Pemasukan vs Pengeluaran</p>
             </div>
-            <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-              <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-primary" /> Masuk</span>
-              <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-foreground/20" /> Keluar</span>
+            <div className="flex items-center gap-3">
+              <select
+                value={finPeriod}
+                onChange={(e) => setFinPeriod(e.target.value)}
+                className="h-8 rounded-lg border border-line bg-card px-2 text-xs"
+                aria-label="Pilih periode keuangan"
+              >
+                <option value="30hari">30 Hari Terakhir</option>
+                {monthOptions.map((mk) => {
+                  const [y, m] = mk.split("-").map(Number)
+                  return (
+                    <option key={mk} value={mk}>
+                      {MONTHS[m - 1]} {y}
+                    </option>
+                  )
+                })}
+                <option value="all">Semua Periode</option>
+              </select>
+              <div className="hidden items-center gap-3 text-[10px] text-muted-foreground sm:flex">
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-primary" /> Masuk</span>
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-foreground/20" /> Keluar</span>
+              </div>
             </div>
           </div>
-          <div className="mt-5 flex h-40 items-end gap-[3px]">
-            {finSummary.daily.map((m, i) => (
-              <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
-                <div className="flex w-full flex-1 items-end justify-center gap-[2px]">
-                  <div
-                    className="w-[45%] max-w-2 rounded-t-sm bg-primary/80 transition-all"
-                    style={{ height: `${Math.max(2, (m.inc / maxDay) * 100)}%` }}
-                    title={`${m.key} — Masuk: ${fmtIDR(m.inc)}`}
-                  />
-                  <div
-                    className="w-[45%] max-w-2 rounded-t-sm bg-foreground/20 transition-all"
-                    style={{ height: `${Math.max(2, (m.exp / maxDay) * 100)}%` }}
-                    title={`${m.key} — Keluar: ${fmtIDR(m.exp)}`}
-                  />
+          {chart.bars.length === 0 ? (
+            <p className="py-14 text-center text-xs text-muted-foreground">Belum ada data keuangan pada periode ini.</p>
+          ) : (
+            <div className="mt-5 flex h-40 items-end gap-[3px]">
+              {chart.bars.map((m, i) => (
+                <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
+                  <div className="flex w-full flex-1 items-end justify-center gap-[2px]">
+                    <div
+                      className="w-[45%] max-w-2 rounded-t-sm bg-primary/80 transition-all"
+                      style={{ height: `${Math.max(2, (m.inc / maxDay) * 100)}%` }}
+                      title={`${m.key} — Masuk: ${fmtIDR(m.inc)}`}
+                    />
+                    <div
+                      className="w-[45%] max-w-2 rounded-t-sm bg-foreground/20 transition-all"
+                      style={{ height: `${Math.max(2, (m.exp / maxDay) * 100)}%` }}
+                      title={`${m.key} — Keluar: ${fmtIDR(m.exp)}`}
+                    />
+                  </div>
+                  <span className="text-[8px] leading-none text-muted-foreground">
+                    {finPeriod === "all"
+                      ? m.label
+                      : i % 5 === 0 || i === chart.bars.length - 1
+                        ? m.label
+                        : ""}
+                  </span>
                 </div>
-                <span className="text-[8px] leading-none text-muted-foreground">
-                  {i % 5 === 0 || i === finSummary.daily.length - 1 ? m.label : ""}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           <div className="mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4">
             <div>
               <p className="text-[10px] text-muted-foreground">Masuk bulan ini</p>
               <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-green-500">
-                {fmtIDR(finSummary.income)} <TrendingUp className="h-3.5 w-3.5" />
+                {fmtIDR(monthIncome)} <TrendingUp className="h-3.5 w-3.5" />
               </p>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground">Keluar bulan ini</p>
               <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-red-400">
-                {fmtIDR(finSummary.expense)} <TrendingDown className="h-3.5 w-3.5" />
+                {fmtIDR(monthExpense)} <TrendingDown className="h-3.5 w-3.5" />
               </p>
             </div>
           </div>

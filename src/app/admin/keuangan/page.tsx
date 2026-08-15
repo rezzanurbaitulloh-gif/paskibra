@@ -49,6 +49,7 @@ export default function KeuanganPage() {
   const [records, setRecords] = useState<FinancialRecord[]>([])
   const [month, setMonth] = useState<string>("all")
   const [year, setYear] = useState<string>("all")
+  const [period, setPeriod] = useState<string>("all")
   const [rows, setRows] = useState<Row[]>([])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -70,14 +71,18 @@ export default function KeuanganPage() {
   useEffect(() => { fetchRecords() }, [])
 
   const filtered = useMemo(() => {
+    const cutoff = new Date()
+    if (period !== "all") cutoff.setDate(cutoff.getDate() - Number(period))
     return records.filter((r) => {
-      const d = r.date?.slice(0, 7) || ""
+      if (!r.date) return false
+      if (period !== "all" && r.date < cutoff.toLocaleDateString("en-CA")) return false
+      const d = r.date.slice(0, 7)
       if (month !== "all" && year !== "all") return d === `${year}-${month}`
       if (month !== "all") return d.endsWith(`-${month}`)
       if (year !== "all") return d.startsWith(year)
       return true
     })
-  }, [records, month, year])
+  }, [records, month, year, period])
 
   const totalIncome = filtered.filter((r) => r.type === "income").reduce((s, r) => s + Number(r.amount), 0)
   const totalExpense = filtered.filter((r) => r.type === "expense").reduce((s, r) => s + Number(r.amount), 0)
@@ -226,9 +231,20 @@ export default function KeuanganPage() {
           </div>
         </div>
 
-        {/* Filter bulan/tahun */}
+        {/* Filter periode/bulan/tahun */}
         <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-card p-4">
           <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Select value={period} onValueChange={(v) => setPeriod(v ?? "all")}>
+            <SelectTrigger className="w-44 border-line bg-soft">
+              <SelectValue placeholder="Semua Waktu" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Waktu</SelectItem>
+              <SelectItem value="7">7 Hari Terakhir</SelectItem>
+              <SelectItem value="30">30 Hari Terakhir</SelectItem>
+              <SelectItem value="90">90 Hari Terakhir</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={month} onValueChange={(v) => setMonth(v ?? "all")}>
             <SelectTrigger className="w-40 border-line bg-soft">
               <SelectValue placeholder="Semua Bulan" />

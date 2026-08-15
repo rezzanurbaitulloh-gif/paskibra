@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { supabase } from "@/lib/supabase/client"
@@ -29,6 +30,12 @@ export default function StructureManagement() {
   const [showImport, setShowImport] = useState(false)
   const [importing, setImporting] = useState(false)
   const [currentMember, setCurrentMember] = useState<Member | null>(null)
+  const [search, setSearch] = useState("")
+  const [fKelas, setFKelas] = useState("all")
+  const [fGen, setFGen] = useState("all")
+  const [fDiv, setFDiv] = useState("all")
+  const [fJab, setFJab] = useState("all")
+  const [sortBy, setSortBy] = useState("nama")
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -41,6 +48,37 @@ export default function StructureManagement() {
   useEffect(() => {
     fetchMembers()
   }, [])
+
+  const distinct = (key: keyof Member) =>
+    Array.from(new Set(members.map((m) => (m[key] || "").trim()).filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b, "id")
+    )
+
+  const filtered = members
+    .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((m) => fKelas === "all" || (m.kelas || "") === fKelas)
+    .filter((m) => fGen === "all" || m.generation === fGen)
+    .filter((m) => fDiv === "all" || m.division === fDiv)
+    .filter((m) => fJab === "all" || m.position === fJab)
+    .sort((a, b) => {
+      const cmp = (x: string, y: string) => x.localeCompare(y, "id")
+      const genNum = (g: string) => {
+        const n = g.replace(/\D/g, "")
+        return n ? Number(n) : 0
+      }
+      switch (sortBy) {
+        case "kelas":
+          return cmp(a.kelas || "", b.kelas || "")
+        case "generasi":
+          return genNum(a.generation) - genNum(b.generation)
+        case "divisi":
+          return cmp(a.division, b.division)
+        case "jabatan":
+          return cmp(a.position, b.position)
+        default:
+          return cmp(a.name, b.name)
+      }
+    })
 
   const fetchMembers = async () => {
     const { data } = await supabase.from("structure_members").select("*")
@@ -87,7 +125,7 @@ export default function StructureManagement() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Pengurus</h1>
+        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Anggota</h1>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="border-line" onClick={() => setShowImport(true)}>
             <Upload className="w-4 h-4 mr-2" /> Import Data
@@ -96,13 +134,13 @@ export default function StructureManagement() {
             <DialogTrigger
               render={
                 <Button className="gradient-primary">
-                  <Plus className="w-4 h-4 mr-2" /> Tambah Pengurus
+                  <Plus className="w-4 h-4 mr-2" /> Tambah Anggota
                 </Button>
               }
             />
             <DialogContent className="glass border-line">
               <DialogHeader>
-                <DialogTitle className="font-display">{currentMember ? 'Edit Pengurus' : 'Tambah Pengurus'}</DialogTitle>
+                <DialogTitle className="font-display">{currentMember ? 'Edit Anggota' : 'Tambah Anggota'}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
@@ -140,6 +178,55 @@ export default function StructureManagement() {
         </div>
       </div>
 
+      <Card className="glass border-line p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama anggota..."
+            className="h-9 w-full border-line bg-soft text-sm sm:w-56"
+          />
+          <Select value={fKelas} onValueChange={(v) => setFKelas(v ?? "all")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Kelas / Jurusan" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Kelas / Jurusan</SelectItem>
+              {distinct("kelas").map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={fGen} onValueChange={(v) => setFGen(v ?? "all")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-36"><SelectValue placeholder="Generasi" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Generasi</SelectItem>
+              {distinct("generation").map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={fDiv} onValueChange={(v) => setFDiv(v ?? "all")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Divisi" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Divisi</SelectItem>
+              {distinct("division").map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={fJab} onValueChange={(v) => setFJab(v ?? "all")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Jabatan" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Jabatan</SelectItem>
+              {distinct("position").map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v ?? "nama")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Urutkan" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="nama">Nama (A-Z)</SelectItem>
+              <SelectItem value="kelas">Kelas / Jurusan</SelectItem>
+              <SelectItem value="generasi">Generasi</SelectItem>
+              <SelectItem value="divisi">Divisi</SelectItem>
+              <SelectItem value="jabatan">Jabatan</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </Card>
+
       <Card className="glass border-line overflow-x-auto">
         <Table className="min-w-[640px]">
           <TableHeader>
@@ -153,7 +240,7 @@ export default function StructureManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.map((member) => (
+            {filtered.map((member) => (
               <motion.tr
                 key={member.id}
                 initial={{ opacity: 0 }}

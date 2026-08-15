@@ -202,7 +202,7 @@ export default function SettingsPage() {
             <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Palet Warna</CardTitle>
-                <p className="text-sm text-muted-foreground">Klik kotak warna untuk memilih, atau ketik kode hex di bawahnya.</p>
+                <p className="text-sm text-muted-foreground">Klik kotak warna untuk memilih, atau ketik kode hex di bawahnya. Warna Teks berlaku di tema terang — di tema gelap otomatis memakai warna terang bawaan agar tetap terbaca.</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -530,8 +530,8 @@ export default function SettingsPage() {
                 ["galeriTitle", "Judul Galeri"],
                 ["layananLabel", "Label Layanan"],
                 ["layananTitle", "Judul Layanan"],
-                ["pengurusLabel", "Label Pengurus"],
-                ["pengurusTitle", "Judul Pengurus"],
+                ["pengurusLabel", "Label Daftar Anggota"],
+                ["pengurusTitle", "Judul Daftar Anggota"],
                 ["saranLabel", "Label Saran"],
                 ["saranTitle", "Judul Saran"],
               ].map(([key, label]) => (

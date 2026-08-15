@@ -41,6 +41,8 @@ const emptyForm = {
 
 export default function InventarisAdminPage() {
   const [items, setItems] = useState<Item[]>([])
+  const [search, setSearch] = useState("")
+  const [fCat, setFCat] = useState("all")
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Item | null>(null)
   const [form, setForm] = useState(emptyForm)
@@ -121,8 +123,30 @@ export default function InventarisAdminPage() {
             <p className="mt-3 text-sm text-muted-foreground">Belum ada aset tercatat.</p>
           </div>
         ) : (
+          <>
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-card p-3">
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari nama aset..."
+              className="h-9 w-full border-line bg-soft text-sm sm:w-56"
+            />
+            <select
+              value={fCat}
+              onChange={(e) => setFCat(e.target.value)}
+              className="h-9 rounded-lg border border-line bg-card px-2 text-xs"
+            >
+              <option value="all">Semua Kategori</option>
+              {Array.from(new Set(items.map((it) => it.category).filter(Boolean))).map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((item, index) => (
+            {items
+              .filter((it) => it.name.toLowerCase().includes(search.toLowerCase()))
+              .filter((it) => fCat === "all" || it.category === fCat)
+              .map((item, index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 16 }}
@@ -166,6 +190,7 @@ export default function InventarisAdminPage() {
               </motion.div>
             ))}
           </div>
+          </>
         )}
 
         <Dialog open={open} onOpenChange={setOpen}>

@@ -13,6 +13,7 @@ import { AnimatedBackground } from "@/components/animated-background";
 import { Navbar } from "@/components/navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
+import { ThemeColorSync } from "@/components/theme-color-sync";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -94,6 +95,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <SiteSettingsProvider>
+              <ThemeColorSync />
               <AnimatedBackground />
               <Navbar />
               <TooltipProvider>{children}</TooltipProvider>

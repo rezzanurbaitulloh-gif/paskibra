@@ -30,6 +30,8 @@ const MAX_EXTRA = 8
 
 export default function GaleriAdminPage() {
   const [items, setItems] = useState<GalleryItem[]>([])
+  const [search, setSearch] = useState("")
+  const [fCat, setFCat] = useState("all")
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<GalleryItem | null>(null)
   const [form, setForm] = useState({
@@ -124,8 +126,31 @@ export default function GaleriAdminPage() {
           </Button>
         </div>
 
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-card p-3">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari judul media..."
+            className="h-9 w-full border-line bg-soft text-sm sm:w-56"
+          />
+          <Select value={fCat} onValueChange={(v) => setFCat(v ?? "all")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-44">
+              <SelectValue placeholder="Semua Kategori" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Kategori</SelectItem>
+              {Array.from(new Set(items.map((it) => it.category).filter(Boolean))).map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item, index) => (
+          {items
+            .filter((it) => it.title.toLowerCase().includes(search.toLowerCase()))
+            .filter((it) => fCat === "all" || it.category === fCat)
+            .map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 16 }}

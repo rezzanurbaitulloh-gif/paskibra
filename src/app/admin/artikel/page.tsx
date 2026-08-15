@@ -22,6 +22,7 @@ const emptyForm = { title: "", content: "", slug: "" }
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
+  const [search, setSearch] = useState("")
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Article | null>(null)
   const [form, setForm] = useState(emptyForm)
@@ -69,9 +70,17 @@ export default function ArticlesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="font-display text-2xl font-bold md:text-3xl">Artikel</h1>
-        <Button onClick={openCreate} className="gradient-primary text-white w-full sm:w-auto">
-          <Plus className="mr-2 h-4 w-4" /> Tulis Artikel
-        </Button>
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari judul artikel..."
+            className="h-9 w-full border-line bg-soft text-sm sm:w-56"
+          />
+          <Button onClick={openCreate} className="gradient-primary text-white w-full sm:w-auto">
+            <Plus className="mr-2 h-4 w-4" /> Tulis Artikel
+          </Button>
+        </div>
       </div>
 
       {articles.length === 0 ? (
@@ -81,7 +90,9 @@ export default function ArticlesPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {articles.map((article, index) => (
+          {articles
+            .filter((a) => a.title.toLowerCase().includes(search.toLowerCase()))
+            .map((article, index) => (
             <motion.div
               key={article.id}
               initial={{ opacity: 0, y: 12 }}

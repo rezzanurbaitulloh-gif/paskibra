@@ -18,7 +18,7 @@ const navGroups: { label: string; items: { name: string; icon: typeof Home; href
   {
     label: "Konten",
     items: [
-      { name: "Pengurus", icon: Users, href: "/admin/pengurus", roles: ["super_admin"] },
+      { name: "Daftar Anggota", icon: Users, href: "/admin/pengurus", roles: ["super_admin"] },
       { name: "Galeri", icon: ImageIcon, href: "/admin/galeri", roles: ["super_admin", "humas"] },
       { name: "Artikel", icon: FileText, href: "/admin/artikel", roles: ["super_admin", "humas"] },
     ],

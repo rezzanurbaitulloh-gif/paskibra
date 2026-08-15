@@ -357,15 +357,11 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   }, [refresh])
 
   useEffect(() => {
-    const { colors, branding } = settings
+    const { branding } = settings
     const root = document.documentElement
-    root.style.setProperty("--primary", colors.primary)
-    root.style.setProperty("--secondary", colors.secondary)
-    root.style.setProperty("--accent", colors.accent)
-    root.style.setProperty("--foreground", colors.foreground)
     root.style.setProperty("--font-sans", FONT_VARS[branding.fontSans] || "var(--font-pjs)")
     root.style.setProperty("--font-display", FONT_VARS[branding.fontDisplay] || "var(--font-pjs)")
-  }, [settings.colors, settings.branding.fontSans, settings.branding.fontDisplay])
+  }, [settings.branding.fontSans, settings.branding.fontDisplay])
 
   return (
     <SiteSettingsContext.Provider value={{ settings, loading, refresh }}>

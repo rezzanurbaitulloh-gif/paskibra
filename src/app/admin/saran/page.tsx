@@ -20,6 +20,8 @@ interface Feedback {
 export default function SaranPage() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
+  const [fStatus, setFStatus] = useState("all")
   const [replyText, setReplyText] = useState<Record<string, string>>({})
   const [replying, setReplying] = useState<Record<string, boolean>>({})
 
@@ -53,6 +55,24 @@ export default function SaranPage() {
       <div className="space-y-6">
         <h1 className="font-display text-2xl font-bold md:text-3xl">Kotak Saran</h1>
 
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama pengirim..."
+            className="h-9 w-full border-line bg-soft text-sm sm:w-56"
+          />
+          <select
+            value={fStatus}
+            onChange={(e) => setFStatus(e.target.value)}
+            className="h-9 rounded-lg border border-line bg-card px-2 text-xs"
+          >
+            <option value="all">Semua Status</option>
+            <option value="unreplied">Belum Dibalas</option>
+            <option value="replied">Sudah Dibalas</option>
+          </select>
+        </div>
+
         {loading ? (
           <p className="text-muted-foreground">Memuat...</p>
         ) : feedbacks.length === 0 ? (
@@ -62,7 +82,12 @@ export default function SaranPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {feedbacks.map((fb, index) => (
+            {feedbacks
+              .filter((fb) => (fb.sender_name || "").toLowerCase().includes(search.toLowerCase()))
+              .filter((fb) =>
+                fStatus === "all" ? true : fStatus === "replied" ? Boolean(fb.admin_reply) : !fb.admin_reply
+              )
+              .map((fb, index) => (
               <motion.div
                 key={fb.id}
                 initial={{ opacity: 0, y: 16 }}

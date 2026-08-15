@@ -29,6 +29,8 @@ const ROLES = ["super_admin", "bendahara", "humas"]
 
 export default function UsersAdminPage() {
   const [users, setUsers] = useState<UserRow[]>([])
+  const [search, setSearch] = useState("")
+  const [fRole, setFRole] = useState("all")
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
@@ -136,6 +138,26 @@ export default function UsersAdminPage() {
           <p className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
         )}
 
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari email..."
+            className="h-9 w-full border-line bg-soft text-sm sm:w-56"
+          />
+          <select
+            value={fRole}
+            onChange={(e) => setFRole(e.target.value)}
+            className="h-9 rounded-lg border border-line bg-card px-2 text-xs"
+          >
+            <option value="all">Semua Role</option>
+            {ROLES.map((r) => (
+              <option key={r} value={r}>{ROLE_LABEL[r]}</option>
+            ))}
+            <option value="none">Tanpa Role</option>
+          </select>
+        </div>
+
         {showAdd && (
           <motion.form
             initial={{ opacity: 0, y: 10 }}
@@ -205,7 +227,10 @@ export default function UsersAdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => (
+                  {users
+                    .filter((u) => (u.email || "").toLowerCase().includes(search.toLowerCase()))
+                    .filter((u) => fRole === "all" || (u.role || "none") === fRole)
+                    .map((u) => (
                     <tr key={u.id} className="border-b border-line/50 last:border-0 hover:bg-soft/50">
                       <td className="px-4 py-3 font-medium">{u.email}</td>
                       <td className="px-4 py-3">

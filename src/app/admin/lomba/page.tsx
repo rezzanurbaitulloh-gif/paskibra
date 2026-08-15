@@ -609,7 +609,6 @@ function InfoEditor() {
                       media: prev.media.map((x, j) => (j === i ? { ...x, url } : x)),
                     }) as SiteSettings["lkbb"])
                   }
-                  aspect={16 / 9}
                 />
               ) : (
                 <div className="space-y-1.5">
@@ -751,7 +750,6 @@ function UpdatesManager() {
                 <ImageUpload
                   value={form.image_url}
                   onChange={(url) => setForm({ ...form, image_url: url })}
-                  aspect={16 / 9}
                 />
               </div>
               <div className="space-y-2">

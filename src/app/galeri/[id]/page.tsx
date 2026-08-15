@@ -77,14 +77,14 @@ export default async function GaleriDetailPage({ params }: { params: Promise<{ i
                   href={`/galeri/${r.id}`}
                   className="group overflow-hidden rounded-2xl border border-line bg-card transition-all hover:border-accent/40"
                 >
-                  <div className="relative aspect-video w-full overflow-hidden bg-soft">
+                  <div className="w-full overflow-hidden bg-soft">
                     {r.image_url ? (
                       <Image
                         src={r.image_url}
                         alt={r.title}
                         width={400}
                         height={300}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
                       <Image
@@ -92,7 +92,7 @@ export default async function GaleriDetailPage({ params }: { params: Promise<{ i
                         alt=""
                         width={400}
                         height={300}
-                        className="h-full w-full object-cover opacity-40"
+                        className="h-auto w-full object-cover opacity-40"
                       />
                     )}
                   </div>

@@ -133,14 +133,14 @@ export default function GaleriAdminPage() {
               transition={{ delay: index * 0.04 }}
               className="overflow-hidden rounded-2xl border border-line bg-card"
             >
-              <div className="flex aspect-video items-center justify-center bg-soft">
+              <div className="flex min-h-32 items-center justify-center overflow-hidden bg-soft">
                 {item.media_type === "video_embed" ? (
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-1.5">
+                  <div className="flex w-full flex-col items-center justify-center gap-1.5 py-10">
                     <Video className="h-6 w-6 text-accent" />
                     <span className="text-[10px] text-muted-foreground">Video</span>
                   </div>
                 ) : item.image_url ? (
-                  <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
+                  <img src={item.image_url} alt={item.title} className="h-auto w-full object-cover" />
                 ) : (
                   <ImageIcon className="h-6 w-6 text-muted-foreground" />
                 )}
@@ -205,7 +205,7 @@ export default function GaleriAdminPage() {
 
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Gambar Utama</Label>
-                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} aspect={4 / 3} />
+                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
               </div>
 
               <div className="space-y-1.5">
@@ -232,7 +232,6 @@ export default function GaleriAdminPage() {
                       value=""
                       label="Tambah Foto"
                       className="h-20 [&_button]:h-full [&_button]:border-dashed [&_button]:text-[10px]"
-                      aspect={4 / 3}
                       hideHint
                       onChange={(url) => setForm((f) => ({ ...f, extraImages: [...f.extraImages, url] }))}
                     />

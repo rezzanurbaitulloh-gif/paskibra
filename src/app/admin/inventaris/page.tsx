@@ -131,8 +131,8 @@ export default function InventarisAdminPage() {
                 className="overflow-hidden rounded-2xl border border-line bg-card card-glow"
               >
                 {item.image_url && (
-                  <div className="aspect-[4/3] w-full overflow-hidden bg-soft">
-                    <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
+                  <div className="w-full overflow-hidden bg-soft">
+                    <img src={item.image_url} alt={item.name} className="h-auto w-full object-cover" />
                   </div>
                 )}
                 <div className="p-5">
@@ -205,7 +205,7 @@ export default function InventarisAdminPage() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Gambar Aset</Label>
-                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} aspect={4 / 3} />
+                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Nomor WhatsApp Penerima Sewa</Label>

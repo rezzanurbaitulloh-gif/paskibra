@@ -27,14 +27,12 @@ export function ImageUpload({
   onChange,
   label = "Upload Gambar",
   className = "",
-  aspect = null,
   hideHint = false,
 }: {
   value: string
   onChange: (url: string) => void
   label?: string
   className?: string
-  aspect?: number | null
   hideHint?: boolean
 }) {
   const [uploading, setUploading] = useState(false)
@@ -131,7 +129,6 @@ export function ImageUpload({
       <ImageCropDialog
         open={cropOpen}
         image={cropImage}
-        defaultAspect={aspect}
         originalFile={originalFile}
         onUploadOriginal={handleUploadOriginal}
         onCancel={() => {

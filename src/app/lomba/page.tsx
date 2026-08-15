@@ -252,13 +252,14 @@ export default function LombaPage() {
                     </p>
                   </div>
                   {u.image_url && (
-                    <div className="relative aspect-[16/9] w-full bg-soft">
+                    <div className="w-full overflow-hidden bg-soft">
                       <Image
                         src={u.image_url}
                         alt={u.title || "Pembaruan lomba"}
-                        fill
+                        width={768}
+                        height={1024}
                         sizes="(max-width: 768px) 100vw, 768px"
-                        className="object-cover"
+                        className="h-auto w-full object-cover"
                       />
                     </div>
                   )}

@@ -41,7 +41,6 @@ async function getCroppedBlob(
 export function ImageCropDialog({
   open,
   image,
-  defaultAspect = null,
   originalFile = null,
   onUploadOriginal,
   onCancel,
@@ -49,14 +48,13 @@ export function ImageCropDialog({
 }: {
   open: boolean
   image: string
-  defaultAspect?: number | null
   originalFile?: File | null
   onUploadOriginal?: (file: File) => Promise<void> | void
   onCancel: () => void
   onConfirm: (blob: Blob) => Promise<void> | void
 }) {
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
-  const [aspect, setAspect] = useState<number | null>(defaultAspect)
+  const [aspect, setAspect] = useState<number | null>(null)
   const [sizePct, setSizePct] = useState(100)
   const [imgSize, setImgSize] = useState({ width: 0, height: 0 })
   const [busy, setBusy] = useState(false)
@@ -64,7 +62,7 @@ export function ImageCropDialog({
 
   useEffect(() => {
     if (!open) return
-    setAspect(defaultAspect)
+    setAspect(null)
     setSizePct(100)
     setCrop({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
     setBusy(false)
@@ -72,20 +70,15 @@ export function ImageCropDialog({
     if (!image) return
     const img = new Image()
     img.onload = () => {
-      const size = { width: img.naturalWidth, height: img.naturalHeight }
-      setImgSize(size)
-      if (defaultAspect) {
-        setCrop(centeredAspectCrop(defaultAspect, 100))
-      } else {
-        setCrop({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
-      }
+      setImgSize({ width: img.naturalWidth, height: img.naturalHeight })
+      setCrop({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
       readyRef.current = true
     }
     img.onerror = () => {
       readyRef.current = true
     }
     img.src = image
-  }, [open, image, defaultAspect])
+  }, [open, image])
 
   const centeredAspectCrop = (ratio: number, widthPct: number): Crop => {
     let w = widthPct

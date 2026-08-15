@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase/client"
 import * as XLSX from "xlsx"
-import { Plus, Trash2, Sparkles, Download, Calendar, Wallet, TrendingUp, TrendingDown, X, ClipboardList } from "lucide-react"
+import { Plus, Trash2, Sparkles, Download, Calendar, Wallet, TrendingUp, TrendingDown, X, ClipboardList, Upload } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
 import { RekapModal } from "./rekap-modal"
+import { ImportModal } from "@/components/admin/import-modal"
 
 interface FinancialRecord {
   id: string
@@ -52,6 +53,8 @@ export default function KeuanganPage() {
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [showRekap, setShowRekap] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   // AI
   const [aiText, setAiText] = useState("")
@@ -186,6 +189,9 @@ export default function KeuanganPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <h1 className="font-display text-2xl font-bold md:text-3xl">Keuangan</h1>
           <div className="flex flex-wrap gap-2">
+            <Button variant="outline" className="border-line" onClick={() => setShowImport(true)}>
+              <Upload className="mr-2 h-4 w-4" /> Import
+            </Button>
             <Button variant="outline" className="border-line" onClick={() => setShowRekap(true)}>
               <ClipboardList className="mr-2 h-4 w-4" /> Rekap
             </Button>
@@ -462,6 +468,36 @@ export default function KeuanganPage() {
         </div>
       </div>
       <RekapModal open={showRekap} onClose={() => setShowRekap(false)} />
+
+      <ImportModal
+        open={showImport}
+        onClose={() => setShowImport(false)}
+        type="keuangan"
+        title="Import Data Keuangan"
+        description="Unggah file Excel (.xlsx/.csv) atau Word (.docx) berisi catatan kas — AI akan membaca, mengkategorikan, dan menyesuaikan datanya. Periksa hasilnya sebelum disimpan."
+        columns={[
+          { key: "description", label: "Deskripsi", required: true },
+          { key: "amount", label: "Jumlah (Rp)", type: "number", required: true },
+          { key: "type", label: "Jenis", type: "select", options: ["expense", "income"] },
+          { key: "category", label: "Kategori", type: "select", options: CATEGORIES },
+          { key: "date", label: "Tanggal", type: "date", required: true },
+        ]}
+        onImport={async (rows) => {
+          setImporting(true)
+          const payload = rows.map((r) => ({
+            description: r.description,
+            amount: Math.round(Number(r.amount) || 0),
+            type: r.type === "income" ? "income" : "expense",
+            category: r.category || "Lainnya",
+            date: r.date || new Date().toISOString().split("T")[0],
+          }))
+          const { error } = await supabase.from("financial_records").insert(payload)
+          setImporting(false)
+          if (error) throw new Error(error.message)
+          fetchRecords()
+        }}
+        importing={importing}
+      />
     </RequireRole>
   )
 }

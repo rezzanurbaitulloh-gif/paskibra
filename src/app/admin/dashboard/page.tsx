@@ -70,6 +70,8 @@ export default function AdminDashboard() {
     monthly: [],
   })
   const [galCategories, setGalCategories] = useState<{ name: string; count: number }[]>([])
+  const [genData, setGenData] = useState<{ name: string; count: number }[]>([])
+  const [yearData, setYearData] = useState<{ year: string; count: number }[]>([])
 
   useEffect(() => {
     const load = async () => {
@@ -89,6 +91,7 @@ export default function AdminDashboard() {
         { data: saranRows },
         { data: artikelRows },
         { data: finRows },
+        { data: genRows },
       ] = await Promise.all([
         supabase.from("structure_members").select("id", { count: "exact", head: true }),
         supabase.from("structure_members").select("id", { count: "exact", head: true }).gte("created_at", firstOfMonth),
@@ -101,6 +104,7 @@ export default function AdminDashboard() {
         supabase.from("feedbacks").select("id, sender_name, message, created_at, admin_reply").order("created_at", { ascending: false }).limit(5),
         supabase.from("articles").select("id, title, slug, created_at").order("created_at", { ascending: false }).limit(5),
         supabase.from("financial_records").select("date, type, amount").gte("date", sixMonthsAgo.slice(0, 10)),
+        supabase.from("structure_members").select("generation"),
       ])
 
       if (!em && !emm) setDeltas((d) => ({ ...d, members: monthMembers || 0 }))
@@ -114,8 +118,33 @@ export default function AdminDashboard() {
         for (const r of galRows) map[r.category] = (map[r.category] || 0) + 1
         setGalCategories(Object.entries(map).map(([name, count]) => ({ name, count })))
       }
-      setSarans(saranRows || [])
-      setArtikels(artikelRows || [])
+        setSarans(saranRows || [])
+        setArtikels(artikelRows || [])
+
+        if (genRows) {
+          const genMap: Record<string, number> = {}
+          const yearMap: Record<string, number> = {}
+          for (const r of genRows as { generation: string }[]) {
+            const g = (r.generation || "").trim()
+            if (!g) continue
+            genMap[g] = (genMap[g] || 0) + 1
+            const num = g.match(/(\d+)/)?.[1]
+            if (num) {
+              const year = num.length >= 4 ? num : `20${num.slice(-2)}`
+              yearMap[year] = (yearMap[year] || 0) + 1
+            }
+          }
+          setGenData(
+            Object.entries(genMap)
+              .map(([name, count]) => ({ name, count }))
+              .sort((a, b) => a.name.localeCompare(b.name))
+          )
+          setYearData(
+            Object.entries(yearMap)
+              .map(([year, count]) => ({ year, count }))
+              .sort((a, b) => a.year.localeCompare(b.year))
+          )
+        }
 
       if (finRows) {
         const monthly: { m: string; inc: number; exp: number }[] = []
@@ -155,6 +184,8 @@ export default function AdminDashboard() {
 
   const maxMonth = Math.max(1, ...finSummary.monthly.map((m) => Math.max(m.inc, m.exp)))
   const maxCat = Math.max(1, ...galCategories.map((c) => c.count))
+  const maxGen = Math.max(1, ...genData.map((g) => g.count))
+  const maxYear = Math.max(1, ...yearData.map((y) => y.count))
 
   return (
     <div className="space-y-6">
@@ -323,6 +354,82 @@ export default function AdminDashboard() {
           </div>
         </Card>
       </div>
+
+      {/* Anggota per Tahun & Generasi */}
+      <Card className="p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="font-display text-sm font-bold">Anggota per Tahun & Generasi</h3>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              Komposisi anggota berdasarkan data anggota pengurus
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="rounded-lg border border-line bg-soft px-3 py-1.5 text-[11px] font-semibold">
+              Total Anggota: {stats.members || 0}
+            </span>
+            <span className="rounded-lg border border-line bg-soft px-3 py-1.5 text-[11px] font-semibold">
+              Total Generasi: {genData.length}
+            </span>
+          </div>
+        </div>
+
+        {yearData.length === 0 && genData.length === 0 ? (
+          <p className="py-10 text-center text-xs text-muted-foreground">
+            Belum ada data anggota.
+          </p>
+        ) : (
+          <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground">Total Anggota per Tahun</p>
+              {yearData.length === 0 ? (
+                <p className="py-6 text-center text-[11px] text-muted-foreground">Belum ada data.</p>
+              ) : (
+                <div className="mt-3 space-y-3">
+                  {yearData.map((y) => (
+                    <div key={y.year}>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-medium">{y.year}</span>
+                        <span className="text-muted-foreground">{y.count} anggota</span>
+                      </div>
+                      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-soft">
+                        <div
+                          className="h-full rounded-full gradient-primary transition-all"
+                          style={{ width: `${Math.max(4, (y.count / maxYear) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground">Total Anggota per Generasi</p>
+              {genData.length === 0 ? (
+                <p className="py-6 text-center text-[11px] text-muted-foreground">Belum ada data.</p>
+              ) : (
+                <div className="mt-3 space-y-3">
+                  {genData.map((g) => (
+                    <div key={g.name}>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-medium">{g.name}</span>
+                        <span className="text-muted-foreground">{g.count} anggota</span>
+                      </div>
+                      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-soft">
+                        <div
+                          className="h-full rounded-full gradient-gold transition-all"
+                          style={{ width: `${Math.max(4, (g.count / maxGen) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </Card>
 
       {/* Tables row */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

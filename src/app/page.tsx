@@ -18,9 +18,15 @@ export default async function Home() {
 
   const categories = [...new Set((allGallery || []).map(g => g.category))]
 
+  const realStats = [
+    { value: `${members?.length || 0}`, label: "Total Anggota" },
+    { value: `${new Set((members || []).map((m) => m.generation).filter(Boolean)).size}`, label: "Total Generasi" },
+    { value: `${achievements?.length || 0}`, label: "Dokumentasi Kegiatan" },
+  ]
+
   return (
     <main>
-      <HeroSection />
+      <HeroSection realStats={realStats} />
       <SchoolBentoGrid />
       {members && <StructureMembers members={members} />}
       {achievements && (

@@ -133,7 +133,7 @@ const wordReveal = {
   },
 }
 
-export function HeroSection() {
+export function HeroSection({ realStats }: { realStats?: { value: string; label: string }[] }) {
   const { scrollY } = useScroll()
   const bgY = useTransform(scrollY, [0, 600], [0, 120])
   const { settings } = useSiteSettings()
@@ -248,7 +248,7 @@ export function HeroSection() {
           transition={{ delay: 1.4, duration: 0.6 }}
           className="mt-16 grid grid-cols-3 gap-8 md:gap-16"
         >
-          {settings.heroExtras.stats.map((stat) => (
+          {(realStats && realStats.length > 0 ? realStats : settings.heroExtras.stats).map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-display text-2xl md:text-3xl font-bold text-gradient">{stat.value}</p>
               <p className="mt-1 text-[11px] md:text-xs text-muted-foreground">{stat.label}</p>

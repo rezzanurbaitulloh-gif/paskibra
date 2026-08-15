@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS structure_members (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ALTER TABLE structure_members ADD COLUMN IF NOT EXISTS kelas TEXT;
+
 -- gallery: Store images for achievements and events
 CREATE TABLE IF NOT EXISTS gallery (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -246,19 +246,26 @@ export default function SettingsPage() {
             <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Statistik Hero</CardTitle>
-                <p className="text-sm text-muted-foreground">Angka prestasi yang tampil di bawah tombol hero.</p>
+                <p className="text-sm text-muted-foreground">
+                  Statistik otomatis dari data real: Total Anggota, Total Generasi & Dokumentasi Kegiatan (diambil langsung dari database).
+                </p>
               </CardHeader>
-              <CardContent>
-                <ListEditor
-                  fields={[
-                    { key: "value", label: "Nilai", placeholder: "45+" },
-                    { key: "label", label: "Label", placeholder: "Anggota Aktif" },
-                  ]}
-                  items={settings.heroExtras.stats}
-                  onChange={(items) => updateArr("heroExtras", "stats", items)}
-                  itemLabel="Statistik"
-                  addText="Tambah Statistik"
-                />
+              <CardContent className="space-y-3">
+                {[
+                  ["Total Anggota", "Jumlah anggota di data pengurus"],
+                  ["Total Generasi", "Banyak generasi (angkatan) yang terdaftar"],
+                  ["Dokumentasi Kegiatan", "Jumlah album di galeri"],
+                ].map(([label, desc]) => (
+                  <div key={label} className="flex items-center gap-3 rounded-xl border border-line bg-soft/50 p-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                      <Check className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold">{label}</p>
+                      <p className="text-[10px] text-muted-foreground">{desc}</p>
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </div>

@@ -13,6 +13,7 @@ interface Member {
   position: string
   division: string
   generation: string
+  kelas?: string | null
   photo_url: string | null
 }
 
@@ -66,7 +67,10 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
           </div>
           <h3 className="font-display text-base font-bold leading-tight">{member.name}</h3>
           <p className="mt-0.5 text-sm text-accent">{member.position}</p>
-          <p className="text-xs text-muted-foreground">{member.division}</p>
+          <p className="text-xs text-muted-foreground">
+            {member.division}
+            {member.kelas ? ` • ${member.kelas}` : ""}
+          </p>
         </div>
       </div>
     </motion.div>

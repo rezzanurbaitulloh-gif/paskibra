@@ -23,6 +23,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { MonthPicker } from "@/components/ui/month-picker"
 import { useAdmin } from "@/contexts/AdminContext"
 import { BendaharaView } from "./bendahara-view"
 import { HumasView } from "./humas-view"
@@ -217,10 +218,6 @@ export default function AdminDashboard() {
   const monthExpense = finRowsAll
     .filter((r) => r.type === "expense" && String(r.date).startsWith(monthKey))
     .reduce((sum, r) => sum + Number(r.amount), 0)
-
-  const monthOptions = Array.from(
-    new Set(finRowsAll.map((r) => String(r.date).slice(0, 7)))
-  ).sort((a, b) => b.localeCompare(a))
 
   const chart = (() => {
     const now = new Date()
@@ -446,20 +443,17 @@ export default function AdminDashboard() {
               <select
                 value={finPeriod}
                 onChange={(e) => setFinPeriod(e.target.value)}
-                className="h-8 rounded-lg border border-line bg-card px-2 text-xs"
+                className="h-9 rounded-lg border border-line bg-card px-2 text-xs"
                 aria-label="Pilih periode keuangan"
               >
                 <option value="30hari">30 Hari Terakhir</option>
-                {monthOptions.map((mk) => {
-                  const [y, m] = mk.split("-").map(Number)
-                  return (
-                    <option key={mk} value={mk}>
-                      {MONTHS[m - 1]} {y}
-                    </option>
-                  )
-                })}
                 <option value="all">Semua Periode</option>
               </select>
+              <MonthPicker
+                value={finPeriod.startsWith("20") ? finPeriod : ""}
+                onChange={(v) => setFinPeriod(v || "30hari")}
+                placeholder="Pilih Bulan"
+              />
               <div className="hidden items-center gap-3 text-[10px] text-muted-foreground sm:flex">
                 <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-primary" /> Masuk</span>
                 <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-foreground/20" /> Keluar</span>
@@ -469,7 +463,7 @@ export default function AdminDashboard() {
           {chart.bars.length === 0 ? (
             <p className="py-14 text-center text-xs text-muted-foreground">Belum ada data keuangan pada periode ini.</p>
           ) : (
-            <div className="mt-5 flex h-40 items-end gap-[3px]">
+            <div className="mt-5 flex h-40 gap-[3px]">
               {chart.bars.map((m, i) => (
                 <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
                   <div className="flex w-full flex-1 items-end justify-center gap-[2px]">

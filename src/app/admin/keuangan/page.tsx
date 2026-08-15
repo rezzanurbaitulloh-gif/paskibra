@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MonthPicker } from "@/components/ui/month-picker"
 import { supabase } from "@/lib/supabase/client"
 import * as XLSX from "xlsx"
 import { Plus, Trash2, Sparkles, Download, Calendar, Wallet, TrendingUp, TrendingDown, X, ClipboardList, Upload } from "lucide-react"
@@ -47,8 +48,7 @@ const fmt = (n: number) => "Rp " + n.toLocaleString("id-ID")
 
 export default function KeuanganPage() {
   const [records, setRecords] = useState<FinancialRecord[]>([])
-  const [month, setMonth] = useState<string>("all")
-  const [year, setYear] = useState<string>("all")
+  const [monthKey, setMonthKey] = useState<string>("")
   const [period, setPeriod] = useState<string>("all")
   const [rows, setRows] = useState<Row[]>([])
   const [showForm, setShowForm] = useState(false)
@@ -76,22 +76,14 @@ export default function KeuanganPage() {
     return records.filter((r) => {
       if (!r.date) return false
       if (period !== "all" && r.date < cutoff.toLocaleDateString("en-CA")) return false
-      const d = r.date.slice(0, 7)
-      if (month !== "all" && year !== "all") return d === `${year}-${month}`
-      if (month !== "all") return d.endsWith(`-${month}`)
-      if (year !== "all") return d.startsWith(year)
+      if (monthKey && !r.date.startsWith(monthKey)) return false
       return true
     })
-  }, [records, month, year, period])
+  }, [records, monthKey, period])
 
   const totalIncome = filtered.filter((r) => r.type === "income").reduce((s, r) => s + Number(r.amount), 0)
   const totalExpense = filtered.filter((r) => r.type === "expense").reduce((s, r) => s + Number(r.amount), 0)
   const balance = totalIncome - totalExpense
-
-  const years = useMemo(() => {
-    const set = new Set(records.map((r) => r.date?.slice(0, 4)).filter(Boolean))
-    return Array.from(set).sort().reverse()
-  }, [records])
 
   // ---- Multi-row batch ----
   const addRow = () => setRows((prev) => [...prev, emptyRow()])
@@ -184,7 +176,7 @@ export default function KeuanganPage() {
     ws["!cols"] = [{ wch: 12 }, { wch: 40 }, { wch: 22 }, { wch: 12 }, { wch: 15 }]
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, "Rekap Keuangan")
-    const label = month !== "all" && year !== "all" ? `${year}-${month}` : "semua"
+    const label = monthKey ? monthKey : period !== "all" ? `periode-${period}hari` : "semua"
     XLSX.writeFile(wb, `rekap-keuangan-${label}.xlsx`)
   }
 
@@ -245,28 +237,14 @@ export default function KeuanganPage() {
               <SelectItem value="90">90 Hari Terakhir</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={month} onValueChange={(v) => setMonth(v ?? "all")}>
-            <SelectTrigger className="w-40 border-line bg-soft">
-              <SelectValue placeholder="Semua Bulan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Bulan</SelectItem>
-              {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((m) => (
-                <SelectItem key={m} value={m}>Bulan {m}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={year} onValueChange={(v) => setYear(v ?? "all")}>
-            <SelectTrigger className="w-32 border-line bg-soft">
-              <SelectValue placeholder="Semua Tahun" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Tahun</SelectItem>
-              {years.map((y) => (
-                <SelectItem key={y} value={y}>{y}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <MonthPicker
+            value={monthKey}
+            onChange={(v) => {
+              setMonthKey(v)
+              if (v) setPeriod("all")
+            }}
+            placeholder="Pilih Bulan"
+          />
         </div>
 
         {/* Form Multi-Row Batch */}

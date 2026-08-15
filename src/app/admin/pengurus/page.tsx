@@ -31,11 +31,7 @@ export default function StructureManagement() {
   const [importing, setImporting] = useState(false)
   const [currentMember, setCurrentMember] = useState<Member | null>(null)
   const [search, setSearch] = useState("")
-  const [fKelas, setFKelas] = useState("all")
-  const [fGen, setFGen] = useState("all")
-  const [fDiv, setFDiv] = useState("all")
-  const [fJab, setFJab] = useState("all")
-  const [sortBy, setSortBy] = useState("nama")
+  const [mode, setMode] = useState("nama-a")
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -56,17 +52,22 @@ export default function StructureManagement() {
 
   const filtered = members
     .filter((m) => m.name.toLowerCase().includes(search.toLowerCase()))
-    .filter((m) => fKelas === "all" || (m.kelas || "") === fKelas)
-    .filter((m) => fGen === "all" || m.generation === fGen)
-    .filter((m) => fDiv === "all" || m.division === fDiv)
-    .filter((m) => fJab === "all" || m.position === fJab)
+    .filter((m) => {
+      if (mode.startsWith("k:")) return (m.kelas || "") === mode.slice(2)
+      if (mode.startsWith("g:")) return m.generation === mode.slice(2)
+      if (mode.startsWith("d:")) return m.division === mode.slice(2)
+      if (mode.startsWith("j:")) return m.position === mode.slice(2)
+      return true
+    })
     .sort((a, b) => {
       const cmp = (x: string, y: string) => x.localeCompare(y, "id")
       const genNum = (g: string) => {
         const n = g.replace(/\D/g, "")
         return n ? Number(n) : 0
       }
-      switch (sortBy) {
+      switch (mode) {
+        case "nama-z":
+          return cmp(b.name, a.name)
         case "kelas":
           return cmp(a.kelas || "", b.kelas || "")
         case "generasi":
@@ -186,42 +187,27 @@ export default function StructureManagement() {
             placeholder="Cari nama anggota..."
             className="h-9 w-full border-line bg-soft text-sm sm:w-56"
           />
-          <Select value={fKelas} onValueChange={(v) => setFKelas(v ?? "all")}>
-            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Kelas / Jurusan" /></SelectTrigger>
+          <Select value={mode} onValueChange={(v) => setMode(v ?? "nama-a")}>
+            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-64"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Kelas / Jurusan</SelectItem>
-              {distinct("kelas").map((k) => <SelectItem key={k} value={k}>{k}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={fGen} onValueChange={(v) => setFGen(v ?? "all")}>
-            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-36"><SelectValue placeholder="Generasi" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Generasi</SelectItem>
-              {distinct("generation").map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={fDiv} onValueChange={(v) => setFDiv(v ?? "all")}>
-            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Divisi" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Divisi</SelectItem>
-              {distinct("division").map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={fJab} onValueChange={(v) => setFJab(v ?? "all")}>
-            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Jabatan" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Jabatan</SelectItem>
-              {distinct("position").map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v ?? "nama")}>
-            <SelectTrigger className="h-9 w-full border-line bg-soft text-xs sm:w-40"><SelectValue placeholder="Urutkan" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="nama">Nama (A-Z)</SelectItem>
-              <SelectItem value="kelas">Kelas / Jurusan</SelectItem>
-              <SelectItem value="generasi">Generasi</SelectItem>
-              <SelectItem value="divisi">Divisi</SelectItem>
-              <SelectItem value="jabatan">Jabatan</SelectItem>
+              <SelectItem value="nama-a">Urutkan: Nama (A-Z)</SelectItem>
+              <SelectItem value="nama-z">Urutkan: Nama (Z-A)</SelectItem>
+              <SelectItem value="kelas">Urutkan: Kelas / Jurusan</SelectItem>
+              <SelectItem value="generasi">Urutkan: Generasi</SelectItem>
+              <SelectItem value="divisi">Urutkan: Divisi</SelectItem>
+              <SelectItem value="jabatan">Urutkan: Jabatan</SelectItem>
+              {distinct("kelas").map((k) => (
+                <SelectItem key={`k:${k}`} value={`k:${k}`}>Kelas: {k}</SelectItem>
+              ))}
+              {distinct("generation").map((g) => (
+                <SelectItem key={`g:${g}`} value={`g:${g}`}>Generasi: {g}</SelectItem>
+              ))}
+              {distinct("division").map((d) => (
+                <SelectItem key={`d:${d}`} value={`d:${d}`}>Divisi: {d}</SelectItem>
+              ))}
+              {distinct("position").map((p) => (
+                <SelectItem key={`j:${p}`} value={`j:${p}`}>Jabatan: {p}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

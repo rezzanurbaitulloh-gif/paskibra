@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { supabase } from "@/lib/supabase/client"
+import { ImageUpload } from "@/components/image-upload"
 import { Plus, Edit, Trash2, Package } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
 
@@ -203,8 +204,8 @@ export default function InventarisAdminPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">URL Gambar (opsional)</Label>
-                <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="/images/baju-pdl.svg" className="h-10 border-line bg-soft" />
+                <Label className="text-xs text-muted-foreground">Gambar Aset</Label>
+                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Nomor WhatsApp Penerima Sewa</Label>

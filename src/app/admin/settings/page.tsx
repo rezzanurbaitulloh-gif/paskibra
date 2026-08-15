@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Save, CheckCircle2, Upload, Loader2, ImagePlus } from "lucide-react"
+import { Save, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { DEFAULT_SETTINGS, type SiteSettings } from "@/contexts/SiteSettingsContext"
+import { ImageUpload } from "@/components/image-upload"
 
 const SETTING_KEYS = ["colors", "hero", "branding", "contacts", "pages", "aiPrompt"]
 
@@ -19,9 +20,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [uploadTarget, setUploadTarget] = useState<"logoUrl" | "schoolLogoUrl" | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
+
 
   useEffect(() => {
     fetchSettings()
@@ -81,32 +80,6 @@ export default function SettingsPage() {
     }))
   }
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file || !uploadTarget) return
-    setUploading(true)
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-    const formData = new FormData()
-    formData.append("file", file)
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${session?.access_token}` },
-      body: formData,
-    })
-    const data = await res.json()
-    setUploading(false)
-    if (res.ok && data.url) {
-      updateSetting("branding", uploadTarget, data.url)
-    } else {
-      alert(data.error || "Upload gagal")
-    }
-    if (fileRef.current) fileRef.current.value = ""
-  }
-
   if (loading) {
     return <div className="flex items-center justify-center h-64">Memuat pengaturan...</div>
   }
@@ -140,78 +113,12 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Logo Paskibra</Label>
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-line bg-soft">
-                      {settings.branding.logoUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={settings.branding.logoUrl} alt="Logo" className="h-full w-full object-cover" />
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <Input
-                        value={settings.branding.logoUrl}
-                        onChange={(e) => updateSetting("branding", "logoUrl", e.target.value)}
-                        className="glass border-line"
-                        placeholder="/logo.png atau https://..."
-                      />
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          disabled={uploading}
-                          onClick={() => {
-                            setUploadTarget("logoUrl")
-                            fileRef.current?.click()
-                          }}
-                        >
-                          {uploading && uploadTarget === "logoUrl" ? (
-                            <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                          ) : (
-                            <ImagePlus className="w-3.5 h-3.5 mr-1.5" />
-                          )}
-                          Upload Gambar
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <ImageUpload value={settings.branding.logoUrl} onChange={(url) => updateSetting("branding", "logoUrl", url)} />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Logo Sekolah</Label>
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-line bg-soft">
-                      {settings.branding.schoolLogoUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={settings.branding.schoolLogoUrl} alt="Logo Sekolah" className="h-full w-full object-cover" />
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <Input
-                        value={settings.branding.schoolLogoUrl}
-                        onChange={(e) => updateSetting("branding", "schoolLogoUrl", e.target.value)}
-                        className="glass border-line"
-                        placeholder="/logo-icon.png atau https://..."
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={uploading}
-                        onClick={() => {
-                          setUploadTarget("schoolLogoUrl")
-                          fileRef.current?.click()
-                        }}
-                      >
-                        {uploading && uploadTarget === "schoolLogoUrl" ? (
-                          <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                        ) : (
-                          <Upload className="w-3.5 h-3.5 mr-1.5" />
-                        )}
-                        Upload Gambar
-                      </Button>
-                    </div>
-                  </div>
+                  <ImageUpload value={settings.branding.schoolLogoUrl} onChange={(url) => updateSetting("branding", "schoolLogoUrl", url)} />
                 </div>
 
                 <div className="space-y-2">
@@ -248,13 +155,6 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           </div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
-            className="hidden"
-            onChange={handleUpload}
-          />
         </TabsContent>
 
         <TabsContent value="warna" className="mt-6">

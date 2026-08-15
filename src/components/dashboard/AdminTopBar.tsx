@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, LogOut, Search, Bell } from "lucide-react"
+import { Menu, LogOut, Search, Bell, Home } from "lucide-react"
 import { AdminSidebar } from "./AdminSidebar"
 import { supabase } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useAdmin } from "@/contexts/AdminContext"
 import { useAuth } from "@/contexts/AuthContext"
@@ -33,6 +34,14 @@ export function AdminTopBar() {
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-line bg-card/80 px-4 py-3 backdrop-blur">
       <div className="flex items-center gap-2">
+        <Link
+          href="/"
+          className="hidden items-center gap-2 rounded-lg border border-line px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground md:inline-flex"
+          title="Kembali ke halaman utama"
+        >
+          <Home className="h-4 w-4" /> Halaman Utama
+        </Link>
+
         <Sheet>
           <SheetTrigger
             className="md:hidden"

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase/client"
+import { ImageUpload } from "@/components/image-upload"
 import { Plus, Edit, Trash2, ImageIcon, Video, Link2 } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
 
@@ -190,13 +191,73 @@ export default function GaleriAdminPage() {
               {form.media_type === "image" ? (
                 <>
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">URL Gambar</Label>
-                    <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} required placeholder="/images/upacara.svg atau https://..." className="h-10 border-line bg-soft" />
+                    <Label className="text-xs text-muted-foreground">Gambar Utama</Label>
+                    <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">URL Foto Lainnya (pisahkan dengan koma)</Label>
-                    <Input value={form.extra_images} onChange={(e) => setForm({ ...form, extra_images: e.target.value })} placeholder="https://...jpg, https://...jpg" className="h-10 border-line bg-soft" />
-                    <p className="text-[10px] text-muted-foreground">Opsional — foto tambahan untuk halaman detail galeri.</p>
+                    <Label className="text-xs text-muted-foreground">Foto Lainnya (opsional)</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {form.extra_images
+                        .split(",")
+                        .map((u) => u.trim())
+                        .filter(Boolean)
+                        .map((u, i) => (
+                          <div key={i} className="relative h-20 overflow-hidden rounded-lg border border-line bg-soft">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={u} alt="" className="h-full w-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setForm({
+                                  ...form,
+                                  extra_images: form.extra_images
+                                    .split(",")
+                                    .map((x) => x.trim())
+                                    .filter((x) => x && x !== u)
+                                    .join(", "),
+                                })
+                              }
+                              className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
+                              aria-label="Hapus"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      {form.extra_images
+                        .split(",")
+                        .map((u) => u.trim())
+                        .filter(Boolean).length < 8 && (
+                        <button
+                          type="button"
+                          className="flex h-20 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+                          onClick={() => {
+                            const input = document.createElement("input")
+                            input.type = "file"
+                            input.accept = "image/png,image/jpeg,image/webp,image/gif"
+                            input.onchange = async () => {
+                              const file = input.files?.[0]
+                              if (!file) return
+                              const { data: { session } } = await supabase.auth.getSession()
+                              const fd = new FormData()
+                              fd.append("file", file)
+                              const res = await fetch("/api/upload", { method: "POST", headers: { Authorization: `Bearer ${session?.access_token}` }, body: fd })
+                              const data = await res.json()
+                              if (res.ok && data.url) {
+                                const list = form.extra_images.split(",").map((x) => x.trim()).filter(Boolean)
+                                setForm({ ...form, extra_images: [...list, data.url].join(", ") })
+                              } else {
+                                alert(data.error || "Upload gagal")
+                              }
+                            }
+                            input.click()
+                          }}
+                        >
+                          <Plus className="h-4 w-4" />
+                          <span className="text-[10px]">Tambah Foto</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (

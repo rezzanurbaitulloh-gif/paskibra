@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase/client"
+import { ImageUpload } from "@/components/image-upload"
 import { Plus, Edit, Trash2 } from "lucide-react"
 
 interface Member {
@@ -98,8 +99,8 @@ export default function StructureManagement() {
                 <Input id="generation" value={formData.generation} onChange={(e) => setFormData({...formData, generation: e.target.value})} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="photo_url">URL Foto</Label>
-                <Input id="photo_url" value={formData.photo_url} onChange={(e) => setFormData({...formData, photo_url: e.target.value})} />
+                <Label>Foto</Label>
+                <ImageUpload value={formData.photo_url} onChange={(url) => setFormData({ ...formData, photo_url: url })} />
               </div>
               <Button type="submit" className="gradient-primary w-full">Simpan</Button>
             </form>

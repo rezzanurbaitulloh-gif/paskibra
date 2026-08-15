@@ -136,11 +136,11 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Logo Paskibra</Label>
-                  <ImageUpload value={settings.branding.logoUrl} onChange={(url) => updateSetting("branding", "logoUrl", url)} />
+                  <ImageUpload value={settings.branding.logoUrl} onChange={(url) => updateSetting("branding", "logoUrl", url)} aspect={1} />
                 </div>
                 <div className="space-y-2">
                   <Label>Logo Sekolah</Label>
-                  <ImageUpload value={settings.branding.schoolLogoUrl} onChange={(url) => updateSetting("branding", "schoolLogoUrl", url)} />
+                  <ImageUpload value={settings.branding.schoolLogoUrl} onChange={(url) => updateSetting("branding", "schoolLogoUrl", url)} aspect={1} />
                 </div>
                 <div className="space-y-2">
                   <Label>Nama Organisasi</Label>
@@ -421,6 +421,7 @@ export default function SettingsPage() {
                   onChange={(items) => updateArr("school", "items", items)}
                   itemLabel="Kartu"
                   addText="Tambah Kartu"
+                  imageAspect={4 / 3}
                 />
               </div>
             </CardContent>
@@ -500,11 +501,11 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Foto Pemuda (kanan atas)</Label>
-                  <ImageUpload value={settings.backgrounds.watermarkPemuda} onChange={(url) => updateSetting("backgrounds", "watermarkPemuda", url)} />
+                  <ImageUpload value={settings.backgrounds.watermarkPemuda} onChange={(url) => updateSetting("backgrounds", "watermarkPemuda", url)} aspect={3 / 4} />
                 </div>
                 <div className="space-y-2">
                   <Label>Foto Pemudi (kiri bawah)</Label>
-                  <ImageUpload value={settings.backgrounds.watermarkPemudi} onChange={(url) => updateSetting("backgrounds", "watermarkPemudi", url)} />
+                  <ImageUpload value={settings.backgrounds.watermarkPemudi} onChange={(url) => updateSetting("backgrounds", "watermarkPemudi", url)} aspect={3 / 4} />
                 </div>
               </div>
             </CardContent>

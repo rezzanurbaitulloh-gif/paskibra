@@ -20,6 +20,7 @@ interface ListEditorProps<T extends Record<string, unknown>> {
   itemLabel?: string
   addText?: string
   max?: number
+  imageAspect?: number | null
 }
 
 export function ListEditor<T extends Record<string, unknown>>({
@@ -29,6 +30,7 @@ export function ListEditor<T extends Record<string, unknown>>({
   itemLabel = "Item",
   addText = "Tambah",
   max,
+  imageAspect = null,
 }: ListEditorProps<T>) {
   const update = (index: number, key: string, value: string) => {
     onChange(items.map((item, i) => (i === index ? { ...item, [key]: value } : item)))
@@ -82,6 +84,7 @@ export function ListEditor<T extends Record<string, unknown>>({
                   <ImageUpload
                     value={String(item[field.key] || "")}
                     onChange={(url) => update(index, field.key, url)}
+                    aspect={imageAspect}
                   />
                 ) : (
                   <Input

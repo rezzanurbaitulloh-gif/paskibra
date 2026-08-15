@@ -205,7 +205,7 @@ export default function InventarisAdminPage() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Gambar Aset</Label>
-                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
+                <ImageUpload value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} aspect={4 / 3} />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Nomor WhatsApp Penerima Sewa</Label>

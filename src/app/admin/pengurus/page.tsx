@@ -100,7 +100,7 @@ export default function StructureManagement() {
               </div>
               <div className="space-y-2">
                 <Label>Foto</Label>
-                <ImageUpload value={formData.photo_url} onChange={(url) => setFormData({ ...formData, photo_url: url })} />
+                <ImageUpload value={formData.photo_url} onChange={(url) => setFormData({ ...formData, photo_url: url })} aspect={3 / 4} />
               </div>
               <Button type="submit" className="gradient-primary w-full">Simpan</Button>
             </form>

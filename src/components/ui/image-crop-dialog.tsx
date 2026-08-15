@@ -17,7 +17,7 @@ const ASPECT_PRESETS: { label: string; value: number | null }[] = [
 async function getCroppedBlob(
   src: string,
   area: { x: number; y: number; width: number; height: number },
-  maxSize = 1600
+  maxSize = 2560
 ): Promise<Blob> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image()
@@ -42,12 +42,16 @@ export function ImageCropDialog({
   open,
   image,
   defaultAspect = null,
+  originalFile = null,
+  onUploadOriginal,
   onCancel,
   onConfirm,
 }: {
   open: boolean
   image: string
   defaultAspect?: number | null
+  originalFile?: File | null
+  onUploadOriginal?: (file: File) => Promise<void> | void
   onCancel: () => void
   onConfirm: (blob: Blob) => Promise<void> | void
 }) {
@@ -144,6 +148,18 @@ export function ImageCropDialog({
     }
   }
 
+  const handleUploadOriginal = async () => {
+    if (busy || !originalFile) return
+    setBusy(true)
+    try {
+      await onUploadOriginal?.(originalFile)
+    } catch (err) {
+      console.error("Upload asli gagal:", err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   if (!open) return null
 
   return (
@@ -217,18 +233,32 @@ export function ImageCropDialog({
           </p>
 
           <div className="flex gap-2 pt-1">
-            <Button variant="ghost" onClick={onCancel} className="flex-1 border border-line" disabled={busy}>
-              Batal
-            </Button>
+            {originalFile && (
+              <Button
+                variant="ghost"
+                onClick={handleUploadOriginal}
+                disabled={busy}
+                className="flex-1 border border-line"
+                title="File diunggah apa adanya tanpa dipotong/kompresi"
+              >
+                {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {busy ? "Mengunggah..." : "Unggah Asli"}
+              </Button>
+            )}
             <Button
               onClick={handleConfirm}
               disabled={busy || imgSize.width === 0}
-              className="gradient-primary flex-1 text-white"
+              className="flex-1 text-white gradient-primary"
             >
               {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {busy ? "Memproses..." : "Simpan & Unggah"}
             </Button>
           </div>
+          {originalFile && (
+            <p className="text-center text-[11px] text-muted-foreground">
+              "Unggah Asli" menyimpan foto sesuai resolusi aslinya tanpa dipotong. Ukuran maksimal 10MB.
+            </p>
+          )}
         </div>
       </div>
     </div>

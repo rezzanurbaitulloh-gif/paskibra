@@ -41,6 +41,7 @@ export function ImageUpload({
   const [error, setError] = useState("")
   const [cropOpen, setCropOpen] = useState(false)
   const [cropImage, setCropImage] = useState("")
+  const [originalFile, setOriginalFile] = useState<File | null>(null)
   const ref = useRef<HTMLInputElement>(null)
 
   const handle = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,15 +55,16 @@ export function ImageUpload({
       return
     }
     const url = URL.createObjectURL(file)
+    setOriginalFile(file)
     setCropImage(url)
     setCropOpen(true)
   }
 
-  const doUpload = async (file: Blob) => {
+  const doUpload = async (file: Blob, filename?: string) => {
     setUploading(true)
     setError("")
     try {
-      const url = await uploadBlob(file, `gambar-${Date.now()}.jpg`)
+      const url = await uploadBlob(file, filename ?? `gambar-${Date.now()}.jpg`)
       onChange(url)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload gagal")
@@ -75,6 +77,15 @@ export function ImageUpload({
     const url = await uploadBlob(blob, `gambar-${Date.now()}.jpg`)
     setCropOpen(false)
     if (cropImage) URL.revokeObjectURL(cropImage)
+    setOriginalFile(null)
+    onChange(url)
+  }
+
+  const handleUploadOriginal = async (file: File) => {
+    const url = await uploadBlob(file, file.name)
+    setCropOpen(false)
+    if (cropImage) URL.revokeObjectURL(cropImage)
+    setOriginalFile(null)
     onChange(url)
   }
 
@@ -105,8 +116,8 @@ export function ImageUpload({
       </button>
       {!hideHint && (
         <p className="mt-1 text-[10px] text-muted-foreground">
-          Foto akan dibuka untuk disesuaikan (crop) sebelum diunggah. Pilih rasio Gambar Penuh atau sesuaikan
-          ukuran area crop sesuai kebutuhan.
+          Foto bisa disesuaikan (crop) dulu, atau pilih "Unggah Asli" untuk menyimpan resolusi penuh tanpa
+          dipotong.
         </p>
       )}
       <input
@@ -121,8 +132,11 @@ export function ImageUpload({
         open={cropOpen}
         image={cropImage}
         defaultAspect={aspect}
+        originalFile={originalFile}
+        onUploadOriginal={handleUploadOriginal}
         onCancel={() => {
           setCropOpen(false)
+          setOriginalFile(null)
           if (cropImage) URL.revokeObjectURL(cropImage)
         }}
         onConfirm={handleCropConfirm}

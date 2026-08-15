@@ -374,10 +374,19 @@ function ParticipantsManager() {
 }
 
 function InfoEditor() {
-  const { settings, refresh } = useSiteSettings()
+  const { settings, loading, refresh } = useSiteSettings()
   const [lkbb, setLkbb] = useState(settings.lkbb)
+  const [ready, setReady] = useState(!loading)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState("")
+
+  useEffect(() => {
+    if (!loading && !ready) {
+      setLkbb(settings.lkbb)
+      setReady(true)
+    }
+  }, [loading, settings.lkbb, ready])
 
   const update = (field: string, value: string) => {
     setLkbb((prev) => ({ ...prev, [field]: value }) as SiteSettings["lkbb"])
@@ -385,15 +394,24 @@ function InfoEditor() {
 
   const handleSave = async () => {
     setSaving(true)
+    setSaveError("")
     const { error } = await supabase.from("site_settings").upsert({ key: "lkbb", value: lkbb }, { onConflict: "key" })
     setSaving(false)
     if (error) {
-      console.error("Gagal simpan:", error.message)
+      setSaveError("Gagal menyimpan: " + error.message)
       return
     }
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
     refresh()
+  }
+
+  if (!ready) {
+    return (
+      <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
+        Memuat data lomba…
+      </div>
+    )
   }
 
   return (
@@ -412,6 +430,11 @@ function InfoEditor() {
           </Button>
         </div>
       </div>
+      {saveError && (
+        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+          {saveError}
+        </p>
+      )}
 
       <Card className="glass border-line p-5">
         <p className="mb-4 text-sm font-semibold">Header Halaman</p>

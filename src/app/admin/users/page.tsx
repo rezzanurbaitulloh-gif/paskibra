@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase/client"
@@ -155,8 +156,7 @@ export default function UsersAdminPage() {
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Password</Label>
-              <Input
-                type="password"
+              <PasswordInput
                 required
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -268,8 +268,7 @@ export default function UsersAdminPage() {
             >
               <h3 className="font-display font-bold">Ubah Sandi</h3>
               <p className="mt-1 text-xs text-muted-foreground">{passwordTarget.email}</p>
-              <Input
-                type="password"
+              <PasswordInput
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Password baru"

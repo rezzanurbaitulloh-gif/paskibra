@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, Loader2, LayoutDashboard, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
@@ -143,9 +144,8 @@ export default function AccountPage() {
                 <p className="text-xs font-semibold">Ubah Password</p>
                 <div className="space-y-1.5">
                   <Label htmlFor="pw" className="text-xs text-muted-foreground">Password Baru</Label>
-                  <Input
+                  <PasswordInput
                     id="pw"
-                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-10 border-line bg-soft"
@@ -154,9 +154,8 @@ export default function AccountPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="pw2" className="text-xs text-muted-foreground">Konfirmasi Password</Label>
-                  <Input
+                  <PasswordInput
                     id="pw2"
-                    type="password"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     className="h-10 border-line bg-soft"

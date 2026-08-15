@@ -182,28 +182,40 @@ export default function SettingsPage() {
             <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Palet Warna</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Klik kotak warna untuk memilih, atau ketik kode hex di bawahnya.
+                </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {Object.entries(settings.colors)
-                  .filter(([key]) => key !== "background")
-                  .map(([key, value]) => (
-                    <div key={key} className="flex items-center gap-4">
-                      <Label className="w-28 capitalize">{key}</Label>
-                      <div className="relative">
-                        <input
-                          type="color"
+              <CardContent>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {Object.entries(settings.colors)
+                    .filter(([key]) => key !== "background")
+                    .map(([key, value]) => (
+                      <div key={key} className="rounded-xl border border-line bg-soft/50 p-3">
+                        <div className="relative h-14 w-full overflow-hidden rounded-lg border border-line">
+                          <input
+                            type="color"
+                            value={value}
+                            onChange={(e) => updateSetting("colors", key, e.target.value)}
+                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                            aria-label={`Pilih warna ${key}`}
+                          />
+                          <div className="absolute inset-0" style={{ backgroundColor: value }} />
+                          <span
+                            className="absolute bottom-1 right-1 rounded bg-black/50 px-1 py-0.5 text-[9px] font-mono text-white/90"
+                          >
+                            {value}
+                          </span>
+                        </div>
+                        <Label className="mt-2 block text-xs capitalize">{key}</Label>
+                        <Input
                           value={value}
                           onChange={(e) => updateSetting("colors", key, e.target.value)}
-                          className="w-12 h-10 rounded cursor-pointer border border-line bg-transparent"
+                          className="mt-1.5 h-8 border-line bg-card font-mono text-xs"
                         />
                       </div>
-                      <Input
-                        value={value}
-                        onChange={(e) => updateSetting("colors", key, e.target.value)}
-                        className="glass border-line max-w-[160px] font-mono"
-                      />
-                    </div>
-                  ))}
+                    ))}
+                </div>
               </CardContent>
             </Card>
 

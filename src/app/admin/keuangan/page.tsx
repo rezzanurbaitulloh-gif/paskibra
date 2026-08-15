@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase/client"
 import * as XLSX from "xlsx"
-import { Plus, Trash2, Sparkles, Download, Calendar, Wallet, TrendingUp, TrendingDown, X } from "lucide-react"
+import { Plus, Trash2, Sparkles, Download, Calendar, Wallet, TrendingUp, TrendingDown, X, ClipboardList } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
+import { RekapModal } from "./rekap-modal"
 
 interface FinancialRecord {
   id: string
@@ -50,6 +51,7 @@ export default function KeuanganPage() {
   const [rows, setRows] = useState<Row[]>([])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showRekap, setShowRekap] = useState(false)
 
   // AI
   const [aiText, setAiText] = useState("")
@@ -184,6 +186,9 @@ export default function KeuanganPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <h1 className="font-display text-2xl font-bold md:text-3xl">Keuangan</h1>
           <div className="flex flex-wrap gap-2">
+            <Button variant="outline" className="border-line" onClick={() => setShowRekap(true)}>
+              <ClipboardList className="mr-2 h-4 w-4" /> Rekap
+            </Button>
             <Button variant="outline" className="border-line" onClick={exportExcel} disabled={filtered.length === 0}>
               <Download className="mr-2 h-4 w-4" /> Export Excel
             </Button>
@@ -456,6 +461,7 @@ export default function KeuanganPage() {
           </table>
         </div>
       </div>
+      <RekapModal open={showRekap} onClose={() => setShowRekap(false)} />
     </RequireRole>
   )
 }

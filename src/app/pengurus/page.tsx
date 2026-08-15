@@ -42,7 +42,7 @@ export default function PengurusPage() {
   
         <div className="mt-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Struktur Organisasi</p>
-          <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Pengurus Satria Cengkara</h1>
+          <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Daftar Anggota Satria Cengkara</h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
             {settings.pages.pengurusIntro}
           </p>

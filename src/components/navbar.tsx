@@ -15,7 +15,7 @@ import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 const NAV_LINKS = [
   { label: "Beranda", href: "#beranda" },
   { label: "Sekolah", href: "#sekolah" },
-  { label: "Pengurus", href: "#pengurus" },
+  { label: "Daftar Anggota", href: "#pengurus" },
   { label: "Galeri", href: "#galeri" },
   { label: "Sejarah", href: "#sejarah" },
   { label: "Layanan", href: "#penyewaan" },

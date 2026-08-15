@@ -43,6 +43,16 @@ export function HeroSection({ realStats }: { realStats?: { value: string; label:
         <div className="absolute inset-0 bg-radial-glow" />
         <div className="absolute -top-40 -right-40 h-[480px] w-[480px] rounded-full bg-secondary/10 blur-[140px]" />
         <div className="absolute -bottom-40 -left-40 h-[480px] w-[480px] rounded-full bg-primary/10 blur-[140px]" />
+        <div className="relative h-full w-full">
+          <Image
+            src={settings.branding.logoUrl || "/logo.png"}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-contain opacity-[0.05] dark:opacity-[0.06]"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
       </motion.div>
 
@@ -66,7 +76,7 @@ export function HeroSection({ realStats }: { realStats?: { value: string; label:
           variants={container}
           initial="hidden"
           animate="visible"
-          className="mt-8 font-display font-extrabold leading-[0.95] tracking-tight"
+          className="mt-8 font-display font-extrabold leading-[0.95] tracking-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl"
         >
           {titleLines.map((line) => (
             <span key={line} className="block">

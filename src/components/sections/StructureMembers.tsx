@@ -86,7 +86,7 @@ export function StructureMembers({ members }: { members: Member[] }) {
         <SectionHeader
           label={st.pengurusLabel}
           title={st.pengurusTitle}
-          actionLabel="Halaman Pengurus"
+          actionLabel="Lihat Semua Anggota"
           actionHref="/pengurus"
           subtitle={settings.pages.pengurusIntro}
         />

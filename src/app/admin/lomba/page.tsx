@@ -395,7 +395,7 @@ function InfoEditor() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="font-display text-lg font-bold">Edit Info Lomba LKBB</h2>
+        <h2 className="font-display text-lg font-bold">Edit Info LKBB</h2>
         <div className="flex gap-2">
           <a href="/lomba" target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="border-line">
@@ -609,7 +609,7 @@ export default function LombaAdmin() {
   return (
     <RequireRole path="/admin/keuangan">
       <div className="space-y-6">
-        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Lomba LKBB</h1>
+        <h1 className="font-display text-2xl font-bold md:text-3xl">Manajemen Peserta LKBB</h1>
         <div className="flex gap-2">
           <Button
             variant="outline"

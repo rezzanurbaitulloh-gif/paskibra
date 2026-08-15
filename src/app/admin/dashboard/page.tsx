@@ -289,7 +289,7 @@ export default function AdminDashboard() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Trophy className="h-4 w-4 text-accent" />
-            <h3 className="font-display text-sm font-bold">Peserta Lomba LKBB</h3>
+            <h3 className="font-display text-sm font-bold">Peserta LKBB</h3>
           </div>
           <Link
             href="/admin/lomba"
@@ -356,7 +356,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <p className="mt-4 text-xs text-muted-foreground">
-            Belum ada peserta terdaftar. Tambahkan di menu <b>Lomba LKBB</b>.
+            Belum ada peserta terdaftar. Tambahkan di menu <b>Peserta LKBB</b>.
           </p>
         )}
       </Card>

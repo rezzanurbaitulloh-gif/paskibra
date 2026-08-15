@@ -184,8 +184,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     saranTitle: "Kotak Saran & Masukan",
   },
   lkbb: {
-    label: "Lomba & LKBB",
-    title: "Lomba PBB / LKBB",
+    label: "LKBB",
+    title: "Lomba Keterampilan Baris-Berbaris",
     subtitle: "Adu keterampilan baris-berbaris dan kecepatan bertindak.",
     intro:
       "Paskibra Satria Cengkara menggelar Lomba Baris-Berbaris untuk tingkat SMP/MTs se-Kabupaten Nganjuk. Daftarkan sekolahmu sekarang!",

@@ -105,7 +105,8 @@ export function ImageUpload({
       </button>
       {!hideHint && (
         <p className="mt-1 text-[10px] text-muted-foreground">
-          Foto akan dibuka untuk disesuaikan (crop) sebelum diunggah.
+          Foto akan dibuka untuk disesuaikan (crop) sebelum diunggah. Pilih rasio Gambar Penuh atau sesuaikan
+          ukuran area crop sesuai kebutuhan.
         </p>
       )}
       <input

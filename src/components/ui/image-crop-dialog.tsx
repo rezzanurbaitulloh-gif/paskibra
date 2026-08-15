@@ -1,33 +1,22 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import Cropper from "react-easy-crop"
+import ReactCrop, { type Crop } from "react-image-crop"
 import { Button } from "@/components/ui/button"
-import { Loader2, RotateCw, X } from "lucide-react"
+import { Loader2, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const ASPECT_PRESETS: { label: string; value: number | null }[] = [
-  { label: "Bebas", value: null },
+  { label: "Gambar Penuh", value: null },
   { label: "Kotak", value: 1 },
   { label: "4:3", value: 4 / 3 },
   { label: "3:4", value: 3 / 4 },
   { label: "16:9", value: 16 / 9 },
 ]
 
-function rotateSize(w: number, h: number, rotation: number) {
-  const rad = (rotation * Math.PI) / 180
-  return rotation % 180 === 0
-    ? { w, h }
-    : {
-        w: Math.round(Math.abs(w * Math.cos(rad)) + Math.abs(h * Math.sin(rad))),
-        h: Math.round(Math.abs(w * Math.sin(rad)) + Math.abs(h * Math.cos(rad))),
-      }
-}
-
 async function getCroppedBlob(
   src: string,
   area: { x: number; y: number; width: number; height: number },
-  rotation: number,
   maxSize = 1600
 ): Promise<Blob> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -37,32 +26,13 @@ async function getCroppedBlob(
     img.src = src
   })
 
-  const { w: rotatedW, h: rotatedH } = rotateSize(area.width, area.height, rotation)
-  const full = document.createElement("canvas")
-  full.width = rotatedW
-  full.height = rotatedH
-  const fctx = full.getContext("2d")!
-  fctx.imageSmoothingQuality = "high"
-  fctx.translate(rotatedW / 2, rotatedH / 2)
-  fctx.rotate((rotation * Math.PI) / 180)
-  fctx.translate(-rotatedW / 2, -rotatedH / 2)
-  fctx.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, area.width, area.height)
-
-  const scale = Math.min(1, maxSize / Math.max(rotatedW, rotatedH))
-  if (scale >= 1) {
-    const blob = await new Promise<Blob | null>((resolve) =>
-      full.toBlob(resolve, "image/jpeg", 0.92)
-    )
-    if (!blob) throw new Error("Gagal memproses gambar")
-    return blob
-  }
-
+  const scale = Math.min(1, maxSize / Math.max(area.width, area.height))
   const out = document.createElement("canvas")
-  out.width = Math.round(rotatedW * scale)
-  out.height = Math.round(rotatedH * scale)
+  out.width = Math.max(1, Math.round(area.width * scale))
+  out.height = Math.max(1, Math.round(area.height * scale))
   const octx = out.getContext("2d")!
   octx.imageSmoothingQuality = "high"
-  octx.drawImage(full, 0, 0, out.width, out.height)
+  octx.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, out.width, out.height)
   const blob = await new Promise<Blob | null>((resolve) => out.toBlob(resolve, "image/jpeg", 0.92))
   if (!blob) throw new Error("Gagal memproses gambar")
   return blob
@@ -81,35 +51,91 @@ export function ImageCropDialog({
   onCancel: () => void
   onConfirm: (blob: Blob) => Promise<void> | void
 }) {
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [rotation, setRotation] = useState(0)
+  const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
   const [aspect, setAspect] = useState<number | null>(defaultAspect)
+  const [sizePct, setSizePct] = useState(100)
+  const [imgSize, setImgSize] = useState({ width: 0, height: 0 })
   const [busy, setBusy] = useState(false)
-  const areaRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null)
+  const readyRef = useRef(false)
 
   useEffect(() => {
-    if (open) {
-      setCrop({ x: 0, y: 0 })
-      setZoom(1)
-      setRotation(0)
-      setAspect(defaultAspect)
-      areaRef.current = null
+    if (!open) return
+    setAspect(defaultAspect)
+    setSizePct(100)
+    setCrop({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
+    setBusy(false)
+    readyRef.current = false
+    if (!image) return
+    const img = new Image()
+    img.onload = () => {
+      const size = { width: img.naturalWidth, height: img.naturalHeight }
+      setImgSize(size)
+      if (defaultAspect) {
+        setCrop(centeredAspectCrop(defaultAspect, 100))
+      } else {
+        setCrop({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
+      }
+      readyRef.current = true
     }
+    img.onerror = () => {
+      readyRef.current = true
+    }
+    img.src = image
   }, [open, image, defaultAspect])
 
+  const centeredAspectCrop = (ratio: number, widthPct: number): Crop => {
+    let w = widthPct
+    let h = w / ratio
+    if (h > 100) {
+      h = 100
+      w = h * ratio
+    }
+    return { unit: "%", x: (100 - w) / 2, y: (100 - h) / 2, width: w, height: h }
+  }
+
+  const pickAspect = (value: number | null) => {
+    setAspect(value)
+    if (value) {
+      setCrop(centeredAspectCrop(value, sizePct))
+    } else {
+      const w = Math.min(100, Math.max(20, sizePct))
+      const h = Math.min(100, Math.max(20, (crop.height / crop.width) * w))
+      setCrop({ unit: "%", x: (100 - w) / 2, y: (100 - h) / 2, width: w, height: h })
+    }
+  }
+
+  const applySize = (pct: number) => {
+    setSizePct(pct)
+    if (aspect) {
+      setCrop(centeredAspectCrop(aspect, pct))
+    } else {
+      setCrop((prev) => {
+        const w = pct
+        const h = Math.min(100, Math.max(5, (prev.height / prev.width) * w))
+        return { unit: "%", x: prev.x + (prev.width - w) / 2, y: prev.y + (prev.height - h) / 2, width: w, height: h }
+      })
+    }
+  }
+
   const onCropComplete = useCallback(
-    (_: unknown, croppedAreaPixels: { x: number; y: number; width: number; height: number }) => {
-      areaRef.current = croppedAreaPixels
+    (_: Crop, percentCrop: Crop) => {
+      setCrop(percentCrop)
+      setSizePct(percentCrop.width)
     },
     []
   )
 
   const handleConfirm = async () => {
-    if (!areaRef.current || busy) return
+    if (busy || imgSize.width === 0) return
     setBusy(true)
     try {
-      const blob = await getCroppedBlob(image, areaRef.current, rotation)
+      const area = {
+        x: Math.round((crop.x / 100) * imgSize.width),
+        y: Math.round((crop.y / 100) * imgSize.height),
+        width: Math.round((crop.width / 100) * imgSize.width),
+        height: Math.round((crop.height / 100) * imgSize.height),
+      }
+      const blob = await getCroppedBlob(image, area)
       await onConfirm(blob)
     } catch (err) {
       console.error("Crop gagal:", err)
@@ -135,18 +161,20 @@ export function ImageCropDialog({
           </button>
         </div>
 
-        <div className="relative h-64 w-full bg-black/80 sm:h-72">
-          <Cropper
-            image={image}
+        <div className="relative flex h-64 w-full items-center justify-center overflow-hidden bg-black/80 sm:h-72">
+          <ReactCrop
             crop={crop}
-            zoom={zoom}
-            rotation={rotation}
+            onChange={(_, pct) => setCrop(pct)}
+            onComplete={onCropComplete}
             aspect={aspect ?? undefined}
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
-            onRotationChange={setRotation}
-            onCropComplete={onCropComplete}
-          />
+            minWidth={5}
+            minHeight={5}
+            keepSelection
+            style={{ width: "100%", height: "100%" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={image} alt="" className="max-h-full max-w-full" />
+          </ReactCrop>
         </div>
 
         <div className="space-y-3 px-5 py-4">
@@ -155,7 +183,7 @@ export function ImageCropDialog({
               <button
                 key={p.label}
                 type="button"
-                onClick={() => setAspect(p.value)}
+                onClick={() => pickAspect(p.value)}
                 className={cn(
                   "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                   aspect === p.value
@@ -166,27 +194,27 @@ export function ImageCropDialog({
                 {p.label}
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => setRotation((r) => (r + 90) % 360)}
-              className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-line bg-soft px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <RotateCw className="h-3 w-3" /> Putar
-            </button>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">Perbesar</span>
+            <span className="shrink-0 text-xs text-muted-foreground">Ukuran area</span>
             <input
               type="range"
-              min={1}
-              max={3}
-              step={0.01}
-              value={zoom}
-              onChange={(e) => setZoom(Number(e.target.value))}
+              min={20}
+              max={100}
+              step={1}
+              value={sizePct}
+              onChange={(e) => applySize(Number(e.target.value))}
               className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-soft accent-[var(--primary)]"
             />
+            <span className="w-9 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+              {Math.round(sizePct)}%
+            </span>
           </div>
+          <p className="text-[11px] text-muted-foreground">
+            Seret sudut/handle kotak untuk mengubah ukuran area crop, atau geser slider. Rasio "Gambar Penuh"
+            = area bebas sesuai ukuran asli foto.
+          </p>
 
           <div className="flex gap-2 pt-1">
             <Button variant="ghost" onClick={onCancel} className="flex-1 border border-line" disabled={busy}>
@@ -194,7 +222,7 @@ export function ImageCropDialog({
             </Button>
             <Button
               onClick={handleConfirm}
-              disabled={busy}
+              disabled={busy || imgSize.width === 0}
               className="gradient-primary flex-1 text-white"
             >
               {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

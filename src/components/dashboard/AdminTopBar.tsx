@@ -28,7 +28,8 @@ export function AdminTopBar() {
     router.push('/login')
   }
 
-  const initial = (user?.email || "U").charAt(0).toUpperCase()
+  const displayName = (user?.user_metadata?.name as string) || user?.email || "Admin"
+  const initial = (displayName || "U").charAt(0).toUpperCase()
   const roleLabel = role ? (ROLE_LABEL[role] || role.replace('_', ' ')) : "—"
 
   return (
@@ -80,7 +81,7 @@ export function AdminTopBar() {
             <AvatarFallback>{initial}</AvatarFallback>
           </Avatar>
           <div className="hidden leading-tight md:block">
-            <p className="max-w-[160px] truncate text-xs font-semibold">{user?.email || "Admin"}</p>
+            <p className="max-w-[160px] truncate text-xs font-semibold">{displayName}</p>
             <p className="text-[10px] text-muted-foreground capitalize">{roleLabel}</p>
           </div>
           <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Keluar">

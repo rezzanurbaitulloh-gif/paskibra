@@ -47,7 +47,8 @@ export function ProfileMenu({ className = "" }: { className?: string }) {
     )
   }
 
-  const initial = (user.email || "U").charAt(0).toUpperCase()
+  const displayName = (user.user_metadata?.name as string) || user.email || ""
+  const initial = (displayName || "U").charAt(0).toUpperCase()
   const label = isStaff ? (ROLE_LABEL[role!] || "Pengurus") : "Pengguna"
 
   return (
@@ -71,8 +72,8 @@ export function ProfileMenu({ className = "" }: { className?: string }) {
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-line bg-card shadow-xl shadow-black/20">
           <div className="border-b border-line px-4 py-3">
-            <p className="truncate text-xs font-semibold">{user.email}</p>
-            <p className="mt-0.5 text-[10px] text-muted-foreground">{label}</p>
+            <p className="truncate text-xs font-semibold">{displayName}</p>
+            <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{label} • {user.email}</p>
           </div>
           <div className="p-1.5">
             {isStaff && (

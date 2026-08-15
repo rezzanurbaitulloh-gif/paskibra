@@ -22,6 +22,9 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useAdmin } from "@/contexts/AdminContext"
+import { BendaharaView } from "./bendahara-view"
+import { HumasView } from "./humas-view"
 
 interface Stat {
   label: string
@@ -52,6 +55,10 @@ const fmtIDR = (n: number) =>
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
 export default function AdminDashboard() {
+  const { role } = useAdmin()
+  if (role === "bendahara") return <BendaharaView />
+  if (role === "humas") return <HumasView />
+
   const { user } = useAuth()
   const [stats, setStats] = useState<Record<string, number>>({})
   const [deltas, setDeltas] = useState<Record<string, number>>({})

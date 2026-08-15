@@ -22,16 +22,18 @@ const formatIDR = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n)
 
 export function RentalCatalog({ items }: { items: RentalItem[] }) {
-  const waNumber = useSiteSettings().settings.contacts.waNumber || "6281234567890"
+  const { settings } = useSiteSettings()
+  const waNumber = settings.contacts.waNumber || "6281234567890"
+  const st = settings.sectionTitles
   return (
     <section id="penyewaan" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Layanan Kami"
-          title="Katalog Penyewaan & Jasa"
+          label={st.layananLabel}
+          title={st.layananTitle}
           actionLabel="Katalog Lengkap"
           actionHref="/layanan"
-          subtitle="Kostum, atribut, dan jasa pasukan untuk acara Anda."
+          subtitle={settings.pages.layananIntro}
         />
 
         {items.length > 0 ? (

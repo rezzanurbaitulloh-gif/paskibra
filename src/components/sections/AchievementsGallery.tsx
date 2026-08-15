@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
 import { X, Expand } from "lucide-react"
 import { SectionHeader } from "./SectionHeader"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { cn } from "@/lib/utils"
 
 interface Achievement {
@@ -24,6 +25,8 @@ export function AchievementsGallery({
 }) {
   const [active, setActive] = useState("Semua")
   const [selected, setSelected] = useState<Achievement | null>(null)
+  const { settings } = useSiteSettings()
+  const st = settings.sectionTitles
 
   const filtered =
     active === "Semua" ? achievements : achievements.filter((a) => a.category === active)
@@ -33,11 +36,11 @@ export function AchievementsGallery({
     <section id="galeri" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Wall of Fame"
-          title="Galeri & Prestasi"
+          label={st.galeriLabel}
+          title={st.galeriTitle}
           actionLabel="Lihat Semua Galeri"
           actionHref="/galeri"
-          subtitle="Momen kebanggaan dan pencapaian Satria Cengkara di berbagai ajang."
+          subtitle={settings.pages.galeriIntro}
         />
 
         {/* Filter */}

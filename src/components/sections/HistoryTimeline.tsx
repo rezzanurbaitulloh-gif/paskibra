@@ -3,23 +3,18 @@
 import { motion } from "framer-motion"
 import { Flag, Target, Trophy, Users } from "lucide-react"
 import { SectionHeader } from "./SectionHeader"
-
-const timeline = [
-  { year: "2018", title: "Lahirnya Satria Cengkara", desc: "Paskibra resmi berdiri di SMKN 1 Kertosono dengan 12 anggota perdana." },
-  { year: "2020", title: "Juara Pertama", desc: "Meraih juara 1 LKBB tingkat Kabupaten Nganjuk untuk pertama kalinya." },
-  { year: "2022", title: "Tingkat Provinsi", desc: "Menjadi wakil Jawa Timur dalam ajang paskibra tingkat provinsi." },
-  { year: "2024", title: "Generasi Emas", desc: "45 anggota aktif dengan 6 divisi lengkap — terbanyak dalam sejarah." },
-  { year: "2026", title: "Terus Berkarya", desc: "Pelatihan modern, jasa pasukan, dan sekolah kepemimpinan." },
-]
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 export function HistoryTimeline() {
+  const { settings } = useSiteSettings()
+  const timeline = settings.history.timeline
   return (
     <section id="sejarah" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Perjalanan Kami"
-          title="Sejarah Satria Cengkara"
-          subtitle="Delapan tahun membangun tradisi disiplin dan prestasi."
+          label={settings.history.label}
+          title={settings.history.title}
+          subtitle={settings.history.subtitle}
         />
 
         <div className="mx-auto max-w-2xl">
@@ -48,20 +43,21 @@ export function HistoryTimeline() {
   )
 }
 
-const elements = [
-  { icon: Flag, title: "Sang Merah Putih", desc: "Simbol nasionalisme dan cinta tanah air." },
-  { icon: Target, title: "Mata Banteng", desc: "Fokus, keberanian, dan kewaspadaan." },
-  { icon: Trophy, title: "Lima Sinar", desc: "Disiplin, loyalitas, integritas, solidaritas, prestasi." },
-  { icon: Users, title: "Genggaman Tangan", desc: "Persaudaraan dan kekompakan tim." },
-]
+const PHIL_ICONS = [Flag, Target, Trophy, Users]
 
 export function LogoPhilosophy() {
+  const { settings } = useSiteSettings()
+  const elements = settings.philosophy.items.map((item, index) => ({
+    icon: PHIL_ICONS[index % PHIL_ICONS.length] || Flag,
+    title: item.title,
+    desc: item.desc,
+  }))
   return (
     <section id="filosofi" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Makna Lambang"
-          title="Filosofi Logo Satria Cengkara"
+          label={settings.philosophy.label}
+          title={settings.philosophy.title}
         />
 
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">

@@ -10,8 +10,11 @@ import { Send, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { SectionHeader } from "./SectionHeader"
 import { SaranTicker } from "./SaranTicker"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
+  const { settings } = useSiteSettings()
+  const st = settings.sectionTitles
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
@@ -47,11 +50,11 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
     <section id="saran" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Suara Anda"
-          title="Kotak Saran & Masukan"
+          label={st.saranLabel}
+          title={st.saranTitle}
           actionLabel="Lihat Semua Saran"
           actionHref="/saran"
-          subtitle="Kritik dan saran membantu Satria Cengkara tumbuh lebih baik. Nama bersifat opsional."
+          subtitle={settings.pages.saranIntro}
         />
 
         <motion.div

@@ -24,6 +24,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const { settings } = useSiteSettings()
   const brandWords = (settings.branding.orgName || "SATRIA CENGKARA").toUpperCase().split(/\s+/).filter(Boolean)
+  const navLinks = settings.nav.links.length > 0 ? settings.nav.links : NAV_LINKS
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function Navbar() {
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
@@ -92,7 +93,7 @@ export function Navbar() {
             className="lg:hidden mt-2 glass rounded-2xl p-3"
           >
             <div className="flex flex-col">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
@@ -237,7 +238,7 @@ export function HeroSection() {
             href="#penyewaan"
             className="inline-flex items-center gap-2 rounded-xl border border-line bg-soft px-7 py-3.5 text-sm font-medium text-foreground backdrop-blur transition-all hover:border-white/20 hover:bg-soft active:scale-[0.98]"
           >
-            Sewa Kostum & Pasukan
+            {settings.heroExtras.secondaryCta || "Sewa Kostum & Pasukan"}
           </Link>
         </motion.div>
 
@@ -247,11 +248,7 @@ export function HeroSection() {
           transition={{ delay: 1.4, duration: 0.6 }}
           className="mt-16 grid grid-cols-3 gap-8 md:gap-16"
         >
-          {[
-            { value: "8+", label: "Tahun Berkarya" },
-            { value: "45+", label: "Anggota Aktif" },
-            { value: "15+", label: "Trofi & Prestasi" },
-          ].map((stat) => (
+          {settings.heroExtras.stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="font-display text-2xl md:text-3xl font-bold text-gradient">{stat.value}</p>
               <p className="mt-1 text-[11px] md:text-xs text-muted-foreground">{stat.label}</p>

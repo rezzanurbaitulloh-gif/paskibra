@@ -22,19 +22,11 @@ function TikTokIcon({ className }: { className?: string }) {
   )
 }
 
-const links = [
-  { label: "Beranda", href: "/#beranda" },
-  { label: "Profil Sekolah", href: "/#sekolah" },
-  { label: "Pengurus", href: "/pengurus" },
-  { label: "Galeri", href: "/galeri" },
-  { label: "Layanan Sewa", href: "/layanan" },
-  { label: "Kotak Saran", href: "/saran" },
-]
-
 export function Footer() {
   const year = new Date().getFullYear()
   const { settings } = useSiteSettings()
-  const { branding, contacts, pages } = settings
+  const { branding, contacts, pages, nav } = settings
+  const links = nav.links.length > 0 ? nav.links : []
   const socials = [
     { label: "Instagram", href: contacts.instagram, Icon: InstagramIcon },
     { label: "TikTok", href: contacts.tiktok, Icon: TikTokIcon },

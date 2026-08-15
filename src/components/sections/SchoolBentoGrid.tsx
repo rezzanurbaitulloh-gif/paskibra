@@ -5,52 +5,27 @@ import { GraduationCap, Target, MapPin, BookOpen } from "lucide-react"
 import Image from "next/image"
 import { SectionHeader } from "./SectionHeader"
 import { cn } from "@/lib/utils"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
-const items = [
-  {
-    title: "Profil Sekolah",
-    icon: GraduationCap,
-    content:
-      "SMKN 1 Kertosono adalah sekolah kejuruan unggulan di Kabupaten Nganjuk yang berfokus pada pengembangan kompetensi siswa di bidang teknologi dan industri.",
-    image: "/logo-icon.png",
-    className: "md:col-span-2 md:row-span-2",
-  },
-  {
-    title: "Visi & Misi",
-    icon: Target,
-    content:
-      "Menjadi sekolah kejuruan unggul yang menghasilkan lulusan berkompeten, berkarakter, dan siap bersaing di dunia industri global.",
-    className: "md:col-span-1",
-  },
-  {
-    title: "Jurusan",
-    icon: BookOpen,
-    content:
-      "TKJ, RPL, TEI, TKR, dan DKV — lima kompetensi keahlian unggulan untuk masa depan.",
-    className: "md:col-span-1",
-  },
-  {
-    title: "Lokasi",
-    icon: MapPin,
-    content: "Jl. Raya Kertosono, Kab. Nganjuk, Jawa Timur.",
-    className: "md:col-span-1",
-  },
-  {
-    title: "Ekstrakurikuler",
-    icon: Target,
-    content: "Paskibra, Pramuka, PMR, Futsal, hingga Robotik.",
-    className: "md:col-span-1",
-  },
-]
+const ICONS = [GraduationCap, Target, BookOpen, MapPin, Target]
+const CLASSNAMES = ["md:col-span-2 md:row-span-2", "md:col-span-1", "md:col-span-1", "md:col-span-1", "md:col-span-1"]
 
 export function SchoolBentoGrid() {
+  const { settings } = useSiteSettings()
+  const items = settings.school.items.map((item, index) => ({
+    title: item.title,
+    icon: ICONS[index % ICONS.length] || Target,
+    content: item.content,
+    image: item.image,
+    className: CLASSNAMES[index % CLASSNAMES.length] || "md:col-span-1",
+  }))
   return (
     <section id="sekolah" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Tentang Sekolah"
-          title="SMKN 1 Kertosono"
-          subtitle="Sekolah yang melahirkan Satria Cengkara — calon pemimpin bangsa."
+          label={settings.school.label}
+          title={settings.school.title}
+          subtitle={settings.school.subtitle}
         />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">

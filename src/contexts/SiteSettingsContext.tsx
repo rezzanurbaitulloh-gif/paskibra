@@ -31,6 +31,40 @@ export interface SiteSettings {
     watermarkPemuda: string
     watermarkPemudi: string
   }
+  nav: {
+    links: { label: string; href: string }[]
+  }
+  heroExtras: {
+    secondaryCta: string
+    stats: { value: string; label: string }[]
+  }
+  history: {
+    label: string
+    title: string
+    subtitle: string
+    timeline: { year: string; title: string; desc: string }[]
+  }
+  philosophy: {
+    label: string
+    title: string
+    items: { title: string; desc: string }[]
+  }
+  school: {
+    label: string
+    title: string
+    subtitle: string
+    items: { title: string; content: string; image: string }[]
+  }
+  sectionTitles: {
+    galeriLabel: string
+    galeriTitle: string
+    layananLabel: string
+    layananTitle: string
+    pengurusLabel: string
+    pengurusTitle: string
+    saranLabel: string
+    saranTitle: string
+  }
   aiPrompt: string
 }
 
@@ -70,11 +104,74 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     watermarkPemuda: "/watermark-pemuda.jpg",
     watermarkPemudi: "/watermark-pemudi.jpg",
   },
+  nav: {
+    links: [
+      { label: "Beranda", href: "#beranda" },
+      { label: "Sekolah", href: "#sekolah" },
+      { label: "Pengurus", href: "#pengurus" },
+      { label: "Galeri", href: "#galeri" },
+      { label: "Sejarah", href: "#sejarah" },
+      { label: "Layanan", href: "#penyewaan" },
+      { label: "Kontak", href: "#kontak" },
+    ],
+  },
+  heroExtras: {
+    secondaryCta: "Sewa Kostum & Pasukan",
+    stats: [
+      { value: "8+", label: "Tahun Berkarya" },
+      { value: "45+", label: "Anggota Aktif" },
+      { value: "15+", label: "Trofi & Prestasi" },
+    ],
+  },
+  history: {
+    label: "Perjalanan Kami",
+    title: "Sejarah Satria Cengkara",
+    subtitle: "Delapan tahun membangun tradisi disiplin dan prestasi.",
+    timeline: [
+      { year: "2018", title: "Lahirnya Satria Cengkara", desc: "Paskibra resmi berdiri di SMKN 1 Kertosono dengan 12 anggota perdana." },
+      { year: "2020", title: "Juara Pertama", desc: "Meraih juara 1 LKBB tingkat Kabupaten Nganjuk untuk pertama kalinya." },
+      { year: "2022", title: "Tingkat Provinsi", desc: "Menjadi wakil Jawa Timur dalam ajang paskibra tingkat provinsi." },
+      { year: "2024", title: "Generasi Emas", desc: "45 anggota aktif dengan 6 divisi lengkap — terbanyak dalam sejarah." },
+      { year: "2026", title: "Terus Berkarya", desc: "Pelatihan modern, jasa pasukan, dan sekolah kepemimpinan." },
+    ],
+  },
+  philosophy: {
+    label: "Makna Lambang",
+    title: "Filosofi Logo Satria Cengkara",
+    items: [
+      { title: "Sang Merah Putih", desc: "Simbol nasionalisme dan cinta tanah air." },
+      { title: "Mata Banteng", desc: "Fokus, keberanian, dan kewaspadaan." },
+      { title: "Lima Sinar", desc: "Disiplin, loyalitas, integritas, solidaritas, prestasi." },
+      { title: "Genggaman Tangan", desc: "Persaudaraan dan kekompakan tim." },
+    ],
+  },
+  school: {
+    label: "Tentang Sekolah",
+    title: "SMKN 1 Kertosono",
+    subtitle: "Sekolah yang melahirkan Satria Cengkara — calon pemimpin bangsa.",
+    items: [
+      { title: "Profil Sekolah", content: "SMKN 1 Kertosono adalah sekolah kejuruan unggulan di Kabupaten Nganjuk yang berfokus pada pengembangan kompetensi siswa di bidang teknologi dan industri.", image: "/logo-icon.png" },
+      { title: "Visi & Misi", content: "Menjadi sekolah kejuruan unggul yang menghasilkan lulusan berkompeten, berkarakter, dan siap bersaing di dunia industri global.", image: "" },
+      { title: "Jurusan", content: "TKJ, RPL, TEI, TKR, dan DKV — lima kompetensi keahlian unggulan untuk masa depan.", image: "" },
+      { title: "Lokasi", content: "Jl. Raya Kertosono, Kab. Nganjuk, Jawa Timur.", image: "" },
+      { title: "Ekstrakurikuler", content: "Paskibra, Pramuka, PMR, Futsal, hingga Robotik.", image: "" },
+    ],
+  },
+  sectionTitles: {
+    galeriLabel: "Dokumentasi",
+    galeriTitle: "Galeri Kegiatan",
+    layananLabel: "Penyewaan",
+    layananTitle: "Sewa Kostum & Perlengkapan",
+    pengurusLabel: "Struktur Organisasi",
+    pengurusTitle: "Pengurus Satria Cengkara",
+    saranLabel: "Suara Anda",
+    saranTitle: "Kotak Saran & Masukan",
+  },
   aiPrompt:
     'Kamu adalah "Tanya Satria Bot", asisten AI resmi Paskibra Satria Cengkara SMKN 1 Kertosono.',
 }
 
-const KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "aiPrompt"] as const
+const KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "nav", "heroExtras", "history", "philosophy", "school", "sectionTitles", "aiPrompt"] as const
 
 function deepMerge<T>(base: T, patch: Partial<T>): T {
   const out: any = { ...base }

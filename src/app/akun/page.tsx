@@ -13,6 +13,9 @@ import { useAuth } from "@/contexts/AuthContext"
 
 export default function AccountPage() {
   const { user, role, isStaff, loading } = useAuth()
+  const [name, setName] = useState(user?.user_metadata?.name || "")
+  const [savingName, setSavingName] = useState(false)
+  const [nameMessage, setNameMessage] = useState("")
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
   const [saving, setSaving] = useState(false)
@@ -24,6 +27,24 @@ export default function AccountPage() {
       window.location.href = "/login"
     }
   }, [loading, user])
+
+  const handleName = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setNameMessage("")
+    const trimmed = name.trim()
+    if (!trimmed) {
+      setNameMessage("Nama tidak boleh kosong.")
+      return
+    }
+    setSavingName(true)
+    const { error: err } = await supabase.auth.updateUser({ data: { name: trimmed } })
+    setSavingName(false)
+    if (err) {
+      setNameMessage(err.message)
+      return
+    }
+    setNameMessage("Nama berhasil diperbarui.")
+  }
 
   const handlePassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,6 +108,27 @@ export default function AccountPage() {
                 <span className="text-xs text-muted-foreground">Role</span>
                 <span className="text-xs font-semibold">{roleLabel}</span>
               </div>
+
+              <form onSubmit={handleName} className="space-y-3">
+                <p className="text-xs font-semibold">Nama Tampilan</p>
+                <div className="space-y-1.5">
+                  <Label htmlFor="dn" className="text-xs text-muted-foreground">Nama</Label>
+                  <Input
+                    id="dn"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-10 border-line bg-soft"
+                    placeholder="Nama yang tampil di seluruh web"
+                  />
+                </div>
+                {nameMessage && (
+                  <p className={`text-xs ${nameMessage.includes("berhasil") ? "text-green-500" : "text-red-400"}`}>{nameMessage}</p>
+                )}
+                <Button type="submit" className="w-full gradient-primary text-white" disabled={savingName}>
+                  {savingName && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Simpan Nama
+                </Button>
+              </form>
 
               {isStaff && (
                 <Link

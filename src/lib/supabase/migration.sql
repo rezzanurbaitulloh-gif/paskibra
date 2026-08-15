@@ -127,6 +127,9 @@ CREATE POLICY "public_read_rentals" ON rentals
 CREATE POLICY "public_read_feedbacks" ON feedbacks
   FOR SELECT USING (true);
 
+CREATE POLICY "public_read_inventory" ON inventory
+  FOR SELECT USING (true);
+
 -- Public like/dislike voting (safe: only increments counters)
 CREATE OR REPLACE FUNCTION public.vote_feedback(p_id uuid, p_vote text)
 RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$

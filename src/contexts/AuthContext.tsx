@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase/client"
 import { getStaffRole, type UserRole } from "@/lib/auth"
 
 interface AuthState {
-  user: { id: string; email: string | null } | null
+  user: { id: string; email: string | null; user_metadata?: { name?: string } } | null
   role: UserRole | null
   isStaff: boolean
   loading: boolean
@@ -38,7 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
     const staffRole = await getStaffRole(session.user.email)
-    setUser({ id: session.user.id, email: session.user.email || null })
+    setUser({
+      id: session.user.id,
+      email: session.user.email || null,
+      user_metadata: (session.user.user_metadata as { name?: string } | undefined) || undefined,
+    })
     setRole(staffRole)
     setLoading(false)
   }, [])

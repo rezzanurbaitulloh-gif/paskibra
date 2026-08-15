@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "./SectionHeader"
+import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { cn } from "@/lib/utils"
 
 interface Member {
@@ -73,15 +74,17 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
 }
 
 export function StructureMembers({ members }: { members: Member[] }) {
+  const { settings } = useSiteSettings()
+  const st = settings.sectionTitles
   return (
     <section id="pengurus" className="relative py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
-          label="Struktur Organisasi"
-          title="Pengurus Satria Cengkara"
+          label={st.pengurusLabel}
+          title={st.pengurusTitle}
           actionLabel="Halaman Pengurus"
           actionHref="/pengurus"
-          subtitle="Badan Pengurus Harian dan seluruh divisi yang menjalankan roda organisasi."
+          subtitle={settings.pages.pengurusIntro}
         />
 
         {members.length > 0 ? (

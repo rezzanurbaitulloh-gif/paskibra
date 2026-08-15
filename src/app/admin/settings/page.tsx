@@ -12,8 +12,12 @@ import { Save, CheckCircle2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { DEFAULT_SETTINGS, type SiteSettings } from "@/contexts/SiteSettingsContext"
 import { ImageUpload } from "@/components/image-upload"
+import { ListEditor, type ListField } from "@/components/admin/ListEditor"
 
-const SETTING_KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "aiPrompt"]
+const SETTING_KEYS = [
+  "colors", "hero", "branding", "contacts", "pages", "backgrounds", "nav",
+  "heroExtras", "history", "philosophy", "school", "sectionTitles", "aiPrompt",
+]
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS)
@@ -80,6 +84,16 @@ export default function SettingsPage() {
     }))
   }
 
+  const updateArr = <G extends keyof SiteSettings>(group: G, field: string, items: unknown[]) => {
+    setSettings((prev) => ({
+      ...prev,
+      [group]: {
+        ...(prev[group] as Record<string, unknown>),
+        [field]: items,
+      } as SiteSettings[G],
+    }))
+  }
+
   if (loading) {
     return <div className="flex items-center justify-center h-64">Memuat pengaturan...</div>
   }
@@ -101,6 +115,11 @@ export default function SettingsPage() {
           <TabsTrigger value="hero">Hero</TabsTrigger>
           <TabsTrigger value="kontak">Kontak & Sosmed</TabsTrigger>
           <TabsTrigger value="halaman">Teks Halaman</TabsTrigger>
+          <TabsTrigger value="navigasi">Navigasi</TabsTrigger>
+          <TabsTrigger value="sejarah">Sejarah</TabsTrigger>
+          <TabsTrigger value="sekolah">Sekolah</TabsTrigger>
+          <TabsTrigger value="filosofi">Filosofi Logo</TabsTrigger>
+          <TabsTrigger value="judul">Judul Section</TabsTrigger>
           <TabsTrigger value="background">Background</TabsTrigger>
           <TabsTrigger value="ai">AI Prompt</TabsTrigger>
         </TabsList>
@@ -256,6 +275,33 @@ export default function SettingsPage() {
                   className="glass border-line"
                 />
               </div>
+              <div className="space-y-2">
+                <Label>Tombol Sekunder (Sewa)</Label>
+                <Input
+                  value={settings.heroExtras.secondaryCta}
+                  onChange={(e) => updateSetting("heroExtras", "secondaryCta", e.target.value)}
+                  className="glass border-line"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Statistik Hero</CardTitle>
+              <p className="text-sm text-muted-foreground">Angka prestasi yang tampil di bawah tombol hero.</p>
+            </CardHeader>
+            <CardContent>
+              <ListEditor
+                fields={[
+                  { key: "value", label: "Nilai", placeholder: "45+" },
+                  { key: "label", label: "Label", placeholder: "Anggota Aktif" },
+                ]}
+                items={settings.heroExtras.stats}
+                onChange={(items) => updateArr("heroExtras", "stats", items)}
+                itemLabel="Statistik"
+                addText="Tambah Statistik"
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -352,6 +398,171 @@ export default function SettingsPage() {
                     onChange={(e) => updateSetting("pages", key, e.target.value)}
                     rows={2}
                     className="glass border-line resize-none"
+                  />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="navigasi" className="mt-6">
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Menu Navigasi</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Menu navbar (beranda) dan tautan footer. Href memakai anchor, contoh: #sejarah atau /layanan.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <ListEditor
+                fields={[
+                  { key: "label", label: "Label Menu", placeholder: "Sejarah" },
+                  { key: "href", label: "Tautan (href)", placeholder: "#sejarah" },
+                ]}
+                items={settings.nav.links}
+                onChange={(items) => updateArr("nav", "links", items)}
+                itemLabel="Menu"
+                addText="Tambah Menu"
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sejarah" className="mt-6">
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Editor Sejarah</CardTitle>
+              <p className="text-sm text-muted-foreground">Judul section dan timeline perjalanan organisasi.</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label>Label</Label>
+                  <Input value={settings.history.label} onChange={(e) => updateSetting("history", "label", e.target.value)} className="glass border-line" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Judul</Label>
+                  <Input value={settings.history.title} onChange={(e) => updateSetting("history", "title", e.target.value)} className="glass border-line" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Subjudul</Label>
+                  <Input value={settings.history.subtitle} onChange={(e) => updateSetting("history", "subtitle", e.target.value)} className="glass border-line" />
+                </div>
+              </div>
+              <div className="pt-2">
+                <p className="mb-3 text-xs font-semibold text-muted-foreground">Timeline Sejarah</p>
+                <ListEditor
+                  fields={[
+                    { key: "year", label: "Tahun", placeholder: "2018" },
+                    { key: "title", label: "Judul", placeholder: "Lahirnya Satria Cengkara" },
+                    { key: "desc", label: "Deskripsi", type: "textarea", placeholder: "Cerita singkat..." },
+                  ]}
+                  items={settings.history.timeline}
+                  onChange={(items) => updateArr("history", "timeline", items)}
+                  itemLabel="Tahun"
+                  addText="Tambah Timeline"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="sekolah" className="mt-6">
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Editor Sekolah</CardTitle>
+              <p className="text-sm text-muted-foreground">Section profil sekolah di beranda — teks dan gambar dapat diubah.</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label>Label</Label>
+                  <Input value={settings.school.label} onChange={(e) => updateSetting("school", "label", e.target.value)} className="glass border-line" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Judul</Label>
+                  <Input value={settings.school.title} onChange={(e) => updateSetting("school", "title", e.target.value)} className="glass border-line" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Subjudul</Label>
+                  <Input value={settings.school.subtitle} onChange={(e) => updateSetting("school", "subtitle", e.target.value)} className="glass border-line" />
+                </div>
+              </div>
+              <div className="pt-2">
+                <p className="mb-3 text-xs font-semibold text-muted-foreground">Kartu Bento (5 kartu)</p>
+                <ListEditor
+                  fields={[
+                    { key: "title", label: "Judul Kartu", placeholder: "Profil Sekolah" },
+                    { key: "content", label: "Isi Teks", type: "textarea", placeholder: "Deskripsi..." },
+                    { key: "image", label: "Gambar", type: "image" },
+                  ]}
+                  items={settings.school.items}
+                  onChange={(items) => updateArr("school", "items", items)}
+                  itemLabel="Kartu"
+                  addText="Tambah Kartu"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="filosofi" className="mt-6">
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Editor Filosofi Logo</CardTitle>
+              <p className="text-sm text-muted-foreground">Makna lambang logo yang tampil di beranda.</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Label</Label>
+                  <Input value={settings.philosophy.label} onChange={(e) => updateSetting("philosophy", "label", e.target.value)} className="glass border-line" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Judul</Label>
+                  <Input value={settings.philosophy.title} onChange={(e) => updateSetting("philosophy", "title", e.target.value)} className="glass border-line" />
+                </div>
+              </div>
+              <div className="pt-2">
+                <p className="mb-3 text-xs font-semibold text-muted-foreground">Item Filosofi</p>
+                <ListEditor
+                  fields={[
+                    { key: "title", label: "Judul", placeholder: "Sang Merah Putih" },
+                    { key: "desc", label: "Deskripsi", type: "textarea", placeholder: "Makna..." },
+                  ]}
+                  items={settings.philosophy.items}
+                  onChange={(items) => updateArr("philosophy", "items", items)}
+                  itemLabel="Filosofi"
+                  addText="Tambah Item"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="judul" className="mt-6">
+          <Card className="glass border-line max-w-2xl">
+            <CardHeader>
+              <CardTitle className="font-display">Judul Section</CardTitle>
+              <p className="text-sm text-muted-foreground">Label dan judul setiap section di halaman utama.</p>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                ["galeriLabel", "Label Galeri"],
+                ["galeriTitle", "Judul Galeri"],
+                ["layananLabel", "Label Layanan"],
+                ["layananTitle", "Judul Layanan"],
+                ["pengurusLabel", "Label Pengurus"],
+                ["pengurusTitle", "Judul Pengurus"],
+                ["saranLabel", "Label Saran"],
+                ["saranTitle", "Judul Saran"],
+              ].map(([key, label]) => (
+                <div key={key} className="space-y-2">
+                  <Label>{label}</Label>
+                  <Input
+                    value={settings.sectionTitles[key as keyof typeof settings.sectionTitles]}
+                    onChange={(e) => updateSetting("sectionTitles", key, e.target.value)}
+                    className="glass border-line"
                   />
                 </div>
               ))}

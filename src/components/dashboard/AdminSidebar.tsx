@@ -52,7 +52,8 @@ export function AdminSidebar() {
   const { settings } = useSiteSettings()
   const { user } = useAuth()
   const orgName = settings.branding.orgName || "SATRIA CENGKARA"
-  const initial = (user?.email || "U").charAt(0).toUpperCase()
+  const displayName = (user?.user_metadata?.name as string) || user?.email || "Pengguna"
+  const initial = (displayName || "U").charAt(0).toUpperCase()
   const roleLabel = role ? ROLE_LABEL[role] || role : "Pengguna"
 
   const groups = navGroups
@@ -114,7 +115,7 @@ export function AdminSidebar() {
             {initial}
           </span>
           <div className="min-w-0 leading-tight">
-            <p className="truncate text-xs font-semibold">{user?.email || "Pengguna"}</p>
+            <p className="truncate text-xs font-semibold">{displayName}</p>
             <p className="text-[10px] text-muted-foreground">{roleLabel}</p>
           </div>
         </div>

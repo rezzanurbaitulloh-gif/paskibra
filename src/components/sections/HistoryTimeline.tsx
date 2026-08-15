@@ -9,7 +9,7 @@ export function HistoryTimeline() {
   const { settings } = useSiteSettings()
   const timeline = settings.history.timeline
   return (
-    <section id="sejarah" className="relative py-24">
+    <section id="sejarah" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={settings.history.label}
@@ -53,14 +53,14 @@ export function LogoPhilosophy() {
     desc: item.desc,
   }))
   return (
-    <section id="filosofi" className="relative py-24">
+    <section id="filosofi" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={settings.philosophy.label}
           title={settings.philosophy.title}
         />
 
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -68,7 +68,7 @@ export function LogoPhilosophy() {
             viewport={{ once: true, margin: "-80px" }}
             className="mx-auto"
           >
-            <div className="relative flex h-56 w-56 items-center justify-center md:h-72 md:w-72">
+            <div className="relative flex h-44 w-44 items-center justify-center md:h-72 md:w-72">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
@@ -85,7 +85,7 @@ export function LogoPhilosophy() {
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
             {elements.map((el, index) => (
               <motion.div
                 key={el.title}
@@ -93,12 +93,12 @@ export function LogoPhilosophy() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: index * 0.08 }}
                 viewport={{ once: true, margin: "-40px" }}
-                className="rounded-2xl border border-line bg-card p-5 card-glow"
+                className="rounded-2xl border border-line bg-card p-4 card-glow md:p-5"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-soft border border-line">
-                  <el.icon className="h-4.5 w-4.5 text-accent" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-soft border border-line md:h-10 md:w-10">
+                  <el.icon className="h-4 w-4 text-accent" />
                 </div>
-                <h3 className="mt-3 font-display text-sm font-bold">{el.title}</h3>
+                <h3 className="mt-2.5 font-display text-sm font-bold">{el.title}</h3>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{el.desc}</p>
               </motion.div>
             ))}

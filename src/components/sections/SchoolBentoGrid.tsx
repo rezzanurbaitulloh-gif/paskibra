@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 const ICONS = [GraduationCap, Target, BookOpen, MapPin, Target]
-const CLASSNAMES = ["md:col-span-2 md:row-span-2", "md:col-span-1", "md:col-span-1", "md:col-span-1", "md:col-span-1"]
+const CLASSNAMES = ["col-span-2 md:col-span-2 md:row-span-2", "md:col-span-1", "md:col-span-1", "md:col-span-1", "md:col-span-1"]
 
 export function SchoolBentoGrid() {
   const { settings } = useSiteSettings()
@@ -20,7 +20,7 @@ export function SchoolBentoGrid() {
     className: CLASSNAMES[index % CLASSNAMES.length] || "md:col-span-1",
   }))
   return (
-    <section id="sekolah" className="relative py-24">
+    <section id="sekolah" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={settings.school.label}
@@ -28,7 +28,7 @@ export function SchoolBentoGrid() {
           subtitle={settings.school.subtitle}
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:grid-rows-2">
           {items.map((item, index) => (
             <motion.div
               key={item.title}
@@ -38,7 +38,7 @@ export function SchoolBentoGrid() {
               viewport={{ once: true, margin: "-60px" }}
               className={cn(item.className)}
             >
-              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card p-6 card-glow">
+              <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card p-4 card-glow md:p-6">
                 {item.image && (
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.05]">
                     <Image
@@ -55,8 +55,8 @@ export function SchoolBentoGrid() {
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-soft">
                     <item.icon className="h-5 w-5 text-accent" />
                   </div>
-                  <h3 className="mt-4 font-display text-lg font-bold">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.content}</p>
+                  <h3 className="mt-3 font-display text-base font-bold md:text-lg">{item.title}</h3>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground md:text-sm">{item.content}</p>
                 </div>
               </div>
             </motion.div>

@@ -33,7 +33,7 @@ export function AchievementsGallery({
   const tabs = ["Semua", ...categories.filter((c) => c !== "Semua")]
 
   return (
-    <section id="galeri" className="relative py-24">
+    <section id="galeri" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={st.galeriLabel}
@@ -63,7 +63,7 @@ export function AchievementsGallery({
 
         {/* Masonry */}
         {filtered.length > 0 ? (
-          <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [column-fill:_balance]">
+          <div className="columns-2 gap-3 sm:gap-4 lg:columns-3 [column-fill:_balance]">
             {filtered.map((item, index) => (
               <motion.div
                 key={item.id}

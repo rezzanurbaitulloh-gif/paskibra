@@ -26,7 +26,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
   const waNumber = settings.contacts.waNumber || "6281234567890"
   const st = settings.sectionTitles
   return (
-    <section id="penyewaan" className="relative py-24">
+    <section id="penyewaan" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={st.layananLabel}
@@ -37,7 +37,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
         />
 
         {items.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {items.map((item, index) => (
               <motion.div
                 key={item.id}
@@ -76,11 +76,11 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
                     </Badge>
                   </div>
 
-                  <div className="flex flex-1 flex-col p-4">
-                    <h3 className="font-display text-sm font-bold">{item.name}</h3>
+                  <div className="flex flex-1 flex-col p-3 md:p-4">
+                    <h3 className="font-display text-sm font-bold leading-tight">{item.name}</h3>
                     <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
-                    <div className="mt-4 flex items-center justify-between pt-3">
-                      <p className="font-display text-sm font-bold text-accent">{formatIDR(item.price)}</p>
+                    <div className="mt-3 flex items-center justify-between gap-1 pt-2">
+                      <p className="font-display text-xs font-bold text-accent md:text-sm">{formatIDR(item.price)}</p>
                       <a
                         href={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                           `Halo Satria Cengkara, saya ingin menyewa ${item.name}`
@@ -88,7 +88,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                          "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all",
+                          "inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-[10px] font-semibold transition-all md:px-3 md:py-2 md:text-xs",
                           item.available
                             ? "bg-white text-black hover:bg-white/90 active:scale-[0.97]"
                             : "pointer-events-none bg-soft text-muted-foreground"

@@ -81,7 +81,7 @@ export function StructureMembers({ members }: { members: Member[] }) {
   const { settings } = useSiteSettings()
   const st = settings.sectionTitles
   return (
-    <section id="pengurus" className="relative py-24">
+    <section id="pengurus" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={st.pengurusLabel}
@@ -92,7 +92,7 @@ export function StructureMembers({ members }: { members: Member[] }) {
         />
 
         {members.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5">
             {members.map((member, index) => (
               <MemberCard key={member.id} member={member} index={index} />
             ))}

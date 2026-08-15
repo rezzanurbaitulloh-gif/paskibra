@@ -47,7 +47,7 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
   }
 
   return (
-    <section id="saran" className="relative py-24">
+    <section id="saran" className="relative py-16 md:py-24">
       <div className="container mx-auto px-4">
         <SectionHeader
           label={st.saranLabel}

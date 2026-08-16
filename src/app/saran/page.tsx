@@ -36,6 +36,7 @@ export default function SaranPage() {
 
   useEffect(() => {
     try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- baca localStorage pasca-hidrasi (mencegah mismatch SSR)
       setVoted(JSON.parse(localStorage.getItem(VOTE_KEY) || "{}"))
     } catch {
       setVoted({})

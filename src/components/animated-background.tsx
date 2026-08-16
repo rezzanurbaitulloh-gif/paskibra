@@ -8,6 +8,7 @@ export function AnimatedBackground() {
   const { settings } = useSiteSettings()
   const { watermarkPemuda, watermarkPemudi, watermarkOpacity } = settings.backgrounds
   const [mounted, setMounted] = useState(false)
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- guard hidrasi: animasi framer-motion hanya setelah mount
   useEffect(() => setMounted(true), [])
 
   return (

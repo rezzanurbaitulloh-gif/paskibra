@@ -73,14 +73,15 @@ function ParticipantsManager() {
     notes: "",
   })
 
-  useEffect(() => {
-    fetchAll()
-  }, [])
-
   const fetchAll = async () => {
     const { data } = await supabase.from("lkbb_participants").select("*").order("created_at", { ascending: false })
     setParticipants(data || [])
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchAll()
+  }, [])
 
   const stats = {
     total: participants.length,
@@ -381,12 +382,10 @@ function InfoEditor() {
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState("")
 
-  useEffect(() => {
-    if (!loading && !ready) {
-      setLkbb(settings.lkbb)
-      setReady(true)
-    }
-  }, [loading, settings.lkbb, ready])
+  if (!ready && !loading) {
+    setLkbb(settings.lkbb)
+    setReady(true)
+  }
 
   const update = (field: string, value: string) => {
     setLkbb((prev) => ({ ...prev, [field]: value }) as SiteSettings["lkbb"])
@@ -666,10 +665,6 @@ function UpdatesManager() {
   const [uploading, setUploading] = useState(false)
   const [form, setForm] = useState({ title: "", description: "", image_url: "", video_url: "" })
 
-  useEffect(() => {
-    fetchAll()
-  }, [])
-
   const fetchAll = async () => {
     const { data } = await supabase
       .from("lkbb_updates")
@@ -677,6 +672,11 @@ function UpdatesManager() {
       .order("created_at", { ascending: false })
     setUpdates(data || [])
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchAll()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -817,10 +817,6 @@ function DocumentsManager() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
 
-  useEffect(() => {
-    fetchAll()
-  }, [])
-
   const fetchAll = async () => {
     const { data } = await supabase
       .from("lkbb_documents")
@@ -828,6 +824,11 @@ function DocumentsManager() {
       .order("created_at", { ascending: false })
     setDocs(data || [])
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchAll()
+  }, [])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

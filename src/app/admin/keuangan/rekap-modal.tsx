@@ -44,7 +44,10 @@ export function RekapModal({ open, onClose }: { open: boolean; onClose: () => vo
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState<string>("all")
   const [year, setYear] = useState<string>("all")
-  const [cats, setCats] = useState<string[]>([])
+  const cats = useMemo(
+    () => [...new Set(records.map((r) => r.category).filter(Boolean))],
+    [records]
+  )
   const [selCats, setSelCats] = useState<string[]>([])
 
   const [aiMode, setAiMode] = useState(false)
@@ -63,13 +66,11 @@ export function RekapModal({ open, onClose }: { open: boolean; onClose: () => vo
   }, [month, year])
 
   useEffect(() => {
-    if (open) fetchRecords()
+    if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+      fetchRecords()
+    }
   }, [open, fetchRecords])
-
-  useEffect(() => {
-    const all = [...new Set(records.map((r) => r.category).filter(Boolean))]
-    setCats(all)
-  }, [records])
 
   const years = useMemo(() => {
     const ys = [...new Set(records.map((r) => r.date?.slice(0, 4)).filter(Boolean))]

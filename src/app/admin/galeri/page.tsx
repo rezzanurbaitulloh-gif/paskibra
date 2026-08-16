@@ -44,14 +44,15 @@ export default function GaleriAdminPage() {
     videos: [] as string[],
   })
 
-  useEffect(() => {
-    fetchItems()
-  }, [])
-
   const fetchItems = async () => {
     const { data } = await supabase.from("gallery").select("*").order("created_at", { ascending: false })
     setItems(data || [])
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchItems()
+  }, [])
 
   const openCreate = () => {
     setEditing(null)

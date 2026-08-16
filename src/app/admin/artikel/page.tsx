@@ -27,14 +27,15 @@ export default function ArticlesPage() {
   const [editing, setEditing] = useState<Article | null>(null)
   const [form, setForm] = useState(emptyForm)
 
-  useEffect(() => {
-    fetchArticles()
-  }, [])
-
   const fetchArticles = async () => {
     const { data } = await supabase.from("articles").select("*").order("created_at", { ascending: false })
     setArticles(data || [])
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchArticles()
+  }, [])
 
   const openCreate = () => {
     setEditing(null)

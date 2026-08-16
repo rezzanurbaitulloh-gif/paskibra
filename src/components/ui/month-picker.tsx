@@ -28,12 +28,14 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
 
   const valueMonth = value && /^\d{4}-\d{2}$/.test(value) ? Number(value.slice(5, 7)) : null
   const activePreset = presets?.find((p) => p.value === value)
+  const [prevOpen, setPrevOpen] = React.useState(open)
 
-  React.useEffect(() => {
+  if (prevOpen !== open) {
+    setPrevOpen(open)
     if (open && valueMonth && value) {
       setView({ y: Number(value.slice(0, 4)), m: valueMonth - 1 })
     }
-  }, [open, value, valueMonth])
+  }
 
   const firstDay = new Date(view.y, view.m, 1)
   const offset = (firstDay.getDay() + 6) % 7

@@ -23,7 +23,11 @@ export function SaranTicker({ refreshKey = 0 }: { refreshKey?: number }) {
   const scrollerRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number>(0)
   const pausedRef = useRef(true)
-  const lastInteractionRef = useRef(Date.now())
+  const lastInteractionRef = useRef(0)
+
+  useEffect(() => {
+    lastInteractionRef.current = Date.now()
+  }, [])
 
   const loadVotes = useCallback(() => {
     try {
@@ -43,11 +47,13 @@ export function SaranTicker({ refreshKey = 0 }: { refreshKey?: number }) {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- baca localStorage pasca-hidrasi (mencegah mismatch SSR)
     loadVotes()
     fetchFeedbacks()
   }, [loadVotes, fetchFeedbacks])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
     fetchFeedbacks()
   }, [refreshKey, fetchFeedbacks])
 

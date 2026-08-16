@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- inisialisasi sesi async (setState setelah await) + subscriber auth
     refresh()
     const { data: sub } = supabase.auth.onAuthStateChange(() => {
       refresh()

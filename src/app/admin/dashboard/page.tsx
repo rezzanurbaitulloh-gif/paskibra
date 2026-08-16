@@ -91,9 +91,6 @@ function LiveClock() {
 
 export default function AdminDashboard() {
   const { role } = useAdmin()
-  if (role === "bendahara") return <BendaharaView />
-  if (role === "humas") return <HumasView />
-
   const { user } = useAuth()
   const [stats, setStats] = useState<Record<string, number>>({})
   const [deltas, setDeltas] = useState<Record<string, number>>({})
@@ -189,6 +186,9 @@ export default function AdminDashboard() {
     }
     load()
   }, [])
+
+  if (role === "bendahara") return <BendaharaView />
+  if (role === "humas") return <HumasView />
 
   const name =
     user?.user_metadata?.name?.trim() ||

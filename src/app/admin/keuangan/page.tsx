@@ -67,6 +67,7 @@ export default function KeuanganPage() {
     setRecords(data || [])
   }
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
   useEffect(() => { fetchRecords() }, [])
 
   const filtered = useMemo(() => {
@@ -261,7 +262,7 @@ export default function KeuanganPage() {
 
               {/* AI Smart Entry */}
               <div className="rounded-xl border border-dashed border-line bg-soft p-4">
-                <Label className="text-xs text-muted-foreground">AI Smart Entry — ketik transaksi bebas, contoh: "1. Pemasukan kas 100rb, 2. Beli air 20rb"</Label>
+                <Label className="text-xs text-muted-foreground">AI Smart Entry — ketik transaksi bebas, contoh: “1. Pemasukan kas 100rb, 2. Beli air 20rb”</Label>
                 <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                   <Input
                     value={aiText}
@@ -431,7 +432,7 @@ export default function KeuanganPage() {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    Belum ada catatan kas. Mulai dengan "+ Tambah Catatan Kas".
+                    Belum ada catatan kas. Mulai dengan “+ Tambah Catatan Kas”.
                   </td>
                 </tr>
               )}

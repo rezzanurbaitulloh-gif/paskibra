@@ -59,15 +59,21 @@ export function ImageCropDialog({
   const [imgSize, setImgSize] = useState({ width: 0, height: 0 })
   const [busy, setBusy] = useState(false)
   const readyRef = useRef(false)
+  const [prevOpen, setPrevOpen] = useState(open)
+  const [prevImage, setPrevImage] = useState(image)
 
-  useEffect(() => {
-    if (!open) return
+  if (open && (prevOpen !== open || prevImage !== image)) {
+    setPrevOpen(open)
+    setPrevImage(image)
     setAspect(null)
     setSizePct(100)
     setCrop({ unit: "%", x: 0, y: 0, width: 100, height: 100 })
     setBusy(false)
+  }
+
+  useEffect(() => {
     readyRef.current = false
-    if (!image) return
+    if (!open || !image) return
     const img = new Image()
     img.onload = () => {
       setImgSize({ width: img.naturalWidth, height: img.naturalHeight })
@@ -221,7 +227,7 @@ export function ImageCropDialog({
             </span>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Seret sudut/handle kotak untuk mengubah ukuran area crop, atau geser slider. Rasio "Gambar Penuh"
+            Seret sudut/handle kotak untuk mengubah ukuran area crop, atau geser slider. Rasio “Gambar Penuh”
             = area bebas sesuai ukuran asli foto.
           </p>
 
@@ -249,7 +255,7 @@ export function ImageCropDialog({
           </div>
           {originalFile && (
             <p className="text-center text-[11px] text-muted-foreground">
-              "Unggah Asli" menyimpan foto sesuai resolusi aslinya tanpa dipotong. Ukuran maksimal 10MB.
+              {"\u201cUnggah Asli\u201d menyimpan foto sesuai resolusi aslinya tanpa dipotong. Ukuran maksimal 10MB."}
             </p>
           )}
         </div>

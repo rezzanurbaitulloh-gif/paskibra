@@ -60,6 +60,7 @@ export default function UsersAdminPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
     fetchUsers()
   }, [])
 

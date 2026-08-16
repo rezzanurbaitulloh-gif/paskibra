@@ -47,14 +47,15 @@ export default function InventarisAdminPage() {
   const [editing, setEditing] = useState<Item | null>(null)
   const [form, setForm] = useState(emptyForm)
 
-  useEffect(() => {
-    fetchItems()
-  }, [])
-
   const fetchItems = async () => {
     const { data } = await supabase.from("inventory").select("*").order("name")
     setItems(data || [])
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchItems()
+  }, [])
 
   const openCreate = () => {
     setEditing(null)

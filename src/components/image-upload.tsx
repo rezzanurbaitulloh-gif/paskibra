@@ -114,7 +114,7 @@ export function ImageUpload({
       </button>
       {!hideHint && (
         <p className="mt-1 text-[10px] text-muted-foreground">
-          Foto bisa disesuaikan (crop) dulu, atau pilih "Unggah Asli" untuk menyimpan resolusi penuh tanpa
+          Foto bisa disesuaikan (crop) dulu, atau pilih “Unggah Asli” untuk menyimpan resolusi penuh tanpa
           dipotong.
         </p>
       )}

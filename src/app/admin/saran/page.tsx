@@ -25,15 +25,16 @@ export default function SaranPage() {
   const [replyText, setReplyText] = useState<Record<string, string>>({})
   const [replying, setReplying] = useState<Record<string, boolean>>({})
 
-  useEffect(() => {
-    fetchFeedbacks()
-  }, [])
-
   const fetchFeedbacks = async () => {
     const { data } = await supabase.from("feedbacks").select("*").order("created_at", { ascending: false })
     setFeedbacks(data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
+    fetchFeedbacks()
+  }, [])
 
   const handleReply = async (fb: Feedback) => {
     const text = replyText[fb.id]?.trim()

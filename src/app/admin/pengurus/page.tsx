@@ -42,7 +42,13 @@ export default function StructureManagement() {
     photo_url: ""
   })
 
+  const fetchMembers = async () => {
+    const { data } = await supabase.from("structure_members").select("*")
+    setMembers(data || [])
+  }
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch async dari Supabase (setState setelah await, bukan sinkron)
     fetchMembers()
   }, [])
 
@@ -87,11 +93,6 @@ export default function StructureManagement() {
           return cmp(a.name, b.name)
       }
     })
-
-  const fetchMembers = async () => {
-    const { data } = await supabase.from("structure_members").select("*")
-    setMembers(data || [])
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -13,6 +13,7 @@ export function useDraggableFloat(key: string, width = 48, height = 48) {
   const posRef = useRef<Pos | null>(null)
   const startRef = useRef<{ px: number; py: number; ox: number; oy: number } | null>(null)
   const movedRef = useRef(false)
+  const onUpRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     try {
@@ -20,6 +21,7 @@ export function useDraggableFloat(key: string, width = 48, height = 48) {
       if (raw) {
         const p = JSON.parse(raw) as Pos
         if (typeof p.x === "number" && typeof p.y === "number") {
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- baca localStorage pasca-hidrasi (mencegah mismatch SSR)
           setPos(p)
           posRef.current = p
         }
@@ -63,7 +65,7 @@ export function useDraggableFloat(key: string, width = 48, height = 48) {
   const onUp = useCallback(() => {
     startRef.current = null
     window.removeEventListener("pointermove", onMove)
-    window.removeEventListener("pointerup", onUp)
+    window.removeEventListener("pointerup", onUpRef.current)
     setDragging(false)
     // Lepas di area bawah -> tempel ke tepi bawah; x selalu menempel ke tepi kiri/kanan terdekat
     const p = posRef.current
@@ -79,6 +81,10 @@ export function useDraggableFloat(key: string, width = 48, height = 48) {
       savePos(snapped)
     }
   }, [onMove, savePos, width, height])
+
+  useEffect(() => {
+    onUpRef.current = onUp
+  })
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLElement>) => {

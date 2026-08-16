@@ -285,12 +285,12 @@ export const DEFAULT_SETTINGS: SiteSettings = {
 
 const KEYS = ["colors", "hero", "branding", "contacts", "pages", "backgrounds", "nav", "heroExtras", "history", "philosophy", "school", "sectionTitles", "lkbb", "aiPrompt"] as const
 
-function deepMerge<T>(base: T, patch: Partial<T>): T {
-  const out: any = { ...base }
+function deepMerge<T extends object>(base: T, patch: Partial<T>): T {
+  const out: { [K in keyof T]: unknown } = { ...base }
   for (const k of Object.keys(patch) as (keyof T)[]) {
     const v = patch[k]
     if (v && typeof v === "object" && !Array.isArray(v) && typeof base[k] === "object") {
-      out[k] = deepMerge(base[k], v)
+      out[k] = deepMerge(base[k] as object, v)
     } else if (v !== undefined) {
       out[k] = v
     }
@@ -345,6 +345,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muat site_settings async (setState setelah await, bukan sinkron)
     refresh()
   }, [refresh])
 

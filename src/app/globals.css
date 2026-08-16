@@ -2,64 +2,68 @@
 @import "react-image-crop/dist/ReactCrop.css";
 
 :root {
-  --background: #f8fafc;
+  --background: #fafafa;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #dc2626;
+  --primary: #010281;
   --primary-foreground: #ffffff;
-  --secondary: #2563eb;
+  --secondary: #2191d0;
   --secondary-foreground: #ffffff;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #d97706;
+  --accent: #a16207;
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #dc2626;
-  --line: rgba(15, 23, 42, 0.08);
-  --soft: rgba(15, 23, 42, 0.04);
+  --ring: #010281;
+  --line: rgba(1, 2, 129, 0.08);
+  --soft: rgba(1, 2, 129, 0.04);
   --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(15, 23, 42, 0.08);
-  --grid-color: rgba(15, 23, 42, 0.05);
-  --glow-red: rgba(220, 38, 38, 0.12);
-  --text-grad-a: #0f172a;
-  --text-grad-b: #d97706;
+  --glass-border: rgba(1, 2, 129, 0.08);
+  --grid-color: rgba(1, 2, 129, 0.05);
+  --glow-red: rgba(1, 2, 129, 0.12);
+  --text-grad-a: #010281;
+  --text-grad-b: #a16207;
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-display: "Bebas Neue", "Plus Jakarta Sans", system-ui, sans-serif;
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: #0f172a;
+  --background: #0a0e1f;
   --foreground: #f1f5f9;
-  --card: #151f33;
+  --card: #121a33;
   --card-foreground: #f1f5f9;
-  --popover: #151f33;
+  --popover: #121a33;
   --popover-foreground: #f1f5f9;
-  --primary: #ef4444;
-  --primary-foreground: #ffffff;
-  --secondary: #3b82f6;
-  --secondary-foreground: #ffffff;
+  --primary: #6b7bff;
+  --primary-foreground: #0a0e1f;
+  --secondary: #4db8e8;
+  --secondary-foreground: #0a0e1f;
   --muted: #1e293b;
   --muted-foreground: #94a3b8;
-  --accent: #f5c542;
-  --accent-foreground: #0f172a;
+  --accent: #e8b93a;
+  --accent-foreground: #0a0e1f;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #26334d;
-  --input: #26334d;
-  --ring: #ef4444;
+  --border: #23304f;
+  --input: #23304f;
+  --ring: #6b7bff;
   --line: rgba(255, 255, 255, 0.08);
   --soft: rgba(255, 255, 255, 0.04);
-  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-bg: rgba(10, 14, 31, 0.6);
   --glass-border: rgba(255, 255, 255, 0.08);
   --grid-color: rgba(255, 255, 255, 0.04);
-  --glow-red: rgba(239, 68, 68, 0.14);
+  --glow-red: rgba(107, 123, 255, 0.14);
   --text-grad-a: #ffffff;
-  --text-grad-b: #f5c542;
+  --text-grad-b: #e8b93a;
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-display: "Bebas Neue", "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 @theme inline {
@@ -89,7 +93,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-  --font-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-display: "Bebas Neue", "Plus Jakarta Sans", system-ui, sans-serif;
 }
 
 @layer base {
@@ -108,7 +112,7 @@
     font-variant-numeric: tabular-nums;
   }
   ::selection {
-    background: rgba(239, 68, 68, 0.3);
+    background: rgba(1, 2, 129, 0.25);
   }
   ::-webkit-scrollbar {
     width: 8px;
@@ -140,7 +144,7 @@
   }
 
   .text-gradient-red {
-    background: linear-gradient(135deg, #ff6b6b, #ef4444 55%, #f5c542);
+    background: linear-gradient(135deg, #6b7bff, #010281 55%, #e8b93a);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -174,14 +178,14 @@
   }
 
   .gradient-primary {
-    background: linear-gradient(135deg, #f04438, #ef4444 60%, #ff6b6b);
+    background: linear-gradient(135deg, #1b2a99, #010281 60%, #6b7bff);
   }
 
   .gradient-gold {
-    background: linear-gradient(135deg, #f5c542, #d4a017);
+    background: linear-gradient(135deg, #e8b93a, #a16207);
   }
 
   .shadow-glow-red {
-    box-shadow: 0 10px 40px -10px rgba(239, 68, 68, 0.45);
+    box-shadow: 0 10px 40px -10px rgba(1, 2, 129, 0.45);
   }
 }

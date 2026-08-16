@@ -4,8 +4,8 @@
   "description": "Portal resmi Paskibra Satria Cengkara SMKN 1 Kertosono — disiplin, tangguh, berintegritas.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#dc2626",
+  "background_color": "#fafafa",
+  "theme_color": "#010281",
   "orientation": "portrait",
   "icons": [
     {

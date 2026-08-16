@@ -10,13 +10,16 @@ export function ThemeColorSync() {
 
   useEffect(() => {
     const root = document.documentElement
-    root.style.setProperty("--primary", settings.colors.primary)
-    root.style.setProperty("--secondary", settings.colors.secondary)
-    root.style.setProperty("--accent", settings.colors.accent)
     if (resolvedTheme === "dark") {
+      root.style.removeProperty("--primary")
+      root.style.removeProperty("--secondary")
+      root.style.removeProperty("--accent")
       root.style.removeProperty("--foreground")
       root.style.removeProperty("--background")
     } else {
+      root.style.setProperty("--primary", settings.colors.primary)
+      root.style.setProperty("--secondary", settings.colors.secondary)
+      root.style.setProperty("--accent", settings.colors.accent)
       root.style.setProperty("--foreground", settings.colors.foreground)
     }
   }, [resolvedTheme, settings.colors.primary, settings.colors.secondary, settings.colors.accent, settings.colors.foreground])

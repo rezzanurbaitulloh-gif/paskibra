@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import {
   Plus_Jakarta_Sans,
-  Inter,
-  Poppins,
-  Montserrat,
-  Lato,
-  DM_Sans,
+  Bebas_Neue,
 } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "next-themes"
@@ -23,44 +19,12 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const inter = Inter({
+const bebas = Bebas_Neue({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-inter",
+  weight: "400",
+  variable: "--font-bebas",
   display: "swap",
-  preload: false,
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-poppins",
-  display: "swap",
-  preload: false,
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-montserrat",
-  display: "swap",
-  preload: false,
-});
-
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-lato",
-  display: "swap",
-  preload: false,
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-dmsans",
-  display: "swap",
-  preload: false,
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -78,7 +42,7 @@ export const metadata: Metadata = {
     title: "Satria Cengkara",
   },
   other: {
-    "theme-color": "#0f172a",
+    "theme-color": "#010281",
   },
 };
 
@@ -88,10 +52,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body
-        className={`${plusJakarta.variable} ${inter.variable} ${poppins.variable} ${montserrat.variable} ${lato.variable} ${dmSans.variable} antialiased`}
-      >
+    <html
+      lang="id"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={`${plusJakarta.variable} ${bebas.variable}`}
+    >
+      <body className={`antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <SiteSettingsProvider>

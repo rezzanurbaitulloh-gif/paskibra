@@ -99,7 +99,7 @@ export interface SiteSettings {
 }
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  colors: { primary: "#E53935", secondary: "#1E88E5", accent: "#FFD700", background: "#0A0A0C", foreground: "#0f172a" },
+  colors: { primary: "#010281", secondary: "#2191d0", accent: "#a16207", background: "#fafafa", foreground: "#0f172a" },
   hero: {
     title: "SATRIA CENGKARA",
     subtitle:
@@ -112,7 +112,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     orgName: "Paskibra Satria Cengkara",
     schoolName: "SMK Negeri 1 Kertosono",
     fontSans: "plus-jakarta",
-    fontDisplay: "plus-jakarta",
+    fontDisplay: "bebas-neue",
   },
   contacts: {
     waNumber: "6289516555498",
@@ -300,20 +300,12 @@ function deepMerge<T>(base: T, patch: Partial<T>): T {
 
 export const FONT_OPTIONS = [
   { key: "plus-jakarta", label: "Plus Jakarta Sans" },
-  { key: "inter", label: "Inter" },
-  { key: "poppins", label: "Poppins" },
-  { key: "montserrat", label: "Montserrat" },
-  { key: "lato", label: "Lato" },
-  { key: "dm-sans", label: "DM Sans" },
+  { key: "bebas-neue", label: "Bebas Neue" },
 ] as const
 
 export const FONT_VARS: Record<string, string> = {
   "plus-jakarta": "var(--font-pjs)",
-  inter: "var(--font-inter)",
-  poppins: "var(--font-poppins)",
-  montserrat: "var(--font-montserrat)",
-  lato: "var(--font-lato)",
-  "dm-sans": "var(--font-dmsans)",
+  "bebas-neue": "var(--font-bebas)",
 }
 
 interface SiteSettingsState {

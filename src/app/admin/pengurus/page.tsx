@@ -18,7 +18,6 @@ interface Member {
   id: string
   name: string
   position: string
-  division: string
   generation: string
   kelas: string | null
   photo_url: string
@@ -36,7 +35,6 @@ export default function StructureManagement() {
   const [formData, setFormData] = useState({
     name: "",
     position: "",
-    division: "",
     generation: "",
     kelas: "",
     photo_url: ""
@@ -70,7 +68,6 @@ export default function StructureManagement() {
       if (filterCol === "nama") return m.name === filterVal
       if (filterCol === "kelas") return (m.kelas || "") === filterVal
       if (filterCol === "generasi") return m.generation === filterVal
-      if (filterCol === "divisi") return m.division === filterVal
       if (filterCol === "jabatan") return m.position === filterVal
       return true
     })
@@ -85,8 +82,6 @@ export default function StructureManagement() {
           return cmp(a.kelas || "", b.kelas || "")
         case "generasi":
           return genNum(a.generation) - genNum(b.generation)
-        case "divisi":
-          return cmp(a.division, b.division)
         case "jabatan":
           return cmp(a.position, b.position)
         default:
@@ -107,7 +102,13 @@ export default function StructureManagement() {
 
   const handleEdit = (member: Member) => {
     setCurrentMember(member)
-    setFormData({ ...member, kelas: member.kelas || "" })
+    setFormData({
+      name: member.name,
+      position: member.position,
+      generation: member.generation,
+      kelas: member.kelas || "",
+      photo_url: member.photo_url,
+    })
     setIsDialogOpen(true)
   }
 
@@ -121,7 +122,6 @@ export default function StructureManagement() {
     const payload = rows.map((r) => ({
       name: r.name,
       position: r.position,
-      division: r.division,
       generation: r.generation,
       kelas: r.kelas || null,
     }))
@@ -160,10 +160,6 @@ export default function StructureManagement() {
                   <div className="space-y-2">
                     <Label htmlFor="position">Jabatan</Label>
                     <Input id="position" value={formData.position} onChange={(e) => setFormData({...formData, position: e.target.value})} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="division">Divisi</Label>
-                    <Input id="division" value={formData.division} onChange={(e) => setFormData({...formData, division: e.target.value})} required />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -206,7 +202,6 @@ export default function StructureManagement() {
             <SelectContent>
               <SelectItem value="nama">Nama</SelectItem>
               <SelectItem value="jabatan">Jabatan</SelectItem>
-              <SelectItem value="divisi">Divisi</SelectItem>
               <SelectItem value="generasi">Generasi</SelectItem>
               <SelectItem value="kelas">Kelas / Jurusan</SelectItem>
             </SelectContent>
@@ -234,7 +229,6 @@ export default function StructureManagement() {
             <TableRow>
               <TableHead>Nama</TableHead>
               <TableHead>Jabatan</TableHead>
-              <TableHead>Divisi</TableHead>
               <TableHead>Generasi</TableHead>
               <TableHead>Kelas / Jurusan</TableHead>
               <TableHead>Aksi</TableHead>
@@ -250,7 +244,6 @@ export default function StructureManagement() {
               >
                 <TableCell className="font-medium">{member.name}</TableCell>
                 <TableCell>{member.position}</TableCell>
-                <TableCell>{member.division}</TableCell>
                 <TableCell>{member.generation}</TableCell>
                 <TableCell>{member.kelas || <span className="text-muted-foreground/50">—</span>}</TableCell>
                 <TableCell>
@@ -278,7 +271,6 @@ export default function StructureManagement() {
         columns={[
           { key: "name", label: "Nama", required: true },
           { key: "position", label: "Jabatan", required: true },
-          { key: "division", label: "Divisi", required: true },
           { key: "generation", label: "Generasi" },
           { key: "kelas", label: "Kelas / Jurusan" },
         ]}

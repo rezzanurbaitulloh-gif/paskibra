@@ -45,82 +45,95 @@ export async function POST(request: NextRequest) {
 
     const systemPrompt = await getSystemPrompt()
 
-    for (const endpoint of getAIEndpoints()) {
-      for (const model of endpoint.models) {
-        try {
-          const response = await fetch(`${endpoint.url}/chat/completions`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${endpoint.key}`,
-            },
-            body: JSON.stringify({
-              model,
-              messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt },
-              ],
-              stream: true,
-            }),
-            signal: AbortSignal.timeout(20000),
-          })
+    const endpoints = getAIEndpoints()
+    const attempts: { endpoint: (typeof endpoints)[number]; model: string }[] = []
+    const maxModels = Math.max(...endpoints.map((e) => e.models.length), 0)
+    for (let m = 0; m < maxModels; m++) {
+      for (const endpoint of endpoints) {
+        if (endpoint.models[m]) attempts.push({ endpoint, model: endpoint.models[m] })
+      }
+    }
 
-          if (!response.ok) {
-            lastError.message = `HTTP ${response.status} dari ${endpoint.url} (${model})`
-            lastError.status = response.status
-            if (response.status === 429 || response.status >= 500) continue
-            break
-          }
+    const deadline = Date.now() + 60000
 
-          if (!response.body) {
-            lastError.message = "Tidak ada response body"
-            continue
-          }
+    for (const { endpoint, model } of attempts) {
+      if (Date.now() > deadline) {
+        lastError.message = "Semua endpoint AI lambat atau tidak merespons (waktu habis 60 detik)"
+        break
+      }
+      try {
+        const response = await fetch(`${endpoint.url}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${endpoint.key}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt },
+            ],
+            stream: true,
+          }),
+          signal: AbortSignal.timeout(20000),
+        })
 
-          const reader = response.body.getReader()
-          const encoder = new TextEncoder()
+        if (!response.ok) {
+          lastError.message = `HTTP ${response.status} dari ${endpoint.url} (${model})`
+          lastError.status = response.status
+          if (response.status === 429 || response.status >= 500) continue
+          break
+        }
 
-          const stream = new ReadableStream({
-            async start(controller) {
-              const decoder = new TextDecoder()
-              try {
-                while (true) {
-                  const { done, value } = await reader.read()
-                  if (done) break
-                  const chunk = decoder.decode(value, { stream: true })
-                  const lines = chunk.split("\n")
-                  for (const line of lines) {
-                    if (!line.startsWith("data: ")) continue
-                    const data = line.slice(6)
-                    if (data === "[DONE]") continue
-                    try {
-                      const parsed = JSON.parse(data)
-                      const content = parsed.choices?.[0]?.delta?.content
-                      if (content) {
-                        controller.enqueue(encoder.encode(content))
-                      }
-                    } catch {
-                      // abaikan chunk yang tidak valid
+        if (!response.body) {
+          lastError.message = "Tidak ada response body"
+          continue
+        }
+
+        const reader = response.body.getReader()
+        const encoder = new TextEncoder()
+
+        const stream = new ReadableStream({
+          async start(controller) {
+            const decoder = new TextDecoder()
+            try {
+              while (true) {
+                const { done, value } = await reader.read()
+                if (done) break
+                const chunk = decoder.decode(value, { stream: true })
+                const lines = chunk.split("\n")
+                for (const line of lines) {
+                  if (!line.startsWith("data: ")) continue
+                  const data = line.slice(6)
+                  if (data === "[DONE]") continue
+                  try {
+                    const parsed = JSON.parse(data)
+                    const content = parsed.choices?.[0]?.delta?.content
+                    if (content) {
+                      controller.enqueue(encoder.encode(content))
                     }
+                  } catch {
+                    // abaikan chunk yang tidak valid
                   }
                 }
-              } catch (err) {
-                controller.error(err)
-              } finally {
-                controller.close()
               }
-            },
-          })
+            } catch (err) {
+              controller.error(err)
+            } finally {
+              controller.close()
+            }
+          },
+        })
 
-          return new Response(stream, {
-            headers: {
-              "Content-Type": "text/plain; charset=utf-8",
-              "Cache-Control": "no-cache",
-            },
-          })
-        } catch (err) {
-          lastError.message = err instanceof Error ? err.message : "Network error"
-        }
+        return new Response(stream, {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-cache",
+          },
+        })
+      } catch (err) {
+        lastError.message = err instanceof Error ? err.message : "Network error"
       }
     }
 

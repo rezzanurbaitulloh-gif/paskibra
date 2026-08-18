@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
+  serverExternalPackages: ["pdf-parse", "pdfjs-dist"],
   turbopack: {
     root: __dirname,
   },

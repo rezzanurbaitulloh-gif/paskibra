@@ -28,14 +28,14 @@ import { supabase } from "@/lib/supabase/client"
 import { DEFAULT_SETTINGS, FONT_OPTIONS, type SiteSettings } from "@/contexts/SiteSettingsContext"
 import { ImageUpload } from "@/components/image-upload"
 import { ListEditor, type ListField } from "@/components/admin/ListEditor"
+import { ContentExtractor } from "@/components/admin/content-extractor"
 
 const SETTING_KEYS = [
   "colors", "hero", "branding", "contacts", "pages", "backgrounds", "nav",
   "heroExtras", "history", "philosophy", "school", "sectionTitles", "aiPrompt",
 ]
 
-const OPTIONS: { key: string; icon: React.ComponentType<{ className?: string }>; title: string; desc: string }[] = [
-  { key: "branding", icon: Image, title: "Logo & Identitas", desc: "Logo, nama organisasi & sekolah" },
+const OPTIONS: { key: string; icon: React.ComponentType<{ className?: string }>; title: string; desc: string }[] = [  { key: "branding", icon: Image, title: "Logo & Identitas", desc: "Logo, nama organisasi & sekolah" },
   { key: "warna", icon: Palette, title: "Warna Tema", desc: "Palet warna seluruh website" },
   { key: "hero", icon: LayoutTemplate, title: "Editor Hero", desc: "Judul, slogan & tombol hero" },
   { key: "kontak", icon: Phone, title: "Kontak & Sosmed", desc: "WhatsApp, email & media sosial" },
@@ -49,12 +49,20 @@ const OPTIONS: { key: string; icon: React.ComponentType<{ className?: string }>;
   { key: "ai", icon: Bot, title: "AI Prompt", desc: "Prompt bot Tanya Satria" },
 ]
 
+const TEXT_TARGETS: [keyof SiteSettings["pages"], string][] = [
+  ["galeriIntro", "Halaman Galeri"],
+  ["layananIntro", "Halaman Layanan Sewa"],
+  ["saranIntro", "Halaman Kotak Saran"],
+  ["pengurusIntro", "Halaman Pengurus"],
+]
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS)
   const [active, setActive] = useState("branding")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [textTarget, setTextTarget] = useState<keyof SiteSettings["pages"]>("galeriIntro")
 
   useEffect(() => {
     fetchSettings()
@@ -253,7 +261,18 @@ export default function SettingsPage() {
 
       case "hero":
         return (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
+            <ContentExtractor
+              mode="text"
+              title="Tulis Slogan dengan AI"
+              description="Upload dokumen/gambar profil atau tulisan untuk membuat slogan hero secara otomatis. Hasil dapat diedit manual atau diperbaiki dengan AI."
+              contextLabel="slogan hero bagian atas website Paskibra Satria Cengkara"
+              value={settings.hero.subtitle}
+              onApply={(v) => {
+                if (typeof v === "string") updateSetting("hero", "subtitle", v)
+              }}
+            />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Editor Hero Section</CardTitle>
@@ -302,6 +321,7 @@ export default function SettingsPage() {
                 ))}
               </CardContent>
             </Card>
+          </div>
           </div>
         )
 
@@ -363,14 +383,29 @@ export default function SettingsPage() {
               <p className="text-sm text-muted-foreground">Teks pengantar setiap halaman publik di website ini.</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {(
-                [
-                  ["galeriIntro", "Halaman Galeri"],
-                  ["layananIntro", "Halaman Layanan Sewa"],
-                  ["saranIntro", "Halaman Kotak Saran"],
-                  ["pengurusIntro", "Halaman Pengurus"],
-                ] as const
-              ).map(([key, label]) => (
+              <ContentExtractor
+                mode="text"
+                title="Buat Teks Pengantar dengan AI"
+                description="Upload dokumen/gambar, pilih halaman tujuan di bawah, lalu terapkan hasilnya."
+                contextLabel={TEXT_TARGETS.find(([key]) => key === textTarget)?.[1] || "halaman publik website Paskibra"}
+                value={settings.pages[textTarget]}
+                onApply={(v) => {
+                  if (typeof v === "string") updateSetting("pages", textTarget, v)
+                }}
+              />
+              <div className="flex items-center gap-3">
+                <Label>Halaman Tujuan</Label>
+                <select
+                  value={textTarget}
+                  onChange={(e) => setTextTarget(e.target.value as keyof SiteSettings["pages"])}
+                  className="h-10 w-full rounded-lg border border-line bg-card px-3 text-sm"
+                >
+                  {TEXT_TARGETS.map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+              </div>
+              {TEXT_TARGETS.map(([key, label]) => (
                 <div key={key} className="space-y-2">
                   <Label>{label}</Label>
                   <Textarea value={settings.pages[key]} onChange={(e) => updateSetting("pages", key, e.target.value)} rows={2} className="glass border-line resize-none" />
@@ -409,7 +444,22 @@ export default function SettingsPage() {
               <CardTitle className="font-display">Editor Sejarah</CardTitle>
               <p className="text-sm text-muted-foreground">Judul section dan timeline perjalanan organisasi.</p>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              <ContentExtractor
+                mode="sejarah"
+                title="Buat Timeline Otomatis"
+                description="Upload dokumen sejarah (PDF/Word/TXT) atau foto arsip — AI menyusun timeline yang bisa diedit lalu diterapkan ke form di bawah."
+                fields={[
+                  { key: "year", label: "Tahun", placeholder: "2018" },
+                  { key: "title", label: "Judul", placeholder: "Lahirnya Satria Cengkara" },
+                  { key: "desc", label: "Deskripsi", type: "textarea", placeholder: "Cerita singkat..." },
+                ]}
+                value={settings.history.timeline}
+                onApply={(v) => {
+                  if (Array.isArray(v)) updateArr("history", "timeline", v)
+                }}
+              />
+              <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label>Label</Label>
@@ -438,6 +488,7 @@ export default function SettingsPage() {
                   addText="Tambah Timeline"
                 />
               </div>
+              </div>
             </CardContent>
           </Card>
         )
@@ -449,7 +500,22 @@ export default function SettingsPage() {
               <CardTitle className="font-display">Editor Sekolah</CardTitle>
               <p className="text-sm text-muted-foreground">Section profil sekolah di beranda — teks dan gambar dapat diubah.</p>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              <ContentExtractor
+                mode="sekolah"
+                title="Buat Kartu Sekolah dengan AI"
+                description="Upload dokumen profil sekolah (PDF/Word/TXT) atau foto — AI menyusun kartu informasi yang bisa diedit lalu diterapkan."
+                fields={[
+                  { key: "title", label: "Judul Kartu", placeholder: "Profil Sekolah" },
+                  { key: "content", label: "Isi Teks", type: "textarea", placeholder: "Deskripsi..." },
+                  { key: "image", label: "Gambar", type: "image" },
+                ]}
+                value={settings.school.items}
+                onApply={(v) => {
+                  if (Array.isArray(v)) updateArr("school", "items", v)
+                }}
+              />
+              <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label>Label</Label>
@@ -478,6 +544,7 @@ export default function SettingsPage() {
                   addText="Tambah Kartu"
                 />
               </div>
+              </div>
             </CardContent>
           </Card>
         )
@@ -489,7 +556,21 @@ export default function SettingsPage() {
               <CardTitle className="font-display">Editor Filosofi Logo</CardTitle>
               <p className="text-sm text-muted-foreground">Makna lambang logo yang tampil di beranda.</p>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              <ContentExtractor
+                mode="filosofi"
+                title="Buat Makna Logo dengan AI"
+                description="Upload dokumen penjelasan lambang atau foto logo — AI menguraikan makna tiap elemen yang bisa diedit lalu diterapkan."
+                fields={[
+                  { key: "title", label: "Judul", placeholder: "Sang Merah Putih" },
+                  { key: "desc", label: "Deskripsi", type: "textarea", placeholder: "Makna..." },
+                ]}
+                value={settings.philosophy.items}
+                onApply={(v) => {
+                  if (Array.isArray(v)) updateArr("philosophy", "items", v)
+                }}
+              />
+              <div className="space-y-4">
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Label</Label>
@@ -512,6 +593,7 @@ export default function SettingsPage() {
                   itemLabel="Filosofi"
                   addText="Tambah Item"
                 />
+              </div>
               </div>
             </CardContent>
           </Card>

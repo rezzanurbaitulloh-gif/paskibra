@@ -7,6 +7,7 @@ import Link from "next/link"
 import { ArrowRight, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
+import { AnimatedCounter } from "@/components/AnimatedCounter"
 
 const container = {
   hidden: {},
@@ -163,12 +164,22 @@ export function HeroSection({ realStats }: { realStats?: { value: string; label:
           transition={{ delay: 1.4, duration: 0.6 }}
           className="mt-16 grid grid-cols-3 gap-8 md:gap-16"
         >
-          {(realStats && realStats.length > 0 ? realStats : settings.heroExtras.stats).map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="font-display text-2xl md:text-3xl font-bold text-gradient">{stat.value}</p>
-              <p className="mt-1 text-[11px] md:text-xs text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
+          {(realStats && realStats.length > 0 ? realStats : settings.heroExtras.stats).map((stat) => {
+            const num = parseInt(String(stat.value).replace(/\D/g, ""), 10)
+            const isNumeric = !Number.isNaN(num)
+            return (
+              <div key={stat.label} className="text-center">
+                <p className="font-display text-2xl md:text-3xl font-bold text-gradient">
+                  {isNumeric ? (
+                    <AnimatedCounter value={num} suffix={String(stat.value).replace(num.toString(), "")} />
+                  ) : (
+                    stat.value
+                  )}
+                </p>
+                <p className="mt-1 text-[11px] md:text-xs text-muted-foreground">{stat.label}</p>
+              </div>
+            )
+          })}
         </motion.div>
       </div>
 

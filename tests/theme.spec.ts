@@ -41,7 +41,7 @@ test.describe("Tema Paskibra (indigo dari logo #010281)", () => {
         "--primary": s.getPropertyValue("--primary").trim(),
       };
     });
-    expect(tokens["--background"]).toMatch(/^#0a0e1f$/i);
+    expect(tokens["--background"]).toMatch(/^#070a18$/i);
     expect(tokens["--primary"]).toMatch(/^#6b7bff$/i);
   });
 

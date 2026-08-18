@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Users, Image as ImageIcon, Package, FileText, Settings, DollarSign, MessageSquare, UserCog, Trophy, ChevronRight } from "lucide-react"
+import { Home, Users, Image as ImageIcon, Package, FileText, Settings, DollarSign, MessageSquare, UserCog, Trophy, CalendarDays, UserPlus, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -21,6 +21,8 @@ const navGroups: { label: string; items: { name: string; icon: typeof Home; href
       { name: "Daftar Anggota", icon: Users, href: "/admin/pengurus", roles: ["super_admin"] },
       { name: "Galeri", icon: ImageIcon, href: "/admin/galeri", roles: ["super_admin", "humas"] },
       { name: "Artikel", icon: FileText, href: "/admin/artikel", roles: ["super_admin", "humas"] },
+      { name: "Kegiatan", icon: CalendarDays, href: "/admin/kegiatan", roles: ["super_admin", "humas"] },
+      { name: "Rekrutmen", icon: UserPlus, href: "/admin/rekrutmen", roles: ["super_admin", "humas"] },
     ],
   },
   {

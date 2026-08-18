@@ -11,6 +11,8 @@ import {
   WidthType,
   AlignmentType,
 } from "docx"
+import { jsPDF } from "jspdf"
+import autoTable from "jspdf-autotable"
 import { fmtIDR } from "@/lib/fmt"
 
 export interface DashboardReportData {
@@ -235,4 +237,130 @@ export async function downloadReportWord(data: DashboardReportData) {
   a.download = `laporan-ringkasan-${stamp()}.docx`
   a.click()
   URL.revokeObjectURL(url)
+}
+
+export function downloadReportPdf(data: DashboardReportData) {
+  const { income, expense, balance } = finSummary(data.finRows)
+  const doc = new jsPDF()
+  const pageW = doc.internal.pageSize.getWidth()
+  const margin = 14
+
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(16)
+  doc.setTextColor(30)
+  doc.text("Laporan Ringkasan Dashboard", pageW / 2, 18, { align: "center" })
+  doc.setFontSize(10)
+  doc.setFont("helvetica", "normal")
+  doc.text("Paskibra Satria Cengkara — SMK Negeri 1 Kertosono", pageW / 2, 25, { align: "center" })
+  doc.setTextColor(120)
+  doc.text(`Dibuat: ${data.generatedAt} oleh ${data.generatedBy}`, pageW / 2, 31, { align: "center" })
+  doc.setTextColor(30)
+
+  let y = 42
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(12)
+  doc.setTextColor(1, 2, 129)
+  doc.text("Statistik", margin, y)
+  y += 6
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(10)
+  doc.setTextColor(30)
+  doc.text(`Anggota: ${data.stats.members || 0}  (bulan ini: ${data.deltas.members || 0})`, margin, y)
+  y += 5
+  doc.text(`Galeri: ${data.stats.galeri || 0}  (bulan ini: ${data.deltas.galeri || 0})`, margin, y)
+  y += 5
+  doc.text(`Inventaris: ${data.stats.inventaris || 0}`, margin, y)
+  y += 5
+  doc.text(`Saran Masuk: ${data.stats.saran || 0}  (bulan ini: ${data.deltas.saran || 0})`, margin, y)
+  y += 8
+
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(12)
+  doc.setTextColor(1, 2, 129)
+  doc.text("Keuangan", margin, y)
+  y += 6
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(10)
+  doc.setTextColor(30)
+  doc.text(`Total Pemasukan: ${fmtIDR(income)}`, margin, y)
+  y += 5
+  doc.text(`Total Pengeluaran: ${fmtIDR(expense)}`, margin, y)
+  y += 5
+  doc.text(`Saldo: ${fmtIDR(balance)}`, margin, y)
+  y += 8
+
+  const rowData: Record<string, string | number>[] = data.lkbbRows.map((r) => ({
+    "Nama Sekolah": r.school_name,
+    Status: r.payment_status === "lunas" ? "Lunas" : r.payment_status === "dp" ? "DP" : "Belum Bayar",
+    Nominal: Number(r.amount || 0),
+    Tanggal: r.created_at ? String(r.created_at).slice(0, 10) : "",
+  }))
+  autoTable(doc, {
+    startY: y,
+    head: [["Peserta LKBB", "Status", "Nominal", "Tanggal"]],
+    body: rowData.map((r) => [r["Nama Sekolah"], r.Status, r.Nominal, r.Tanggal]),
+    headStyles: { fillColor: [1, 2, 129], fontSize: 9 },
+    bodyStyles: { fontSize: 9 },
+    margin: { left: margin, right: margin },
+  })
+
+  const saranData = data.sarans.map((s) => ({
+    Pengirim: s.sender_name || "Anonim",
+    Pesan: s.message,
+    Dibalas: s.admin_reply ? "Ya" : "Belum",
+  }))
+  autoTable(doc, {
+    head: [["Saran Terbaru", "", ""]],
+    body: saranData.map((s) => [s.Pengirim, s.Pesan, s.Dibalas]),
+    headStyles: { fillColor: [1, 2, 129], fontSize: 9 },
+    bodyStyles: { fontSize: 8 },
+    margin: { left: margin, right: margin },
+  })
+
+  const artData = data.artikels.map((a) => ({
+    Judul: a.title,
+    Tanggal: a.created_at ? String(a.created_at).slice(0, 10) : "",
+  }))
+  autoTable(doc, {
+    head: [["Artikel Terbaru", "Tanggal"]],
+    body: artData.map((a) => [a.Judul, a.Tanggal]),
+    headStyles: { fillColor: [1, 2, 129], fontSize: 9 },
+    bodyStyles: { fontSize: 8 },
+    margin: { left: margin, right: margin },
+  })
+
+  doc.save(`laporan-ringkasan-${stamp()}.pdf`)
+}
+
+export function emailReportSummary(data: DashboardReportData) {
+  const { income, expense, balance } = finSummary(data.finRows)
+  const subject = encodeURIComponent(`Laporan Ringkasan Dashboard ${stamp()} — Satria Cengkara`)
+  const lines = [
+    `Laporan Ringkasan Dashboard — ${data.generatedAt}`,
+    `Dibuat oleh: ${data.generatedBy}`,
+    "",
+    "STATISTIK",
+    `- Anggota: ${data.stats.members || 0} (bulan ini: ${data.deltas.members || 0})`,
+    `- Galeri: ${data.stats.galeri || 0} (bulan ini: ${data.deltas.galeri || 0})`,
+    `- Inventaris: ${data.stats.inventaris || 0}`,
+    `- Saran Masuk: ${data.stats.saran || 0} (bulan ini: ${data.deltas.saran || 0})`,
+    "",
+    "KEUANGAN",
+    `- Total Pemasukan: ${fmtIDR(income)}`,
+    `- Total Pengeluaran: ${fmtIDR(expense)}`,
+    `- Saldo: ${fmtIDR(balance)}`,
+    "",
+    `PESERTA LKBB (${data.lkbbRows.length})`,
+    ...data.lkbbRows.slice(0, 20).map((r) => `- ${r.school_name}: ${r.payment_status === "lunas" ? "Lunas" : r.payment_status === "dp" ? "DP" : "Belum Bayar"}`),
+    "",
+    `SARAN TERBARU (${data.sarans.length})`,
+    ...data.sarans.slice(0, 20).map((s) => `- ${s.sender_name || "Anonim"}: ${s.message.slice(0, 100)}${s.message.length > 100 ? "…" : ""}`),
+    "",
+    `ARTIKEL TERBARU (${data.artikels.length})`,
+    ...data.artikels.slice(0, 20).map((a) => `- ${a.title}`),
+    "",
+    "— Satria Cengkara Dashboard",
+  ]
+  const body = encodeURIComponent(lines.join("\n"))
+  window.location.href = `mailto:?subject=${subject}&body=${body}`
 }

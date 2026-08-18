@@ -22,6 +22,7 @@ import {
   FileSpreadsheet,
   FileText as FileWord,
   ChevronDown,
+  Mail,
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -39,7 +40,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu"
-import { downloadReportExcel, downloadReportWord, type DashboardReportData } from "@/lib/dashboard-report"
+import { downloadReportExcel, downloadReportWord, downloadReportPdf, emailReportSummary, type DashboardReportData } from "@/lib/dashboard-report"
 
 interface Stat {
   label: string
@@ -353,6 +354,19 @@ export default function AdminDashboard() {
                   onClick={() => downloadReportWord(buildReportData())}
                 >
                   <FileWord className="mr-2 h-4 w-4 text-blue-500" /> Unduh Word (.docx)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => downloadReportPdf(buildReportData())}
+                >
+                  <FileText className="mr-2 h-4 w-4 text-red-500" /> Unduh PDF (.pdf)
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">Bagikan</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => emailReportSummary(buildReportData())}
+                >
+                  <Mail className="mr-2 h-4 w-4 text-amber-500" /> Kirim Ringkasan via Email
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

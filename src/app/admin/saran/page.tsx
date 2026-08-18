@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { supabase } from "@/lib/supabase/client"
 import { Trash2, Reply, Inbox, CheckCircle2 } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useToast } from "@/components/ui/toast"
 
 interface Feedback {
   id: string
@@ -18,6 +21,7 @@ interface Feedback {
 }
 
 export default function SaranPage() {
+  const toast = useToast()
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -40,15 +44,25 @@ export default function SaranPage() {
     const text = replyText[fb.id]?.trim()
     if (!text) return
     setReplying((prev) => ({ ...prev, [fb.id]: true }))
-    await supabase.from("feedbacks").update({ admin_reply: text, replied_at: new Date().toISOString() }).eq("id", fb.id)
+    const { error } = await supabase.from("feedbacks").update({ admin_reply: text, replied_at: new Date().toISOString() }).eq("id", fb.id)
     setReplyText((prev) => ({ ...prev, [fb.id]: "" }))
     setReplying((prev) => ({ ...prev, [fb.id]: false }))
-    fetchFeedbacks()
+    if (error) {
+      toast({ type: "error", title: "Gagal membalas" })
+    } else {
+      toast({ type: "success", title: "Balasan terkirim", description: `Saran dari ${fb.sender_name || "Anonim"} telah dibalas.` })
+      fetchFeedbacks()
+    }
   }
 
   const handleDelete = async (id: string) => {
-    await supabase.from("feedbacks").delete().eq("id", id)
-    fetchFeedbacks()
+    const { error } = await supabase.from("feedbacks").delete().eq("id", id)
+    if (error) {
+      toast({ type: "error", title: "Gagal menghapus" })
+    } else {
+      toast({ type: "info", title: "Saran dihapus" })
+      fetchFeedbacks()
+    }
   }
 
   return (
@@ -75,12 +89,17 @@ export default function SaranPage() {
         </div>
 
         {loading ? (
-          <p className="text-muted-foreground">Memuat...</p>
-        ) : feedbacks.length === 0 ? (
-          <div className="flex flex-col items-center rounded-2xl border border-dashed border-line bg-card/40 py-16 text-center">
-            <Inbox className="h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 text-sm text-muted-foreground">Belum ada saran dari pengunjung.</p>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-40 rounded-2xl" />
+            ))}
           </div>
+        ) : feedbacks.length === 0 ? (
+          <EmptyState
+            icon={Inbox}
+            title="Belum ada saran masuk"
+            description="Saran dari pengunjung akan muncul di sini."
+          />
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {feedbacks

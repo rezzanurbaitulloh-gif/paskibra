@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Edit, Trash2, FileText } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
+import { EmptyState } from "@/components/ui/empty-state"
+import { useToast } from "@/components/ui/toast"
 
 interface Article {
   id: string
@@ -21,6 +23,7 @@ interface Article {
 const emptyForm = { title: "", content: "", slug: "" }
 
 export default function ArticlesPage() {
+  const toast = useToast()
   const [articles, setArticles] = useState<Article[]>([])
   const [search, setSearch] = useState("")
   const [open, setOpen] = useState(false)
@@ -54,16 +57,22 @@ export default function ArticlesPage() {
     const slug = form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
     const payload = { ...form, slug }
     if (editing) {
-      await supabase.from("articles").update(payload).eq("id", editing.id)
+      const { error } = await supabase.from("articles").update(payload).eq("id", editing.id)
+      if (!error) toast({ type: "success", title: "Artikel diperbarui" })
+      else toast({ type: "error", title: "Gagal memperbarui" })
     } else {
-      await supabase.from("articles").insert(payload)
+      const { error } = await supabase.from("articles").insert(payload)
+      if (!error) toast({ type: "success", title: "Artikel terbit!" })
+      else toast({ type: "error", title: "Gagal menerbitkan" })
     }
     setOpen(false)
     fetchArticles()
   }
 
   const handleDelete = async (id: string) => {
-    await supabase.from("articles").delete().eq("id", id)
+    const { error } = await supabase.from("articles").delete().eq("id", id)
+    if (!error) toast({ type: "info", title: "Artikel dihapus" })
+    else toast({ type: "error", title: "Gagal menghapus" })
     fetchArticles()
   }
 
@@ -85,10 +94,16 @@ export default function ArticlesPage() {
       </div>
 
       {articles.length === 0 ? (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-line bg-card/40 py-16 text-center">
-          <FileText className="h-8 w-8 text-muted-foreground" />
-          <p className="mt-3 text-sm text-muted-foreground">Belum ada artikel.</p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="Belum ada artikel"
+          description="Tulis artikel pertama tentang kegiatan Satria Cengkara."
+          action={
+            <Button onClick={openCreate} className="gradient-primary text-white">
+              <Plus className="mr-2 h-4 w-4" /> Tulis Artikel
+            </Button>
+          }
+        />
       ) : (
         <div className="space-y-3">
           {articles

@@ -17,11 +17,18 @@ import {
   Image as ImageIcon,
   Download,
   Newspaper,
+  ClipboardCheck,
+  CheckCircle2,
 } from "lucide-react"
 import { SectionHeader } from "@/components/sections/SectionHeader"
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 import { VideoEmbed } from "@/components/video-embed"
 import { supabase } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/components/ui/toast"
 
 interface UpdateRow {
   id: string
@@ -104,11 +111,15 @@ function TextCard({
 
 export default function LombaPage() {
   const { settings } = useSiteSettings()
+  const toast = useToast()
   const lkbb = settings.lkbb
   const images = lkbb.media.filter((m) => m.type === "image")
   const videos = lkbb.media.filter((m) => m.type === "video")
   const [updates, setUpdates] = useState<UpdateRow[]>([])
   const [docs, setDocs] = useState<DocumentRow[]>([])
+  const [regForm, setRegForm] = useState({ school_name: "", contact: "", category: "", notes: "" })
+  const [regLoading, setRegLoading] = useState(false)
+  const [regDone, setRegDone] = useState(false)
 
   useEffect(() => {
     supabase.from("lkbb_updates").select("*").order("created_at", { ascending: false }).then(({ data }) => {
@@ -119,8 +130,34 @@ export default function LombaPage() {
     })
   }, [])
 
+  const submitRegistration = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setRegLoading(true)
+    try {
+      const res = await fetch("/api/lomba/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(regForm),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.ok) {
+        toast({ type: "error", title: "Pendaftaran gagal", description: data.error || "Coba lagi." })
+      } else {
+        setRegDone(true)
+        toast({
+          type: "success",
+          title: "Pendaftaran terkirim!",
+          description: "Tim kami akan menghubungi Anda untuk konfirmasi.",
+        })
+      }
+    } catch {
+      toast({ type: "error", title: "Terjadi kesalahan", description: "Coba lagi beberapa saat." })
+    }
+    setRegLoading(false)
+  }
+
   return (
-    <main className="pt-28">
+    <main id="konten" className="pt-28">
       <section className="relative py-16 md:py-24">
         <div className="container mx-auto px-4">
           <SectionHeader label={lkbb.label} title={lkbb.title} subtitle={lkbb.subtitle} />
@@ -312,6 +349,118 @@ export default function LombaPage() {
           </div>
         </section>
       )}
+
+      <section id="daftar-online" className="relative py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <SectionHeader
+            label="Pendaftaran Online"
+            title="Daftar Sekarang"
+            subtitle="Isi formulir berikut — data langsung masuk ke panitia. Tim kami akan menghubungi Anda untuk konfirmasi."
+          />
+          <div className="mx-auto max-w-lg rounded-2xl border border-line bg-card p-6 md:p-8 card-glow">
+            {regDone ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center py-8 text-center"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/15">
+                  <CheckCircle2 className="h-7 w-7 text-green-400" />
+                </div>
+                <h3 className="mt-4 font-display text-lg font-bold">Pendaftaran Terkirim!</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Sekolah <span className="font-semibold text-foreground">{regForm.school_name}</span> tercatat.
+                  Panitia akan menghubungi kontak yang Anda isi.
+                </p>
+                <Button
+                  onClick={() => {
+                    setRegDone(false)
+                    setRegForm({ school_name: "", contact: "", category: "", notes: "" })
+                  }}
+                  className="mt-6 h-10 gradient-primary text-white"
+                >
+                  Daftarkan Sekolah Lain
+                </Button>
+              </motion.div>
+            ) : (
+              <form onSubmit={submitRegistration} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-school" className="text-xs text-muted-foreground">Nama Sekolah *</Label>
+                  <Input
+                    id="reg-school"
+                    value={regForm.school_name}
+                    onChange={(e) => setRegForm({ ...regForm, school_name: e.target.value })}
+                    placeholder="Contoh: SMPN 1 Kertosono"
+                    required
+                    className="h-11 border-line bg-soft focus-visible:ring-accent"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-contact" className="text-xs text-muted-foreground">Kontak (No. WhatsApp) *</Label>
+                  <Input
+                    id="reg-contact"
+                    type="tel"
+                    value={regForm.contact}
+                    onChange={(e) => setRegForm({ ...regForm, contact: e.target.value })}
+                    placeholder="Contoh: 0812-3456-7890"
+                    required
+                    className="h-11 border-line bg-soft focus-visible:ring-accent"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-category" className="text-xs text-muted-foreground">Kategori / Tingkat</Label>
+                  <Input
+                    id="reg-category"
+                    value={regForm.category}
+                    onChange={(e) => setRegForm({ ...regForm, category: e.target.value })}
+                    list="reg-category-options"
+                    placeholder="Pilih atau ketik kategori"
+                    className="h-11 border-line bg-soft focus-visible:ring-accent"
+                  />
+                  <datalist id="reg-category-options">
+                    <option value="PBB" />
+                    <option value="LKBB" />
+                    <option value="Variasi Formasi" />
+                    <option value="SMP" />
+                    <option value="SMA/SMK" />
+                    <option value="Umum" />
+                  </datalist>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-notes" className="text-xs text-muted-foreground">Catatan (Opsional)</Label>
+                  <Textarea
+                    id="reg-notes"
+                    value={regForm.notes}
+                    onChange={(e) => setRegForm({ ...regForm, notes: e.target.value })}
+                    rows={3}
+                    placeholder="Jumlah peserta, kebutuhan khusus, dll."
+                    className="resize-none border-line bg-soft focus-visible:ring-accent"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={regLoading}
+                  className="w-full h-11 gradient-primary text-white hover:brightness-110"
+                >
+                  <ClipboardCheck className="mr-2 h-4 w-4" />
+                  {regLoading ? "Mengirim..." : "Kirim Pendaftaran"}
+                </Button>
+                <p className="text-center text-[11px] text-muted-foreground">
+                  Atau daftar langsung via WhatsApp:{" "}
+                  <a
+                    href={`https://wa.me/${lkbb.whatsapp.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-accent underline underline-offset-2"
+                  >
+                    {lkbb.whatsapp}
+                  </a>
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="relative py-16 md:py-24">
         <div className="container mx-auto px-4">

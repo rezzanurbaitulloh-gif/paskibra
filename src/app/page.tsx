@@ -6,8 +6,10 @@ import { RentalCatalog } from "@/components/sections/RentalCatalog"
 import { HistoryTimeline, LogoPhilosophy } from "@/components/sections/HistoryTimeline"
 import { FeedbackForm } from "@/components/sections/FeedbackForm"
 import { Footer } from "@/components/sections/Footer"
+import { UpcomingEvents } from "@/components/sections/UpcomingEvents"
 import { AIChatWidget } from "@/components/widgets/AIChatWidget"
 import { FloatingWhatsApp } from "@/components/widgets/FloatingWhatsApp"
+import { InstallPrompt } from "@/components/InstallPrompt"
 import { supabase } from "@/lib/supabase/server"
 
 export const dynamic = "force-dynamic"
@@ -27,7 +29,7 @@ export default async function Home() {
   ]
 
   return (
-    <main>
+    <main id="konten">
       <HeroSection realStats={realStats} />
       <SchoolBentoGrid />
       {members && <StructureMembers members={members} />}
@@ -41,6 +43,7 @@ export default async function Home() {
           categories={categories}
         />
       )}
+      <UpcomingEvents />
       <HistoryTimeline />
       <LogoPhilosophy />
       {rentals && (
@@ -57,6 +60,7 @@ export default async function Home() {
       <Footer />
       <FloatingWhatsApp />
       <AIChatWidget />
+      <InstallPrompt />
     </main>
   )
 }

@@ -7,7 +7,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { supabase } from "@/lib/supabase/client"
 import { embedFromUrl } from "@/lib/embed"
-import { Play, Inbox } from "lucide-react"
+import { Play, ZoomIn } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Lightbox, LightboxImage } from "@/components/lightbox"
 
 interface GalleryItem {
   id: string
@@ -78,6 +81,8 @@ export default function GaleriPage() {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [category, setCategory] = useState("Semua")
   const [loading, setLoading] = useState(true)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -90,8 +95,12 @@ export default function GaleriPage() {
 
   const filtered = category === "Semua" ? items : items.filter((i) => i.category === category)
 
+  const lightboxItems: LightboxImage[] = filtered
+    .filter((i) => i.image_url)
+    .map((i) => ({ src: i.image_url as string, alt: i.title }))
+
   return (
-    <div className="min-h-screen">
+    <div id="konten" className="min-h-screen">
       <div className="container mx-auto px-4 pt-28 pb-16">
   
         <div className="mt-6 text-center">
@@ -121,11 +130,18 @@ export default function GaleriPage() {
 
         {/* Grid */}
         {loading ? (
-          <p className="mt-12 text-center text-sm text-muted-foreground">Memuat...</p>
+          <div className="mt-10 columns-2 gap-3 sm:gap-4 lg:columns-3 [&>*]:mb-3 sm:[&>*]:mb-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="mb-3 h-48 break-inside-avoid rounded-2xl sm:mb-4 lg:h-56" />
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
-          <div className="mt-12 flex flex-col items-center py-16 text-center">
-            <Inbox className="h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 text-sm text-muted-foreground">Belum ada galeri untuk kategori ini.</p>
+          <div className="mt-10">
+            <EmptyState
+              icon={ZoomIn}
+              title="Belum ada galeri untuk kategori ini"
+              description="Dokumentasi kegiatan sedang dikumpulkan. Kembali lagi nanti."
+            />
           </div>
         ) : (
           <div className="mt-10 columns-2 gap-3 sm:gap-4 lg:columns-3 [&>*]:mb-3 sm:[&>*]:mb-4">
@@ -141,25 +157,39 @@ export default function GaleriPage() {
                 {item.media_type === "video_embed" ? (
                   <VideoEmbed item={item} />
                 ) : item.image_url ? (
-                  <div className="relative w-full overflow-hidden">
-                    <Image
-                      src={item.image_url}
-                      alt={item.title}
-                      width={800}
-                      height={600}
-                      className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    {item.images && item.images.length > 0 && (
-                      <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
-                        +{item.images.length} foto
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      const imgIdx = lightboxItems.findIndex((li) => li.src === item.image_url)
+                      setLightboxIndex(Math.max(imgIdx, 0))
+                      setLightboxOpen(true)
+                    }}
+                    className="relative block w-full text-left"
+                    aria-label={`Perbesar foto ${item.title}`}
+                  >
+                    <div className="relative w-full overflow-hidden">
+                      <Image
+                        src={item.image_url}
+                        alt={item.title}
+                        width={800}
+                        height={600}
+                        className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <span className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                        <ZoomIn className="h-3.5 w-3.5" />
                       </span>
-                    )}
-                    {item.videos && item.videos.length > 0 && (
-                      <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
-                        +{item.videos.length} video
-                      </span>
-                    )}
-                  </div>
+                      {item.images && item.images.length > 0 && (
+                        <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                          +{item.images.length} foto
+                        </span>
+                      )}
+                      {item.videos && item.videos.length > 0 && (
+                        <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                          +{item.videos.length} video
+                        </span>
+                      )}
+                    </div>
+                  </button>
                 ) : null}
                 <div className="p-4">
                   <p className="text-sm font-semibold">{item.title}</p>
@@ -184,6 +214,14 @@ export default function GaleriPage() {
           </div>
         )}
       </div>
+
+      <Lightbox
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        items={lightboxItems}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+      />
     </div>
   )
 }

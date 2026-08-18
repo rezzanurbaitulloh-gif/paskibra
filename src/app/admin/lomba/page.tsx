@@ -34,6 +34,8 @@ import {
   FileText,
   Upload,
   Download,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 
 interface Participant {
@@ -64,6 +66,8 @@ function ParticipantsManager() {
   const [view, setView] = useState<"table" | "grid">("table")
   const [open, setOpen] = useState(false)
   const [current, setCurrent] = useState<Participant | null>(null)
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 10
   const [form, setForm] = useState({
     school_name: "",
     contact: "",
@@ -98,6 +102,14 @@ function ParticipantsManager() {
     if (search && !p.school_name.toLowerCase().includes(search.toLowerCase())) return false
     return true
   })
+
+  useEffect(() => {
+    setPage(1)
+  }, [filter, search])
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, pageCount)
+  const pageItems = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -292,83 +304,148 @@ function ParticipantsManager() {
           Belum ada peserta untuk filter ini.
         </Card>
       ) : view === "table" ? (
-        <Card className="glass border-line overflow-x-auto">
-          <Table className="min-w-[760px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nama Sekolah</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead>Kontak</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Nominal</TableHead>
-                <TableHead>Tanggal Daftar</TableHead>
-                <TableHead>Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((p) => (
-                <motion.tr key={p.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <TableCell className="font-medium">{p.school_name}</TableCell>
-                  <TableCell>{p.category || <span className="text-muted-foreground/50">—</span>}</TableCell>
-                  <TableCell className="text-xs">{p.contact || "—"}</TableCell>
-                  <TableCell>
-                    <Badge className={cn(STATUS_META[p.payment_status]?.badge)}>
-                      {STATUS_META[p.payment_status]?.label || p.payment_status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatIDR(Number(p.amount))}</TableCell>
-                  <TableCell className="text-xs">
-                    {new Date(p.created_at).toLocaleDateString("id-ID")}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(p)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </motion.tr>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <>
+          <Card className="glass border-line overflow-x-auto">
+            <Table className="min-w-[760px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nama Sekolah</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Kontak</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Nominal</TableHead>
+                  <TableHead>Tanggal Daftar</TableHead>
+                  <TableHead>Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageItems.map((p) => (
+                  <motion.tr key={p.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <TableCell className="font-medium">{p.school_name}</TableCell>
+                    <TableCell>{p.category || <span className="text-muted-foreground/50">—</span>}</TableCell>
+                    <TableCell className="text-xs">{p.contact || "—"}</TableCell>
+                    <TableCell>
+                      <Badge className={cn(STATUS_META[p.payment_status]?.badge)}>
+                        {STATUS_META[p.payment_status]?.label || p.payment_status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatIDR(Number(p.amount))}</TableCell>
+                    <TableCell className="text-xs">
+                      {new Date(p.created_at).toLocaleDateString("id-ID")}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(p)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </motion.tr>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+          <PaginationControls page={safePage} pageCount={pageCount} total={filtered.length} onPage={setPage} />
+        </>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((p) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-line bg-card p-4 card-glow"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-display text-sm font-bold leading-tight">{p.school_name}</h3>
-                <Badge className={cn("shrink-0", STATUS_META[p.payment_status]?.badge)}>
-                  {STATUS_META[p.payment_status]?.label}
-                </Badge>
-              </div>
-              <div className="mt-3 space-y-1 text-xs text-muted-foreground">
-                {p.category && <p>Kategori: {p.category}</p>}
-                {p.contact && <p>Kontak: {p.contact}</p>}
-                <p>Nominal: {formatIDR(Number(p.amount))}</p>
-                <p>Daftar: {new Date(p.created_at).toLocaleDateString("id-ID")}</p>
-                {p.notes && <p className="text-muted-foreground/70">Catatan: {p.notes}</p>}
-              </div>
-              <div className="mt-3 flex justify-end gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(p)}>
-                  <Edit className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(p.id)}>
-                  <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {pageItems.map((p) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl border border-line bg-card p-4 card-glow"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-display text-sm font-bold leading-tight">{p.school_name}</h3>
+                  <Badge className={cn("shrink-0", STATUS_META[p.payment_status]?.badge)}>
+                    {STATUS_META[p.payment_status]?.label}
+                  </Badge>
+                </div>
+                <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+                  {p.category && <p>Kategori: {p.category}</p>}
+                  {p.contact && <p>Kontak: {p.contact}</p>}
+                  <p>Nominal: {formatIDR(Number(p.amount))}</p>
+                  <p>Daftar: {new Date(p.created_at).toLocaleDateString("id-ID")}</p>
+                  {p.notes && <p className="text-muted-foreground/70">Catatan: {p.notes}</p>}
+                </div>
+                <div className="mt-3 flex justify-end gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(p)}>
+                    <Edit className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(p.id)}>
+                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <PaginationControls page={safePage} pageCount={pageCount} total={filtered.length} onPage={setPage} />
+        </>
       )}
+    </div>
+  )
+}
+
+function PaginationControls({
+  page,
+  pageCount,
+  total,
+  onPage,
+}: {
+  page: number
+  pageCount: number
+  total: number
+  onPage: (p: number) => void
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-xs text-muted-foreground">
+        Menampilkan {total === 0 ? 0 : (page - 1) * 10 + 1}–{Math.min(page * 10, total)} dari {total} peserta
+      </p>
+      <div className="flex items-center gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 border-line"
+          disabled={page <= 1}
+          onClick={() => onPage(page - 1)}
+        >
+          <ChevronLeft className="h-3.5 w-3.5" /> Sebelumnya
+        </Button>
+        {Array.from({ length: pageCount }).slice(0, 7).map((_, i) => {
+          const p = i + 1
+          const show = p === 1 || p === pageCount || Math.abs(p - page) <= 1
+          if (!show) {
+            if (p === 2 || p === pageCount - 1) return <span key={p} className="px-1 text-xs text-muted-foreground">…</span>
+            return null
+          }
+          return (
+            <Button
+              key={p}
+              variant={p === page ? "default" : "outline"}
+              size="sm"
+              className={cn("h-8 w-8", p === page ? "gradient-primary text-white" : "border-line")}
+              onClick={() => onPage(p)}
+            >
+              {p}
+            </Button>
+          )
+        })}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 border-line"
+          disabled={page >= pageCount}
+          onClick={() => onPage(page + 1)}
+        >
+          Berikutnya <ChevronRight className="h-3.5 w-3.5" />
+        </Button>
+      </div>
     </div>
   )
 }

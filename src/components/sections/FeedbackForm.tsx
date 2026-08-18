@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Send, CheckCircle2 } from "lucide-react"
+import { useToast } from "@/components/ui/toast"
+import { Send, CheckCircle2, Copy } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { SectionHeader } from "./SectionHeader"
 import { SaranTicker } from "./SaranTicker"
@@ -14,11 +15,13 @@ import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 
 export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
   const { settings } = useSiteSettings()
+  const toast = useToast()
   const st = settings.sectionTitles
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
+  const [trackingCode, setTrackingCode] = useState("")
   const [error, setError] = useState("")
   const [tickerKey, setTickerKey] = useState(0)
 
@@ -28,22 +31,43 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
     setLoading(true)
     setError("")
 
-    const { error: insertError } = await supabase.from("feedbacks").insert({
-      sender_name: name.trim() || "Anonim",
-      message: message.trim(),
-    })
+    const { data, error: insertError } = await supabase
+      .from("feedbacks")
+      .insert({
+        sender_name: name.trim() || "Anonim",
+        message: message.trim(),
+      })
+      .select("id")
+      .single()
 
     if (insertError) {
       setError("Gagal mengirim. Coba lagi.")
+      toast({ type: "error", title: "Gagal mengirim saran" })
     } else {
+      const code = (data?.id || "").slice(0, 8).toUpperCase()
+      setTrackingCode(code)
       setSent(true)
       setName("")
       setMessage("")
       setTickerKey((k) => k + 1)
       onSubmitted?.()
+      toast({
+        type: "success",
+        title: "Saran terkirim",
+        description: code ? `Kode pelacakan: ${code}` : undefined,
+      })
       setTimeout(() => setSent(false), 4000)
     }
     setLoading(false)
+  }
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(trackingCode)
+      toast({ type: "info", title: "Kode disalin" })
+    } catch {
+      toast({ type: "error", title: "Gagal menyalin kode" })
+    }
   }
 
   return (
@@ -76,6 +100,32 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
                 </div>
                 <h3 className="mt-4 font-display text-lg font-bold">Terima Kasih!</h3>
                 <p className="mt-1 text-sm text-muted-foreground">Masukan Anda telah kami terima.</p>
+                {trackingCode && (
+                  <div className="mt-4 w-full rounded-xl border border-line bg-soft p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Kode Pelacakan
+                    </p>
+                    <div className="mt-1 flex items-center justify-center gap-2">
+                      <code className="rounded-md bg-background px-2.5 py-1 font-mono text-sm font-bold tracking-widest text-accent">
+                        {trackingCode}
+                      </code>
+                      <button
+                        onClick={copyCode}
+                        aria-label="Salin kode pelacakan"
+                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                      Simpan kode ini untuk memeriksa status saran Anda di{" "}
+                      <a href="/saran?mode=cek" className="text-accent underline underline-offset-2">
+                        halaman cek status
+                      </a>
+                      .
+                    </p>
+                  </div>
+                )}
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">

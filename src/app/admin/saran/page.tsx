@@ -134,7 +134,7 @@ export default function SaranPage() {
                     />
                     <Button
                       size="sm"
-                      className="shrink-0 gradient-primary text-white"
+                      className="shrink-0 h-9 gradient-primary text-white"
                       disabled={!replyText[fb.id]?.trim() || replying[fb.id]}
                       onClick={() => handleReply(fb)}
                     >

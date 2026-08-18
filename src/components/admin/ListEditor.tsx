@@ -60,7 +60,7 @@ export function ListEditor<T extends Record<string, unknown>>({
               variant="ghost"
               size="sm"
               onClick={() => remove(index)}
-              className="h-7 w-7 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-400"
+              className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/10 hover:text-red-400"
               aria-label={`Hapus ${itemLabel.toLowerCase()} ${index + 1}`}
             >
               <Trash2 className="h-3.5 w-3.5" />

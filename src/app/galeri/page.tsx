@@ -108,7 +108,7 @@ export default function GaleriPage() {
             <button
               key={c}
               onClick={() => setCategory(c)}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
+              className={`rounded-full px-4 py-2.5 text-xs font-medium transition-all ${
                 category === c
                   ? "gradient-primary text-white shadow-glow-red"
                   : "border border-line bg-card text-muted-foreground hover:text-foreground"

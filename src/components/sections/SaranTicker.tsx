@@ -167,7 +167,7 @@ export function SaranTicker({ refreshKey = 0 }: { refreshKey?: number }) {
                   <button
                     onClick={() => vote(fb.id, "like")}
                     disabled={!!voted[fb.id]}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-2 text-xs font-medium transition-colors ${
                       voted[fb.id] === "like"
                         ? "border-green-500/50 bg-green-500/10 text-green-400"
                         : "border-line text-muted-foreground hover:text-green-400"
@@ -179,7 +179,7 @@ export function SaranTicker({ refreshKey = 0 }: { refreshKey?: number }) {
                   <button
                     onClick={() => vote(fb.id, "dislike")}
                     disabled={!!voted[fb.id]}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-2 text-xs font-medium transition-colors ${
                       voted[fb.id] === "dislike"
                         ? "border-red-500/50 bg-red-500/10 text-red-400"
                         : "border-line text-muted-foreground hover:text-red-400"

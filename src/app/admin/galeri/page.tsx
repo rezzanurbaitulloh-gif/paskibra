@@ -257,7 +257,7 @@ export default function GaleriAdminPage() {
                       <button
                         type="button"
                         onClick={() => setForm((f) => ({ ...f, extraImages: f.extraImages.filter((x) => x !== u) }))}
-                        className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
+                        className="absolute right-1 top-1 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 p-0 text-white hover:bg-black/80"
                         aria-label="Hapus"
                       >
                         <Trash2 className="h-3 w-3" />

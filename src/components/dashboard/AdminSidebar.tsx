@@ -99,7 +99,7 @@ export function AdminSidebar({ drawer = false, onNavigate }: { drawer?: boolean;
                     href={item.href}
                     onClick={onNavigate}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                      "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                       active
                         ? "bg-foreground text-background shadow-sm"
                         : "text-muted-foreground hover:bg-soft hover:text-foreground"

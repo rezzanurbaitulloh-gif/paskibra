@@ -54,7 +54,7 @@ export function ProfileMenu({ className = "" }: { className?: string }) {
     <div ref={ref} className={`relative ${className}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-full border border-line bg-card py-1 pl-1 pr-2.5 transition-colors hover:border-accent/50"
+        className="flex items-center gap-2 rounded-full border border-line bg-card py-2 pl-1 pr-2.5 transition-colors hover:border-accent/50"
         aria-label="Menu akun"
       >
         <span

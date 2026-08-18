@@ -96,7 +96,7 @@ export function ImageUpload({
           <button
             type="button"
             onClick={() => onChange("")}
-            className="absolute right-1.5 top-1.5 rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black/80"
+            className="absolute right-1.5 top-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 p-0 text-white transition-colors hover:bg-black/80"
             aria-label="Hapus gambar"
           >
             <X className="h-3 w-3" />

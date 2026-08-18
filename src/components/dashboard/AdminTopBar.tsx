@@ -39,7 +39,7 @@ export function AdminTopBar() {
       <div className="flex items-center gap-2">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-lg border border-line px-2.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground sm:px-3"
+          className="inline-flex items-center gap-2 rounded-lg border border-line px-2.5 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground sm:px-3"
           title="Kembali ke halaman utama"
         >
           <Home className="h-4 w-4" /> <span className="hidden sm:inline">Halaman Utama</span>
@@ -49,7 +49,7 @@ export function AdminTopBar() {
           <SheetTrigger
             className="md:hidden"
             render={
-              <Button variant="ghost" size="icon" aria-label="Buka menu">
+              <Button variant="ghost" size="icon" aria-label="Buka menu" className="h-10 w-10">
                 <Menu className="h-5 w-5" />
               </Button>
             }
@@ -69,7 +69,7 @@ export function AdminTopBar() {
       </div>
 
       <div className="flex items-center gap-1.5">
-        <Button variant="ghost" size="icon" aria-label="Notifikasi">
+        <Button variant="ghost" size="icon" aria-label="Notifikasi" className="h-10 w-10">
           <span className="relative">
             <Bell className="h-4 w-4" />
             <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
@@ -86,7 +86,7 @@ export function AdminTopBar() {
             <p className="max-w-[160px] truncate text-xs font-semibold">{displayName}</p>
             <p className="text-[10px] text-muted-foreground capitalize">{roleLabel}</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Keluar">
+          <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Keluar" className="h-10 w-10">
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

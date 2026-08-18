@@ -66,7 +66,7 @@ function InfoCard({
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           {title}
         </p>
-        <p className="mt-0.5 truncate text-sm font-semibold text-foreground">{value}</p>
+        <p className="mt-0.5 line-clamp-2 text-sm font-semibold text-foreground">{value}</p>
       </div>
     </motion.div>
   )

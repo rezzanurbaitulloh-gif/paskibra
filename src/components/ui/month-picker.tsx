@@ -90,7 +90,7 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
         <div className="flex items-center justify-between">
           <button
             onClick={() => nav(-1)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-soft hover:text-foreground"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-soft hover:text-foreground"
             aria-label="Bulan sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -100,7 +100,7 @@ export function MonthPicker({ value, onChange, placeholder = "Pilih Bulan", clas
           </span>
           <button
             onClick={() => nav(1)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-soft hover:text-foreground"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-soft hover:text-foreground"
             aria-label="Bulan berikutnya"
           >
             <ChevronRight className="h-4 w-4" />

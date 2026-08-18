@@ -232,7 +232,7 @@ export function ImportModal({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-8 w-8"
                             onClick={() => setRows((prev) => prev.filter((_, j) => j !== i))}
                             aria-label="Hapus baris"
                           >

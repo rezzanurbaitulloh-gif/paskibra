@@ -28,6 +28,7 @@ export function Navbar() {
   const { settings } = useSiteSettings()
   const pathname = usePathname()
   const brandWords = (settings.branding.orgName || "SATRIA CENGKARA").toUpperCase().split(/\s+/).filter(Boolean)
+  const brandTitle = brandWords.length > 1 ? brandWords.slice(-2).join(" ") : brandWords[0] || "SATRIA CENGKARA"
   const navLinks = settings.nav.links.length > 0 ? settings.nav.links : NAV_LINKS
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -66,7 +67,7 @@ export function Navbar() {
             </div>
             <div className="hidden sm:block leading-tight">
               <p className="font-display font-bold text-sm tracking-wide">
-                {brandWords[0] || "SATRIA CENGKARA"}
+                {brandTitle}
               </p>
               <p className="text-[10px] text-muted-foreground">Paskibra {settings.branding.schoolName}</p>
             </div>
@@ -92,7 +93,7 @@ export function Navbar() {
             <ProfileMenu />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
+              className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
               aria-label="Menu"
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

@@ -367,7 +367,7 @@ export default function AdminDashboard() {
               <p className="text-xs text-muted-foreground">{card.label}</p>
               <Link
                 href={card.href}
-                className="flex items-center gap-0.5 text-[10px] font-medium text-foreground opacity-60 transition-opacity group-hover:opacity-100"
+                className="flex items-center gap-0.5 py-1 text-[10px] font-medium text-foreground opacity-60 transition-opacity group-hover:opacity-100"
               >
                 Lihat <ArrowUpRight className="h-3 w-3" />
               </Link>

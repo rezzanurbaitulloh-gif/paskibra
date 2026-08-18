@@ -239,7 +239,7 @@ export default function UsersAdminPage() {
                           value={u.role || "none"}
                           onValueChange={(v) => handleRole(u, v === "none" ? null : v)}
                         >
-                          <SelectTrigger className="h-8 w-36 border-line bg-soft">
+                          <SelectTrigger className="h-9 w-36 border-line bg-soft">
                             <SelectValue placeholder="User biasa" />
                           </SelectTrigger>
                           <SelectContent>
@@ -263,12 +263,13 @@ export default function UsersAdminPage() {
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="h-9 w-9"
                             onClick={() => setPasswordTarget(u)}
                             title="Ubah sandi"
                           >
                             <KeyRound className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(u)} title="Hapus akun">
+                          <Button variant="ghost" size="sm" className="h-9 w-9" onClick={() => handleDelete(u)} title="Hapus akun">
                             <Trash2 className="h-4 w-4 text-red-400" />
                           </Button>
                         </div>

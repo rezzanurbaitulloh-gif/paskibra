@@ -24,7 +24,7 @@ export function PasswordInput({ className, toggleClassName, ...props }: Password
         onClick={() => setVisible((v) => !v)}
         aria-label={visible ? "Sembunyikan password" : "Tampilkan password"}
         className={cn(
-          "absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground",
+          "absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground",
           toggleClassName
         )}
       >

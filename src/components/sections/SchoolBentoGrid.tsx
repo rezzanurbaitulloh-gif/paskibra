@@ -56,7 +56,7 @@ export function SchoolBentoGrid() {
                     <item.icon className="h-5 w-5 text-accent" />
                   </div>
                   <h3 className="mt-3 font-display text-base font-bold md:text-lg">{item.title}</h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground md:text-sm">{item.content}</p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground break-words md:text-sm">{item.content}</p>
                 </div>
               </div>
             </motion.div>

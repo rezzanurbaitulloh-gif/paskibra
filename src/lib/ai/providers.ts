@@ -18,13 +18,14 @@ interface RawEndpoint {
 
 const CONFIG_PATH = path.join(os.homedir(), ".config", "opencode", "opencode.json")
 
-/** Baca SEMUA provider + apiKey + model dari config opencode saat ini */
+/** Baca SEMUA provider + apiKey + model dari config opencode saat ini (kecuali provider hc_* yang dihapus) */
 function readOpencodeConfig(): RawEndpoint[] {
   try {
     const raw = fs.readFileSync(CONFIG_PATH, "utf8")
     const data = JSON.parse(raw)
     const out: RawEndpoint[] = []
     for (const [name, provider] of Object.entries(data.provider || {})) {
+      if (name.startsWith("hc_")) continue
       const p = provider as { options?: { baseURL?: string; apiKey?: string }; models?: Record<string, unknown> }
       const url = p?.options?.baseURL
       const key = p?.options?.apiKey
@@ -38,28 +39,17 @@ function readOpencodeConfig(): RawEndpoint[] {
   }
 }
 
-/** Tambahan dari env (jika ada key yang tidak ada di JSON) */
+/** Tambahan dari env (jika ada key yang tidak ada di JSON) — Nara sebagai default utama */
 function envEndpoints(): RawEndpoint[] {
   const out: RawEndpoint[] = []
-  const push = (provider: string, url: string, keys: string[], models: string[]) => {
-    for (const key of keys) out.push({ url: url.replace(/\/+$/, ""), key, models, provider })
+  for (const key of (process.env.NARA_KEYS || process.env.NEXT_PUBLIC_NARA_KEYS || "").split(",").filter(Boolean)) {
+    out.push({
+      url: (process.env.NARA_BASE_URL || "https://router.bynara.id/v1").replace(/\/+$/, ""),
+      key,
+      models: [process.env.NARA_MODEL || "mistral-large"],
+      provider: "env-nara",
+    })
   }
-  push(
-    "env-nara",
-    process.env.NARA_BASE_URL || "https://router.bynara.id/v1",
-    (process.env.NARA_KEYS || process.env.NEXT_PUBLIC_NARA_KEYS || "").split(",").filter(Boolean),
-    [(process.env.NARA_MODEL || "mistral-large")]
-  )
-  push(
-    "env-hcnsec",
-    process.env.HCNSEC_BASE_URL || "https://api.hcnsec.cn/v1",
-    (process.env.HCNSEC_KEYS || process.env.NEXT_PUBLIC_HCNSEC_KEYS || "").split(",").filter(Boolean),
-    [
-      process.env.HCNSEC_MODEL || "DeepSeek-V4-Flash",
-      "Qwen3-Coder-Next-FP8",
-      "Qwen3.5-397B-A17B",
-    ]
-  )
   return out
 }
 
@@ -68,7 +58,7 @@ export function getAIEndpoints(): AIEndpoint[] {
   const config = readOpencodeConfig()
   const cloud = config.filter((e) => !/localhost|127\.0\.0\.1/.test(e.url))
   const local = config.filter((e) => /localhost|127\.0\.0\.1/.test(e.url))
-  const all = [...cloud, ...envEndpoints(), ...local]
+  const all = [...envEndpoints(), ...cloud, ...local]
   return all.filter((e) => {
     const id = `${e.url}|${e.key}`
     if (seen.has(id)) return false

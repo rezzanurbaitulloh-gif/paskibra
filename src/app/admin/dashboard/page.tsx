@@ -19,6 +19,9 @@ import {
   FileText,
   ArrowRight,
   Trophy,
+  FileSpreadsheet,
+  FileText as FileWord,
+  ChevronDown,
 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -28,6 +31,15 @@ import { fmtIDR } from "@/lib/fmt"
 import { useAdmin } from "@/contexts/AdminContext"
 import { BendaharaView } from "./bendahara-view"
 import { HumasView } from "./humas-view"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
+} from "@/components/ui/dropdown-menu"
+import { downloadReportExcel, downloadReportWord, type DashboardReportData } from "@/lib/dashboard-report"
 
 interface Stat {
   label: string
@@ -195,6 +207,20 @@ export default function AdminDashboard() {
     (user?.email?.split("@")[0] || "Admin").replace(/[._-]/g, " ")
   const today = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
 
+  const buildReportData = (): DashboardReportData => ({
+    generatedBy: name,
+    generatedAt: today,
+    stats,
+    deltas,
+    genData,
+    yearData,
+    galCategories,
+    finRows: finRowsAll,
+    lkbbRows,
+    sarans,
+    artikels,
+  })
+
   const statCards: Stat[] = [
     { label: "Anggota", value: stats.members || 0, delta: deltas.members || 0, icon: Users, href: "/admin/pengurus" },
     { label: "Galeri", value: stats.galeri || 0, delta: deltas.galeri || 0, icon: ImageIcon, href: "/admin/galeri" },
@@ -306,9 +332,31 @@ export default function AdminDashboard() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <LiveClock />
-          <Button variant="outline" size="sm" className="h-9">
-            <Download className="mr-1.5 h-3.5 w-3.5" /> Unduh
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="outline" size="sm" className="h-9">
+                  <Download className="mr-1.5 h-3.5 w-3.5" /> Unduh
+                  <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-60" />
+                </Button>
+              }
+            />
+            <DropdownMenuContent className="glass border-line">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">Laporan Ringkasan</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => downloadReportExcel(buildReportData())}
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4 text-green-500" /> Unduh Excel (.xlsx)
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => downloadReportWord(buildReportData())}
+                >
+                  <FileWord className="mr-2 h-4 w-4 text-blue-500" /> Unduh Word (.docx)
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

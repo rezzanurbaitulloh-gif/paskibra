@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useToast } from "@/components/ui/toast"
+import { safeJson } from "@/lib/fetch-json"
 import { Skeleton } from "@/components/ui/skeleton"
 import { supabase } from "@/lib/supabase/client"
 import { CalendarDays, Plus, Trash2, MapPin } from "lucide-react"
@@ -37,7 +38,7 @@ export default function KegiatanPage() {
 
   const fetchEvents = async () => {
     const res = await fetch(`/api/settings-json?key=events`)
-    const data = await res.json()
+    const { data } = await safeJson<{ value?: unknown }>(res)
     setEvents(
       (Array.isArray(data.value) ? data.value : []).sort((a: EventItem, b: EventItem) =>
         new Date(a.date).getTime() - new Date(b.date).getTime()

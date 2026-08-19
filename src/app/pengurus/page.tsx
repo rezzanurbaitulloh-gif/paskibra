@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useToast } from "@/components/ui/toast"
+import { safeJson } from "@/lib/fetch-json"
 
 interface Member {
   id: string
@@ -53,8 +54,8 @@ export default function PengurusPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: recruitForm.name, kelas: recruitForm.kelas, contact: recruitForm.contact, motivation: recruitForm.motivation }),
       })
-      const data = await res.json()
-      if (!res.ok || !data.ok) {
+      const { ok, data } = await safeJson<{ ok?: boolean; error?: string }>(res)
+      if (!ok || !data.ok) {
         toast({ type: "error", title: "Pendaftaran gagal", description: data.error || "Coba lagi." })
       } else {
         setRecruitDone(true)
@@ -88,7 +89,7 @@ export default function PengurusPage() {
             className="h-10 gradient-primary text-white hover:brightness-110"
           >
             <UserPlus className="mr-2 h-4 w-4" />
-            Gabung Jadi Pengurus
+            Gabung Menjadi Anggota
           </Button>
         </div>
 

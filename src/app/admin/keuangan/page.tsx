@@ -129,9 +129,10 @@ export default function KeuanganPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: aiText }),
       })
-      const data = await response.json()
+      const raw = await response.text()
+      const data = raw ? JSON.parse(raw) : {}
       if (!response.ok || !data.records) {
-        setAiError(data.error || "AI gagal mengurai teks")
+        setAiError(data.error || (raw ? `AI gagal mengurai teks (HTTP ${response.status})` : "Server tidak merespons — coba lagi"))
         return
       }
       const parsed: Row[] = data.records.map((r: { description: string; amount: number; type: string; category: string; date: string }) => ({

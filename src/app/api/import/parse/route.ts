@@ -2,6 +2,7 @@ import { NextRequest } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { getAIEndpoints } from "@/lib/ai/providers"
 import { extractText } from "@/lib/extractText"
+import * as XLSX from "xlsx"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -11,6 +12,88 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ""
 const admin = createClient(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
+
+/** Fallback tanpa AI: baca langsung dari workbook Excel/CSV bila kolomnya dikenal */
+function extractRowsDirect(
+  buffer: Buffer,
+  filename: string,
+  type: string
+): Record<string, string>[] | null {
+  const lower = filename.toLowerCase()
+  if (!(lower.endsWith(".xlsx") || lower.endsWith(".xls") || lower.endsWith(".csv"))) return null
+  let wb: XLSX.WorkBook
+  try {
+    wb = XLSX.read(buffer, { type: "buffer" })
+  } catch {
+    return null
+  }
+  const sheet = wb.Sheets[wb.SheetNames[0]]
+  if (!sheet) return null
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" })
+  if (rows.length === 0) return null
+
+  const norm = (k: string) => k.toLowerCase().replace(/[^a-z0-9]/g, "")
+  const keyMap: Record<string, string> = {}
+  for (const k of Object.keys(rows[0])) {
+    const n = norm(k)
+    if (type === "anggota") {
+      if (/(nama|^name)/.test(n)) keyMap[k] = "name"
+      else if (/(jabatan|posisi|^position)/.test(n)) keyMap[k] = "position"
+      else if (/(divisi|bidang|^division)/.test(n)) keyMap[k] = "division"
+      else if (/(generasi|angkatan|generation)/.test(n)) keyMap[k] = "generation"
+      else if (/(kelas|jurusan|^class)/.test(n)) keyMap[k] = "kelas"
+    } else {
+      if (/(deskripsi|keterangan|uraian|description)/.test(n)) keyMap[k] = "description"
+      else if (/(nominal|jumlah|total|amount|^jumlah)/.test(n)) keyMap[k] = "amount"
+      else if (/(jenis|tipe|^type)/.test(n)) keyMap[k] = "type"
+      else if (/(kategori|category)/.test(n)) keyMap[k] = "category"
+      else if (/(tanggal|date)/.test(n)) keyMap[k] = "date"
+    }
+  }
+  const required = type === "anggota" ? "name" : "description"
+  if (!Object.values(keyMap).includes(required)) return null
+
+  const out: Record<string, string>[] = []
+  for (const r of rows) {
+    const mapped: Record<string, string> = {}
+    for (const [k, target] of Object.entries(keyMap)) {
+      const v = r[k]
+      mapped[target] = v === null || v === undefined ? "" : String(v).trim()
+    }
+    if (type === "anggota" ? mapped.name : mapped.description) out.push(mapped)
+  }
+  return out.length > 0 ? out : null
+}
+
+/** Normalisasi baris agar konsisten dengan hasil AI */
+function normalizeRows(raw: Record<string, string>[], type: string): Record<string, string>[] {
+  return raw
+    .filter((r) => {
+      const name = String(r.name || "").trim()
+      const description = String(r.description || "").trim()
+      return type === "anggota" ? Boolean(name) : Boolean(description && r.amount)
+    })
+    .map((r): Record<string, string> => {
+      const row: Record<string, string> = {}
+      if (type === "anggota") {
+        row.name = String(r.name || "").trim()
+        row.position = String(r.position || "Anggota").trim() || "Anggota"
+        row.division = String(r.division || "Umum").trim() || "Umum"
+        row.generation = String(r.generation || "").trim()
+        row.kelas = String(r.kelas || "").trim()
+      } else {
+        row.description = String(r.description).trim()
+        row.amount = String(Math.round(Number(r.amount)) || "")
+        row.type =
+          String(r.type).toLowerCase() === "income" || String(r.type).toLowerCase() === "pemasukan"
+            ? "income"
+            : "expense"
+        row.category = String(r.category || "Lainnya")
+        row.date = String(r.date || new Date().toISOString().split("T")[0])
+      }
+      return row
+    })
+}
 
 const TYPE_PROMPTS: Record<string, string> = {
   keuangan: `Kamu adalah asisten keuangan organisasi Paskibra. Ubah data yang diberikan menjadi JSON array transaksi keuangan.
@@ -64,10 +147,19 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer())
     const text = await extractText(buffer, file.name)
+    const directRows = extractRowsDirect(buffer, file.name, type)
+    if (directRows && directRows.length > 0) {
+      return Response.json({ rows: normalizeRows(directRows, type) })
+    }
 
     const lastError: { message: string } = { message: "Semua endpoint AI gagal" }
+    const deadline = Date.now() + 15000
+    const failedUrls = new Set<string>()
     for (const endpoint of getAIEndpoints()) {
+      if (Date.now() >= deadline) break
+      if (failedUrls.has(endpoint.url)) continue
       for (const model of endpoint.models) {
+        if (Date.now() >= deadline) break
         try {
           const response = await fetch(`${endpoint.url}/chat/completions`, {
             method: "POST",
@@ -86,7 +178,7 @@ export async function POST(request: NextRequest) {
               ],
               temperature: 0.1,
             }),
-            signal: AbortSignal.timeout(60000),
+            signal: AbortSignal.timeout(Math.min(8000, Math.max(2000, deadline - Date.now()))),
           })
 
           if (!response.ok) {
@@ -106,29 +198,12 @@ export async function POST(request: NextRequest) {
           const parsed = JSON.parse(jsonMatch[0])
           const rows = Array.isArray(parsed) ? parsed : [parsed]
 
-          const clean = rows
-            .filter((r: Record<string, unknown>) => {
-              const name = String(r.name || "").trim()
-              const description = String(r.description || "").trim()
-              return type === "anggota" ? Boolean(name) : Boolean(description && r.amount)
-            })
-            .map((r: Record<string, unknown>) =>
-              type === "anggota"
-                ? {
-                    name: String(r.name || "").trim(),
-                    position: String(r.position || "Anggota").trim() || "Anggota",
-                    division: String(r.division || "Umum").trim() || "Umum",
-                    generation: String(r.generation || "").trim(),
-                    kelas: String(r.kelas || "").trim(),
-                  }
-                : {
-                    description: String(r.description).trim(),
-                    amount: Math.round(Number(r.amount)),
-                    type: r.type === "income" ? "income" : "expense",
-                    category: String(r.category || "Lainnya"),
-                    date: String(r.date || new Date().toISOString().split("T")[0]),
-                  }
-            )
+          const clean = normalizeRows(
+            rows.map((r: Record<string, unknown>) =>
+              Object.fromEntries(Object.entries(r).map(([k, v]) => [k, String(v ?? "")]))
+            ),
+            type
+          )
 
           if (clean.length === 0) {
             lastError.message = "Tidak ada data terdeteksi dari file"
@@ -138,6 +213,7 @@ export async function POST(request: NextRequest) {
           return Response.json({ rows: clean })
         } catch (err) {
           lastError.message = err instanceof Error ? err.message : "Network error"
+          if (/aborted|timeout|fetch failed|ECONN/i.test(lastError.message)) failedUrls.add(endpoint.url)
         }
       }
     }

@@ -23,8 +23,13 @@ export async function POST(request: NextRequest) {
 
     const lastError: { message: string } = { message: "Semua endpoint AI gagal" }
 
+    const deadline = Date.now() + 15000
+    const failedUrls = new Set<string>()
     for (const endpoint of getAIEndpoints()) {
+      if (Date.now() >= deadline) break
+      if (failedUrls.has(endpoint.url)) continue
       for (const model of endpoint.models) {
+        if (Date.now() >= deadline) break
         try {
           const response = await fetch(`${endpoint.url}/chat/completions`, {
             method: "POST",
@@ -40,7 +45,7 @@ export async function POST(request: NextRequest) {
               ],
               temperature: 0.1,
             }),
-            signal: AbortSignal.timeout(45000),
+            signal: AbortSignal.timeout(Math.min(8000, Math.max(2000, deadline - Date.now()))),
           })
 
           if (!response.ok) {
@@ -79,6 +84,7 @@ export async function POST(request: NextRequest) {
           return Response.json({ records: clean })
         } catch (err) {
           lastError.message = err instanceof Error ? err.message : "Network error"
+          if (/aborted|timeout|fetch failed|ECONN/i.test(lastError.message)) failedUrls.add(endpoint.url)
         }
       }
     }

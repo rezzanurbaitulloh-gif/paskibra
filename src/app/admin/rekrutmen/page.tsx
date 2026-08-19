@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useToast } from "@/components/ui/toast"
+import { safeJson } from "@/lib/fetch-json"
 import { Skeleton } from "@/components/ui/skeleton"
 import { supabase } from "@/lib/supabase/client"
 import { UserPlus, Check, X } from "lucide-react"
@@ -47,7 +48,7 @@ export default function RekrutmenPage() {
     const res = await fetch(`/api/recruitment`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    const data = await res.json()
+    const { data } = await safeJson<{ applicants?: Applicant[] }>(res)
     setApplicants(data.applicants || [])
     setLoading(false)
   }, [])
@@ -81,7 +82,7 @@ export default function RekrutmenPage() {
       setGeneration(String(new Date().getFullYear()))
       fetchAll()
     } else {
-      const data = await res.json().catch(() => ({}))
+      const { data } = await safeJson<{ error?: string }>(res)
       toast({ type: "error", title: data.error || "Gagal memperbarui status" })
     }
     setBusy(false)

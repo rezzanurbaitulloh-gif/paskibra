@@ -31,6 +31,7 @@ function readOpencodeConfig(): RawEndpoint[] {
       const key = p?.options?.apiKey
       const models = Object.keys(p?.models || {})
       if (!url || !key || models.length === 0) continue
+      if (/(none|placeholder|ganti.*key|xxxx|your.?key|^$)/i.test(key.trim())) continue
       out.push({ url: url.replace(/\/+$/, ""), key, models, provider: name })
     }
     return out

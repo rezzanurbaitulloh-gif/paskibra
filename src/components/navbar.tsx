@@ -23,6 +23,7 @@ const NAV_LINKS = [
 ]
 
 const EXTRA_LINKS = [
+  { label: "Rekrutmen", href: "/pengurus" },
   { label: "Berita", href: "/berita" },
   { label: "Prestasi", href: "/prestasi" },
 ]

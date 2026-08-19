@@ -4,6 +4,7 @@ import { StructureMembers } from "@/components/sections/StructureMembers"
 import { AchievementsGallery } from "@/components/sections/AchievementsGallery"
 import { RentalCatalog } from "@/components/sections/RentalCatalog"
 import { HistoryTimeline, LogoPhilosophy } from "@/components/sections/HistoryTimeline"
+import { RecruitmentBanner } from "@/components/sections/RecruitmentBanner"
 import { FeedbackForm } from "@/components/sections/FeedbackForm"
 import { Footer } from "@/components/sections/Footer"
 import { UpcomingEvents } from "@/components/sections/UpcomingEvents"
@@ -31,6 +32,7 @@ export default async function Home() {
   return (
     <main id="konten">
       <HeroSection realStats={realStats} />
+      <RecruitmentBanner />
       <SchoolBentoGrid />
       {members && <StructureMembers members={members} />}
       {achievements && (

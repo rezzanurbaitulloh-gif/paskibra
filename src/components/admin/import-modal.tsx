@@ -58,8 +58,13 @@ export function ImportModal({
         headers: { Authorization: `Bearer ${session?.access_token}` },
         body: fd,
       })
-      const data = await res.json()
-      if (!res.ok || !data.rows) throw new Error(data.error || "Gagal membaca file")
+      const raw = await res.text()
+      const data = raw ? JSON.parse(raw) : {}
+      if (!res.ok || !data.rows) {
+        throw new Error(
+          data.error || (raw ? `Gagal membaca file (HTTP ${res.status})` : "Server tidak merespons — coba lagi atau perkecil file")
+        )
+      }
       setRows(
         data.rows.map((r: Record<string, unknown>) =>
           Object.fromEntries(columns.map((c) => [c.key, String(r[c.key] ?? "")]))

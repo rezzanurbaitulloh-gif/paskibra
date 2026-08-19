@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/toast"
+import { safeJson } from "@/lib/fetch-json"
 
 interface UpdateRow {
   id: string
@@ -139,8 +140,8 @@ export default function LombaPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(regForm),
       })
-      const data = await res.json()
-      if (!res.ok || !data.ok) {
+      const { ok, data } = await safeJson<{ ok?: boolean; error?: string }>(res)
+      if (!ok || !data.ok) {
         toast({ type: "error", title: "Pendaftaran gagal", description: data.error || "Coba lagi." })
       } else {
         setRegDone(true)

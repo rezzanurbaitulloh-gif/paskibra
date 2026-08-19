@@ -4,6 +4,7 @@ import { useRef, useState } from "react"
 import { Upload, Loader2, X, Crop } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { ImageCropDialog } from "@/components/ui/image-crop-dialog"
+import { safeJson } from "@/lib/fetch-json"
 
 async function uploadBlob(blob: Blob, filename: string) {
   const {
@@ -17,8 +18,8 @@ async function uploadBlob(blob: Blob, filename: string) {
     headers: { Authorization: `Bearer ${session?.access_token}` },
     body: fd,
   })
-  const data = await res.json()
-  if (!res.ok || !data.url) throw new Error(data.error || "Upload gagal")
+  const { ok, data } = await safeJson<{ url?: string; error?: string }>(res)
+  if (!ok || !data.url) throw new Error(data.error || "Upload gagal")
   return data.url as string
 }
 

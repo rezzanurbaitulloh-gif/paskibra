@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase/client"
 import { ImageUpload } from "@/components/image-upload"
+import { safeJson } from "@/lib/fetch-json"
 import { Plus, Edit, Trash2, ImageIcon, Video, Link2 } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
 
@@ -110,9 +111,9 @@ export default function GaleriAdminPage() {
     const fd = new FormData()
     fd.append("file", file)
     const res = await fetch("/api/upload", { method: "POST", headers: { Authorization: `Bearer ${session?.access_token}` }, body: fd })
-    const data = await res.json()
-    if (res.ok && data.url) {
-      setForm((f) => ({ ...f, extraImages: [...f.extraImages, data.url] }))
+    const { ok, data } = await safeJson<{ url?: string; error?: string }>(res)
+    if (ok && data.url) {
+      setForm((f) => ({ ...f, extraImages: [...f.extraImages, data.url!] }))
     } else {
       alert(data.error || "Upload gagal")
     }

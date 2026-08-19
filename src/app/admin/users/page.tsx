@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/lib/supabase/client"
 import { Plus, Trash2, KeyRound, ShieldCheck, Inbox, Loader2 } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
+import { safeJson } from "@/lib/fetch-json"
 
 interface UserRow {
   id: string
@@ -54,7 +55,7 @@ export default function UsersAdminPage() {
       setLoading(false)
       return
     }
-    const data = await res.json()
+    const { data } = await safeJson<{ users?: UserRow[] }>(res)
     setUsers(data.users || [])
     setLoading(false)
   }
@@ -74,9 +75,9 @@ export default function UsersAdminPage() {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${t}` },
       body: JSON.stringify(form),
     })
-    const data = await res.json()
+    const { ok, data } = await safeJson<{ error?: string }>(res)
     setBusy(false)
-    if (!res.ok) {
+    if (!ok) {
       setError(data.error || "Gagal menambahkan akun")
       return
     }

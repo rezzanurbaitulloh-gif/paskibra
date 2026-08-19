@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { supabase } from "@/lib/supabase/client"
 import { RequireRole } from "@/components/require-role"
+import { safeJson } from "@/lib/fetch-json"
 import { useSiteSettings, SiteSettings } from "@/contexts/SiteSettingsContext"
 import { ListEditor } from "@/components/admin/ListEditor"
 import { ImageUpload } from "@/components/image-upload"
@@ -923,8 +924,8 @@ function DocumentsManager() {
         headers: { Authorization: `Bearer ${session?.access_token}` },
         body: fd,
       })
-      const data = await res.json()
-      if (!res.ok || !data.url) throw new Error(data.error || "Upload gagal")
+      const { ok, data } = await safeJson<{ url?: string; fileName?: string; error?: string }>(res)
+      if (!ok || !data.url) throw new Error(data.error || "Upload gagal")
       const { error } = await supabase.from("lkbb_documents").insert({
         title: file.name.replace(/\.[^.]+$/, ""),
         file_url: data.url,

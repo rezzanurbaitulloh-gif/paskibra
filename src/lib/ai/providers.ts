@@ -67,6 +67,21 @@ export function getAIEndpoints(): AIEndpoint[] {
   })
 }
 
+const aiFailCache = new Map<string, number>()
+
+/** Tandai endpoint gagal — dilewati 60 detik berikutnya agar request tidak menunggu */
+export function markEndpointFailed(url: string) {
+  aiFailCache.set(url, Date.now())
+}
+
+export function shouldSkipEndpoint(url: string): boolean {
+  const t = aiFailCache.get(url)
+  if (!t) return false
+  if (Date.now() - t < 60_000) return true
+  aiFailCache.delete(url)
+  return false
+}
+
 /** Daftar endpoint dengan key disembunyikan — untuk debug/monitoring */
 export function getAIEndpointInfo(): { provider: string; url: string; keyHint: string; models: string[] }[] {
   return getAIEndpoints().map((e) => ({

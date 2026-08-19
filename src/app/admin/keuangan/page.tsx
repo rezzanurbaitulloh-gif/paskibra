@@ -128,11 +128,14 @@ export default function KeuanganPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: aiText }),
+        signal: AbortSignal.timeout(35000),
       })
       const raw = await response.text()
       const data = raw ? JSON.parse(raw) : {}
       if (!response.ok || !data.records) {
-        setAiError(data.error || (raw ? `AI gagal mengurai teks (HTTP ${response.status})` : "Server tidak merespons — coba lagi"))
+        setAiError(
+          data.error || (raw ? `AI gagal mengurai teks (HTTP ${response.status})` : "Koneksi terputus saat memproses (server sedang restart?) — coba lagi")
+        )
         return
       }
       const parsed: Row[] = data.records.map((r: { description: string; amount: number; type: string; category: string; date: string }) => ({
@@ -144,8 +147,12 @@ export default function KeuanganPage() {
         date: r.date || new Date().toISOString().split("T")[0],
       }))
       setAiPreview(parsed)
-    } catch {
-      setAiError("Terjadi kesalahan jaringan")
+    } catch (err) {
+      setAiError(
+        err instanceof Error && err.name === "TimeoutError"
+          ? "Memproses terlalu lama (endpoint AI tidak merespons) — coba lagi nanti."
+          : "Terjadi kesalahan jaringan"
+      )
     } finally {
       setAiLoading(false)
     }

@@ -57,12 +57,13 @@ export function ImportModal({
         method: "POST",
         headers: { Authorization: `Bearer ${session?.access_token}` },
         body: fd,
+        signal: AbortSignal.timeout(35000),
       })
       const raw = await res.text()
       const data = raw ? JSON.parse(raw) : {}
       if (!res.ok || !data.rows) {
         throw new Error(
-          data.error || (raw ? `Gagal membaca file (HTTP ${res.status})` : "Server tidak merespons — coba lagi atau perkecil file")
+          data.error || (raw ? `Gagal membaca file (HTTP ${res.status})` : "Koneksi terputus saat memproses (server sedang restart?) — coba lagi")
         )
       }
       setRows(
@@ -71,7 +72,13 @@ export function ImportModal({
         )
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal membaca file")
+      setError(
+        err instanceof Error && err.name === "TimeoutError"
+          ? "Memproses terlalu lama (endpoint AI tidak merespons) — coba lagi nanti, atau gunakan file Excel/CSV yang langsung terbaca."
+          : err instanceof Error
+            ? err.message
+            : "Gagal membaca file"
+      )
       setRows([])
     } finally {
       setLoading(false)

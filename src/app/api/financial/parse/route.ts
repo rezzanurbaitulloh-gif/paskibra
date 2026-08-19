@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server"
-import { getAIEndpoints } from "@/lib/ai/providers"
+import { getAIEndpoints, markEndpointFailed, shouldSkipEndpoint } from "@/lib/ai/providers"
 
 const PARSER_PROMPT = `Kamu adalah parser keuangan cerdas untuk organisasi Paskibra. 
 Tugasmu: ubah kalimat bebas bahasa Indonesia menjadi JSON array transaksi keuangan.
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     for (const endpoint of getAIEndpoints()) {
       if (Date.now() >= deadline) break
       if (failedUrls.has(endpoint.url)) continue
+      if (shouldSkipEndpoint(endpoint.url)) continue
       for (const model of endpoint.models) {
         if (Date.now() >= deadline) break
         try {
@@ -84,7 +85,10 @@ export async function POST(request: NextRequest) {
           return Response.json({ records: clean })
         } catch (err) {
           lastError.message = err instanceof Error ? err.message : "Network error"
-          if (/aborted|timeout|fetch failed|ECONN/i.test(lastError.message)) failedUrls.add(endpoint.url)
+          if (/aborted|timeout|fetch failed|ECONN/i.test(lastError.message)) {
+            failedUrls.add(endpoint.url)
+            markEndpointFailed(endpoint.url)
+          }
         }
       }
     }

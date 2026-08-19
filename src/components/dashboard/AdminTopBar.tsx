@@ -42,7 +42,7 @@ export function AdminTopBar() {
       <div className="flex items-center gap-2">
         <Link
           href="/"
-          className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-line px-2.5 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground sm:px-3"
+          className="inline-flex items-center gap-2 rounded-lg border border-line px-2.5 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
           title="Kembali ke halaman utama"
         >
           <Home className="h-4 w-4" /> <span className="hidden lg:inline">Halaman Utama</span>
@@ -80,7 +80,7 @@ export function AdminTopBar() {
         <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
         <button
           onClick={() => setPaletteOpen(true)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-soft hover:text-foreground lg:hidden"
+          className="hidden h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-soft hover:text-foreground sm:inline-flex lg:hidden"
           aria-label="Cari menu atau perintah"
         >
           <Search className="h-4 w-4" />

@@ -404,37 +404,30 @@ export default function AdminDashboard() {
         </div>
       </motion.div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Stat cards — tile persegi 1 kolom, klik untuk masuk menu */}
+      <div className="mx-auto grid max-w-sm grid-cols-1 gap-4">
         {statCards.map((card) => (
-          <Card key={card.label} className="group p-5 transition-colors hover:border-ring/40">
-            <div className="flex items-start justify-between">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-soft">
-                <card.icon className="h-5 w-5 text-foreground" />
-              </div>
-              {card.delta > 0 ? (
-                <span className="flex items-center gap-0.5 rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-semibold text-green-500">
-                  <TrendingUp className="h-3 w-3" /> +{card.delta} bln ini
+          <Link
+            key={card.label}
+            href={card.href}
+            className="group flex aspect-square flex-col items-center justify-center gap-2.5 rounded-2xl border border-line bg-card p-6 text-center transition-all hover:-translate-y-0.5 hover:border-ring/40 hover:bg-soft/50 active:scale-[0.98]"
+          >
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-soft transition-colors group-hover:bg-foreground group-hover:text-background">
+              <card.icon className="h-7 w-7" />
+              {card.delta > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex items-center gap-0.5 rounded-full bg-green-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-green-500">
+                  <TrendingUp className="h-2.5 w-2.5" /> +{card.delta}
                 </span>
-              ) : (
-                card.label === "Inventaris" && (
-                  <span className="flex items-center gap-0.5 rounded-full bg-soft px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                    Total
-                  </span>
-                )
               )}
             </div>
-            <p className="mt-4 font-display text-2xl font-bold">{card.value}</p>
-            <div className="mt-1 flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">{card.label}</p>
-              <Link
-                href={card.href}
-                className="flex items-center gap-0.5 py-1 text-[10px] font-medium text-foreground opacity-60 transition-opacity group-hover:opacity-100"
-              >
-                Lihat <ArrowUpRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </Card>
+            <p className="font-display text-3xl font-bold tabular-nums">{card.value}</p>
+            <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
+            {card.delta === 0 && card.label === "Inventaris" && (
+              <span className="rounded-full bg-soft px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                Total
+              </span>
+            )}
+          </Link>
         ))}
       </div>
 

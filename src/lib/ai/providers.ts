@@ -18,14 +18,13 @@ interface RawEndpoint {
 
 const CONFIG_PATH = path.join(os.homedir(), ".config", "opencode", "opencode.json")
 
-/** Baca SEMUA provider + apiKey + model dari config opencode saat ini (kecuali provider hc_* yang dihapus) */
+/** Baca SEMUA provider + apiKey + model dari config opencode saat ini */
 function readOpencodeConfig(): RawEndpoint[] {
   try {
     const raw = fs.readFileSync(CONFIG_PATH, "utf8")
     const data = JSON.parse(raw)
     const out: RawEndpoint[] = []
     for (const [name, provider] of Object.entries(data.provider || {})) {
-      if (name.startsWith("hc_")) continue
       const p = provider as { options?: { baseURL?: string; apiKey?: string }; models?: Record<string, unknown> }
       const url = p?.options?.baseURL
       const key = p?.options?.apiKey

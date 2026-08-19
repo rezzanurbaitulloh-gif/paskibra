@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     }
 
     const lastError: { message: string } = { message: "Semua endpoint AI gagal" }
-    const deadline = Date.now() + 15000
+    const deadline = Date.now() + 20000
     const failedUrls = new Set<string>()
     for (const endpoint of getAIEndpoints()) {
       if (Date.now() >= deadline) break
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
               ],
               temperature: 0.1,
             }),
-            signal: AbortSignal.timeout(Math.min(8000, Math.max(2000, deadline - Date.now()))),
+            signal: AbortSignal.timeout(Math.min(6000, Math.max(2000, deadline - Date.now()))),
           })
 
           if (!response.ok) {

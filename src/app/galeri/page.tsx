@@ -1,7 +1,7 @@
 "use client"
 
 import { useSiteSettings } from "@/contexts/SiteSettingsContext"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
@@ -80,6 +80,7 @@ export default function GaleriPage() {
   const { settings } = useSiteSettings()
   const [items, setItems] = useState<GalleryItem[]>([])
   const [category, setCategory] = useState("Semua")
+  const [year, setYear] = useState("Semua")
   const [loading, setLoading] = useState(true)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
@@ -93,7 +94,16 @@ export default function GaleriPage() {
     fetchItems()
   }, [])
 
-  const filtered = category === "Semua" ? items : items.filter((i) => i.category === category)
+  const years = useMemo(() => {
+    const set = new Set(items.map((i) => new Date(i.created_at).getFullYear().toString()))
+    return ["Semua", ...Array.from(set).sort((a, b) => Number(b) - Number(a))]
+  }, [items])
+
+  const filtered = items.filter((i) => {
+    if (year !== "Semua" && new Date(i.created_at).getFullYear().toString() !== year) return false
+    if (category !== "Semua" && i.category !== category) return false
+    return true
+  })
 
   const lightboxItems: LightboxImage[] = filtered
     .filter((i) => i.image_url)
@@ -104,7 +114,7 @@ export default function GaleriPage() {
       <div className="container mx-auto px-4 pt-28 pb-16">
   
         <div className="mt-6 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Galeri Kegiatan</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Galeri & Prestasi</p>
           <h1 className="mt-2 font-display text-3xl font-extrabold md:text-4xl">Dokumentasi Satria Cengkara</h1>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
             {settings.pages.galeriIntro}
@@ -112,7 +122,26 @@ export default function GaleriPage() {
         </div>
 
         {/* Filter */}
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Tahun
+          </span>
+          {years.map((y) => (
+            <button
+              key={y}
+              onClick={() => setYear(y)}
+              className={`rounded-full px-4 py-2.5 text-xs font-medium transition-all ${
+                year === y
+                  ? "gradient-primary text-white shadow-glow-red"
+                  : "border border-line bg-card text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {y}
+            </button>
+          ))}
+          <span className="ml-3 mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Kategori
+          </span>
           {CATEGORIES.map((c) => (
             <button
               key={c}

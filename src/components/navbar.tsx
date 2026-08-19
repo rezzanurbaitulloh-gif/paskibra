@@ -15,8 +15,6 @@ import { useSiteSettings } from "@/contexts/SiteSettingsContext"
 const NAV_LINKS = [
   { label: "Beranda", href: "#beranda" },
   { label: "Sekolah", href: "#sekolah" },
-  { label: "Daftar Anggota", href: "#pengurus" },
-  { label: "Galeri", href: "#galeri" },
   { label: "Sejarah", href: "#sejarah" },
   { label: "Layanan", href: "#penyewaan" },
   { label: "Kontak", href: "#kontak" },
@@ -25,7 +23,7 @@ const NAV_LINKS = [
 const EXTRA_LINKS = [
   { label: "Rekrutmen", href: "/pengurus" },
   { label: "Berita", href: "/berita" },
-  { label: "Prestasi", href: "/prestasi" },
+  { label: "Galeri & Prestasi", href: "/galeri" },
 ]
 
 export function Navbar() {

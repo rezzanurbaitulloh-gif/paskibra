@@ -404,8 +404,8 @@ export default function AdminDashboard() {
         </div>
       </motion.div>
 
-      {/* Stat cards — tile persegi 1 kolom, klik untuk masuk menu */}
-      <div className="mx-auto grid max-w-sm grid-cols-1 gap-4">
+      {/* Stat cards — tile persegi 4 kolom, klik untuk masuk menu */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {statCards.map((card) => (
           <Link
             key={card.label}

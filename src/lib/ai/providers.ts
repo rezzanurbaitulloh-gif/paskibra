@@ -18,6 +18,11 @@ interface RawEndpoint {
 
 const CONFIG_PATH = path.join(os.homedir(), ".config", "opencode", "opencode.json")
 
+/** Key yang sengaja kosong/"none" = endpoint publik tanpa autentikasi */
+const NO_AUTH_KEY = /^(none|no.?key|n\/a|skip)$/i
+/** Key placeholder yang belum diisi — jangan dipakai */
+const PLACEHOLDER_KEY = /(placeholder|ganti.*key|xxxx|your.?key)/i
+
 /** Baca SEMUA provider + apiKey + model dari config opencode saat ini */
 function readOpencodeConfig(): RawEndpoint[] {
   try {
@@ -27,10 +32,14 @@ function readOpencodeConfig(): RawEndpoint[] {
     for (const [name, provider] of Object.entries(data.provider || {})) {
       const p = provider as { options?: { baseURL?: string; apiKey?: string }; models?: Record<string, unknown> }
       const url = p?.options?.baseURL
-      const key = p?.options?.apiKey
+      const key = String(p?.options?.apiKey || "").trim()
       const models = Object.keys(p?.models || {})
-      if (!url || !key || models.length === 0) continue
-      if (/(none|placeholder|ganti.*key|xxxx|your.?key|^$)/i.test(key.trim())) continue
+      if (!url || models.length === 0) continue
+      if (NO_AUTH_KEY.test(key)) {
+        out.push({ url: url.replace(/\/+$/, ""), key: "", models, provider: name })
+        continue
+      }
+      if (!key || PLACEHOLDER_KEY.test(key)) continue
       out.push({ url: url.replace(/\/+$/, ""), key, models, provider: name })
     }
     return out

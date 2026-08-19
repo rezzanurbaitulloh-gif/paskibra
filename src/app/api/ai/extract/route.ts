@@ -168,7 +168,7 @@ async function callAI(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${endpoint.key}`,
+          ...(endpoint.key ? { Authorization: `Bearer ${endpoint.key}` } : {}),
         },
         body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: 4096 }),
         signal: controller.signal,

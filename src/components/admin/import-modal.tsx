@@ -215,7 +215,7 @@ export function ImportModal({
                     </tr>
                   </thead>
                   <tbody>
-                    {rows.map((row, i) => (
+                    {rows.slice(0, 100).map((row, i) => (
                       <tr key={i} className="border-b border-line/50 last:border-0">
                         <td className="px-2 py-1.5 text-muted-foreground">{i + 1}</td>
                         {columns.map((c) => (
@@ -256,6 +256,11 @@ export function ImportModal({
                   </tbody>
                 </table>
               </div>
+              {rows.length > 100 && (
+                <p className="text-[11px] text-muted-foreground">
+                  Menampilkan 100 dari {rows.length} baris pertama — semua baris tetap akan disimpan.
+                </p>
+              )}
             </>
           )}
 

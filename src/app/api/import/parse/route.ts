@@ -29,8 +29,16 @@ function extractRowsDirect(
   }
   const sheet = wb.Sheets[wb.SheetNames[0]]
   if (!sheet) return null
-  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" })
+  let rows: Record<string, unknown>[]
+  try {
+    rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" })
+  } catch {
+    return null
+  }
   if (rows.length === 0) return null
+  if (rows.length > 20000) {
+    throw new Error(`Terlalu banyak baris (${rows.length.toLocaleString("id-ID")}) — maksimal 20.000 per impor. Pisahkan file menjadi beberapa bagian.`)
+  }
 
   const norm = (k: string) => k.toLowerCase().replace(/[^a-z0-9]/g, "")
   const keyMap: Record<string, string> = {}

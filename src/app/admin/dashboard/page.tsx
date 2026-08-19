@@ -404,26 +404,26 @@ export default function AdminDashboard() {
         </div>
       </motion.div>
 
-      {/* Stat cards — tile persegi 4 kolom, klik untuk masuk menu */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* Stat cards — tile persegi 4 kolom (terlihat penuh sejak 320px), klik untuk masuk menu */}
+      <div className="grid grid-cols-4 gap-2 sm:gap-4">
         {statCards.map((card) => (
           <Link
             key={card.label}
             href={card.href}
-            className="group flex aspect-square flex-col items-center justify-center gap-2.5 rounded-2xl border border-line bg-card p-6 text-center transition-all hover:-translate-y-0.5 hover:border-ring/40 hover:bg-soft/50 active:scale-[0.98]"
+            className="group flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-line bg-card p-1.5 text-center transition-all hover:-translate-y-0.5 hover:border-ring/40 hover:bg-soft/50 active:scale-[0.98] sm:gap-2.5 sm:rounded-2xl sm:p-6"
           >
-            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-soft transition-colors group-hover:bg-foreground group-hover:text-background">
-              <card.icon className="h-7 w-7" />
+            <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-soft transition-colors group-hover:bg-foreground group-hover:text-background sm:h-14 sm:w-14 sm:rounded-2xl">
+              <card.icon className="h-4 w-4 sm:h-7 sm:w-7" />
               {card.delta > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex items-center gap-0.5 rounded-full bg-green-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-green-500">
+                <span className="absolute -top-1.5 -right-1.5 hidden items-center gap-0.5 rounded-full bg-green-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-green-500 sm:flex">
                   <TrendingUp className="h-2.5 w-2.5" /> +{card.delta}
                 </span>
               )}
             </div>
-            <p className="font-display text-3xl font-bold tabular-nums">{card.value}</p>
-            <p className="text-xs font-medium text-muted-foreground">{card.label}</p>
+            <p className="font-display text-base font-bold tabular-nums sm:text-3xl">{card.value}</p>
+            <p className="text-[9px] font-medium leading-tight text-muted-foreground sm:text-xs">{card.label}</p>
             {card.delta === 0 && card.label === "Inventaris" && (
-              <span className="rounded-full bg-soft px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <span className="hidden rounded-full bg-soft px-2 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block">
                 Total
               </span>
             )}

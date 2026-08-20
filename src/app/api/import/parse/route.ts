@@ -5,6 +5,7 @@ import { extractText } from "@/lib/extractText"
 import * as XLSX from "xlsx"
 
 export const runtime = "nodejs"
+export const maxDuration = 60
 export const dynamic = "force-dynamic"
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ""

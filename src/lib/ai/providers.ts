@@ -62,12 +62,39 @@ function envEndpoints(): RawEndpoint[] {
   return out
 }
 
+/** Endpoint dari env AI_ENDPOINTS (JSON) — untuk deployment cloud (Vercel) yang tidak punya file config opencode */
+function envJsonEndpoints(): RawEndpoint[] {
+  const raw = process.env.AI_ENDPOINTS || ""
+  if (!raw) return []
+  try {
+    const list = JSON.parse(raw) as { url?: string; key?: string; models?: string[]; provider?: string }[]
+    return list
+      .filter((e) => e?.url && Array.isArray(e.models) && e.models.length > 0)
+      .map((e) => ({
+        url: (e.url || "").replace(/\/+$/, ""),
+        key: String(e.key || "").trim(),
+        models: e.models as string[],
+        provider: e.provider || "env-json",
+      }))
+  } catch {
+    return []
+  }
+}
+
+/** Endpoint publik tanpa auth — fallback terakhir agar AI selalu punya kandidat (termasuk di Vercel) */
+function publicFallback(): RawEndpoint[] {
+  const base = process.env.QWEN_BASE_URL || "https://g9hnto0u7lvbu837.us-east-2.aws.endpoints.huggingface.cloud/v1"
+  const model = process.env.QWEN_MODEL || "Qwen/Qwen3.8-27B"
+  if (process.env.DISABLE_QWEN_FALLBACK === "1") return []
+  return [{ url: base.replace(/\/+$/, ""), key: "", models: [model], provider: "public-qwen" }]
+}
+
 export function getAIEndpoints(): AIEndpoint[] {
   const seen = new Set<string>()
   const config = readOpencodeConfig()
   const cloud = config.filter((e) => !/localhost|127\.0\.0\.1/.test(e.url))
   const local = config.filter((e) => /localhost|127\.0\.0\.1/.test(e.url))
-  const all = [...envEndpoints(), ...cloud, ...local]
+  const all = [...envEndpoints(), ...envJsonEndpoints(), ...cloud, ...local, ...publicFallback()]
   return all.filter((e) => {
     const id = `${e.url}|${e.key}`
     if (seen.has(id)) return false

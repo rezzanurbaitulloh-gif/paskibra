@@ -1,4 +1,6 @@
 import { NextRequest } from "next/server"
+export const runtime = "nodejs"
+export const maxDuration = 60
 import { getAIEndpoints, markEndpointFailed, shouldSkipEndpoint } from "@/lib/ai/providers"
 
 const PARSER_PROMPT = `Kamu adalah parser keuangan cerdas untuk organisasi Paskibra. 

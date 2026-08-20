@@ -4,6 +4,7 @@ import { getAIEndpoints } from "@/lib/ai/providers"
 import { extractText, isDocumentFile } from "@/lib/extractText"
 
 export const runtime = "nodejs"
+export const maxDuration = 60
 export const dynamic = "force-dynamic"
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ""

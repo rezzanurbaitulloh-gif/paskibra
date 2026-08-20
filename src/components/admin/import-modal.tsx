@@ -47,6 +47,9 @@ export function ImportModal({
     setLoading(true)
     setError("")
     try {
+      if (file.size > 4 * 1024 * 1024) {
+        throw new Error("File terlalu besar untuk import web (maks 4MB) — perkecil file atau pisahkan menjadi beberapa bagian.")
+      }
       const {
         data: { session },
       } = await supabase.auth.getSession()

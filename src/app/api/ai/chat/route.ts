@@ -10,6 +10,7 @@ Tugasmu:
 - Jika tidak tahu, jawab jujur dan tawarkan bantuan lain.`
 
 export const runtime = "nodejs"
+export const maxDuration = 60
 
 async function getSystemPrompt(): Promise<string> {
   try {

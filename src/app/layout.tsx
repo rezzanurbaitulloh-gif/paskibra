@@ -29,7 +29,7 @@ const bebas = Bebas_Neue({
   preload: true,
 });
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://paskibra-smkn1kertosono.vercel.app").replace(/\/$/, "")
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://satriacengkar.vercel.app").replace(/\/$/, "")
 
 export const metadata: Metadata = {
   title: {

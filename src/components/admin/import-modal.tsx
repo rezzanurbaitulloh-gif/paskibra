@@ -63,7 +63,7 @@ export function ImportModal({
         signal: AbortSignal.timeout(35000),
       })
       const raw = await res.text()
-      let data: { rows?: unknown[]; error?: string } = {}
+      let data: { rows?: Record<string, unknown>[]; error?: string } = {}
       try {
         data = raw ? JSON.parse(raw) : {}
       } catch {

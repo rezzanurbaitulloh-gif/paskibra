@@ -1,6 +1,5 @@
 import * as XLSX from "xlsx"
 import mammoth from "mammoth"
-import { PDFParse } from "pdf-parse"
 
 export const SUPPORTED_EXT = [
   ".docx", ".doc", ".txt", ".pdf", ".xlsx", ".xls", ".csv",
@@ -36,6 +35,13 @@ export async function extractText(buffer: Buffer, filename: string): Promise<str
   }
 
   if (lower.endsWith(".pdf")) {
+    let PDFParse: (new (opts: { data: Buffer }) => { getText: () => Promise<{ text: string }>; destroy: () => Promise<void> }) | null = null
+    try {
+      const mod = await import("pdf-parse")
+      PDFParse = mod.PDFParse
+    } catch {
+      throw new Error("Modul pembaca PDF gagal dimuat di server ini — gunakan .docx atau .xlsx")
+    }
     const parser = new PDFParse({ data: buffer })
     try {
       const result = await parser.getText()

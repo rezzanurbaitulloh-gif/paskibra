@@ -440,7 +440,7 @@ export default function AdminDashboard() {
           </div>
           <Link
             href="/admin/lomba"
-            className="flex items-center gap-0.5 text-xs font-medium text-foreground opacity-60 transition-opacity hover:opacity-100"
+            className="inline-flex min-h-[44px] items-center gap-1 px-2 text-xs font-medium text-foreground opacity-60 transition-opacity hover:opacity-100"
           >
             Kelola Peserta <ArrowUpRight className="h-3 w-3" />
           </Link>
@@ -555,7 +555,7 @@ export default function AdminDashboard() {
           </div>
           <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
             <p className="text-[11px] text-muted-foreground">Total {stats.galeri || 0} item</p>
-            <Link href="/admin/galeri" className="text-[11px] font-medium text-foreground hover:underline">
+            <Link href="/admin/galeri" className="inline-flex min-h-[44px] items-center px-2 text-xs font-medium text-foreground hover:underline">
               Kelola galeri →
             </Link>
           </div>
@@ -646,7 +646,7 @@ export default function AdminDashboard() {
               <h3 className="font-display text-sm font-bold">Saran Terbaru</h3>
               <p className="mt-0.5 text-[11px] text-muted-foreground">Masukan dari pengunjung</p>
             </div>
-            <Link href="/admin/saran" className="text-[11px] font-medium text-foreground hover:underline">
+            <Link href="/admin/saran" className="inline-flex min-h-[44px] items-center px-2 text-xs font-medium text-foreground hover:underline">
               Lihat semua →
             </Link>
           </div>
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
               <h3 className="font-display text-sm font-bold">Artikel Terbaru</h3>
               <p className="mt-0.5 text-[11px] text-muted-foreground">Publikasi tim redaksi</p>
             </div>
-            <Link href="/admin/artikel" className="text-[11px] font-medium text-foreground hover:underline">
+            <Link href="/admin/artikel" className="inline-flex min-h-[44px] items-center px-2 text-xs font-medium text-foreground hover:underline">
               Lihat semua →
             </Link>
           </div>

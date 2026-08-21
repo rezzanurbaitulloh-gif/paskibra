@@ -31,7 +31,7 @@ export function SectionHeader({
       {actionLabel && actionHref && (
         <Link
           href={actionHref}
-          className="group mt-5 inline-flex items-center gap-1.5 py-1.5 text-sm font-medium text-accent transition-colors hover:text-foreground"
+          className="group mt-4 inline-flex min-h-[44px] items-center gap-1.5 px-3 text-sm font-medium text-accent transition-colors hover:text-foreground"
         >
           {actionLabel}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

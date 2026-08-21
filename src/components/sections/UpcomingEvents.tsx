@@ -57,12 +57,12 @@ export function UpcomingEvents() {
                   <span className="text-lg font-display font-bold leading-none">
                     {date.getDate()}
                   </span>
-                  <span className="text-[10px] font-semibold uppercase text-accent">
+                  <span className="text-xs font-semibold uppercase text-accent">
                     {date.toLocaleDateString("id-ID", { month: "short" })}
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     <CalendarDays className="h-3 w-3 text-accent" />
                     {date.getFullYear()}
                   </p>

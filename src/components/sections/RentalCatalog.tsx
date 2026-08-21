@@ -69,7 +69,7 @@ export function RentalCatalog({ items }: { items: RentalItem[] }) {
                     <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
                     <Badge
                       className={cn(
-                        "absolute right-3 top-3 border-0 text-[10px] font-semibold",
+                        "absolute right-3 top-3 border-0 text-xs font-semibold",
                         item.available ? "bg-green-500/90 text-white" : "bg-red-500/90 text-white"
                       )}
                     >

@@ -154,7 +154,7 @@ export function SaranTicker({ refreshKey = 0 }: { refreshKey?: number }) {
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-semibold">{fb.sender_name || "Anonim"}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {new Date(fb.created_at).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "short",

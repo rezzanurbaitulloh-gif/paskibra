@@ -102,7 +102,7 @@ export function FeedbackForm({ onSubmitted }: { onSubmitted?: () => void }) {
                 <p className="mt-1 text-sm text-muted-foreground">Masukan Anda telah kami terima.</p>
                 {trackingCode && (
                   <div className="mt-4 w-full rounded-xl border border-line bg-soft p-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Kode Pelacakan
                     </p>
                     <div className="mt-1 flex items-center justify-center gap-2">

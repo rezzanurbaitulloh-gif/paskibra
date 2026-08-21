@@ -56,7 +56,7 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
           <div className="mb-2">
             <Badge
               className={cn(
-                "border-0 text-[10px] font-semibold",
+                "border-0 text-xs font-semibold",
                 isBPH ? "gradient-gold text-black" : "bg-soft text-foreground"
               )}
             >

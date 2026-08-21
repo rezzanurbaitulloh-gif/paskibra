@@ -76,7 +76,7 @@ function LoginForm() {
       >
         <Link
           href="/"
-          className="mb-4 inline-flex items-center gap-1.5 px-2 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-4 inline-flex min-h-[44px] items-center gap-1.5 px-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Beranda
         </Link>

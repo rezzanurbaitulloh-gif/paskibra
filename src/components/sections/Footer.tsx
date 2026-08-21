@@ -45,7 +45,7 @@ export function Footer() {
                 <p className="font-display font-bold text-sm">
                   {branding.orgName.toUpperCase() || "SATRIA CENGKARA"}
                 </p>
-                <p className="text-[10px] text-muted-foreground">Paskibra {branding.schoolName}</p>
+                <p className="text-xs text-muted-foreground">Paskibra {branding.schoolName}</p>
               </div>
             </div>
             <p className="mt-4 max-w-xs text-xs leading-relaxed text-muted-foreground">
@@ -123,7 +123,7 @@ export function Footer() {
             Dibuat dengan <span className="text-primary">♥</span> oleh Tim Satria Cengkara
           </p>
         </div>
-        <p className="mt-2 text-[10px] text-muted-foreground/60">
+        <p className="mt-2 text-xs text-muted-foreground/60">
           Foto watermark: Wikimedia Commons (CC BY-SA 4.0)
         </p>
       </div>

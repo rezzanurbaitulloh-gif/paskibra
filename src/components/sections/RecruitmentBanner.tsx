@@ -71,7 +71,7 @@ export function RecruitmentBanner() {
                     <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15">
                       <step.icon className="h-5 w-5" />
                     </span>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-white/60">
+                    <p className="text-xs font-bold uppercase tracking-wider text-white/60">
                       Langkah {i + 1}
                     </p>
                   </div>

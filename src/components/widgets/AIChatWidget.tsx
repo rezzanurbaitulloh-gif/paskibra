@@ -149,7 +149,7 @@ export function AIChatWidget() {
                   </div>
                   <div className="leading-tight">
                     <p className="font-display text-sm font-bold">Tanya Satria Bot</p>
-                    <p className="text-[10px] text-green-400">Online</p>
+                    <p className="text-xs text-green-400">Online</p>
                   </div>
                 </div>
                 <Button

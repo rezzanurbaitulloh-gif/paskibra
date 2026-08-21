@@ -380,8 +380,6 @@ export default function AdminDashboard() {
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden rounded-2xl gradient-primary p-6 text-white shadow-glow-red md:p-8"
       >
-        <div className="pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
-        <div className="pointer-events-none absolute right-24 -bottom-20 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex flex-wrap items-center justify-between gap-6">
           <div>
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/80">
@@ -405,7 +403,7 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* Stat cards — tile persegi 4 kolom (terlihat penuh sejak 320px), klik untuk masuk menu */}
-      <div className="grid grid-cols-4 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {statCards.map((card) => (
           <Link
             key={card.label}
@@ -415,13 +413,13 @@ export default function AdminDashboard() {
             <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-soft transition-colors group-hover:bg-foreground group-hover:text-background sm:h-14 sm:w-14 sm:rounded-2xl">
               <card.icon className="h-4 w-4 sm:h-7 sm:w-7" />
               {card.delta > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 hidden items-center gap-0.5 rounded-full bg-green-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-green-500 sm:flex">
+                <span className="absolute -top-1.5 -right-1.5 hidden items-center gap-0.5 rounded-full bg-green-500/15 px-1.5 py-0.5 text-xs font-semibold text-green-500 sm:flex">
                   <TrendingUp className="h-2.5 w-2.5" /> +{card.delta}
                 </span>
               )}
             </div>
             <p className="font-display text-base font-bold tabular-nums sm:text-3xl">{card.value}</p>
-            <p className="text-[9px] font-medium leading-tight text-muted-foreground sm:text-xs">{card.label}</p>
+            <p className="text-xs font-medium leading-tight text-muted-foreground sm:text-xs">{card.label}</p>
             {card.delta === 0 && card.label === "Inventaris" && (
               <span className="hidden rounded-full bg-soft px-2 py-0.5 text-xs font-medium text-muted-foreground sm:inline-block">
                 Total

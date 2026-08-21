@@ -42,8 +42,11 @@ export function HeroSection({ realStats }: { realStats?: { value: string; label:
       {/* Background layers */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 -z-10 will-change-transform">
         <div className="absolute inset-0 bg-radial-glow" />
-        <div className="absolute -top-40 -right-40 h-[480px] w-[480px] rounded-full bg-secondary/10 blur-[140px]" />
-        <div className="absolute -bottom-40 -left-40 h-[480px] w-[480px] rounded-full bg-primary/10 blur-[140px]" />
+        {/* Pita identitas merah-putih */}
+        <div aria-hidden className="absolute left-0 right-0 top-0 flex h-1">
+          <div className="h-full flex-1 bg-accent" />
+          <div className="h-full flex-1 bg-foreground/90" />
+        </div>
         {settings.backgrounds.heroBackground ? (
           <div className="relative h-full w-full">
             <Image

@@ -194,6 +194,8 @@ export async function POST(request: NextRequest) {
           if (!response.ok) {
             lastError.message = `HTTP ${response.status}`
             if (response.status === 429 || response.status >= 500) continue
+            failedUrls.add(endpoint.url)
+            markEndpointFailed(endpoint.url)
             break
           }
 

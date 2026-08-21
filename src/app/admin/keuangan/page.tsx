@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MonthPicker } from "@/components/ui/month-picker"
 import { supabase } from "@/lib/supabase/client"
+import { normalizeDateId, parseAmountId } from "@/lib/format-id"
 import * as XLSX from "xlsx"
 import { Plus, Trash2, Sparkles, Download, Calendar, Wallet, TrendingUp, TrendingDown, X, ClipboardList, Upload } from "lucide-react"
 import { RequireRole } from "@/components/require-role"
@@ -485,10 +486,10 @@ export default function KeuanganPage() {
           setImporting(true)
           const payload = rows.map((r) => ({
             description: r.description,
-            amount: Math.round(Number(r.amount) || 0),
+            amount: parseAmountId(r.amount),
             type: r.type === "income" ? "income" : "expense",
             category: r.category || "Lainnya",
-            date: r.date || new Date().toISOString().split("T")[0],
+            date: normalizeDateId(r.date) || new Date().toISOString().split("T")[0],
           }))
           const { error } = await supabase.from("financial_records").insert(payload)
           setImporting(false)

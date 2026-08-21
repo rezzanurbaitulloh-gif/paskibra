@@ -2,6 +2,7 @@ import { NextRequest } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { getAIEndpoints, markEndpointFailed, shouldSkipEndpoint } from "@/lib/ai/providers"
 import { extractText } from "@/lib/extractText"
+import { normalizeDateId, parseAmountId } from "@/lib/format-id"
 import * as XLSX from "xlsx"
 
 export const runtime = "nodejs"
@@ -135,13 +136,13 @@ function normalizeRows(raw: Record<string, string>[], type: string): Record<stri
         row.kelas = String(r.kelas || "").trim()
       } else {
         row.description = String(r.description).trim()
-        row.amount = String(Math.round(Number(r.amount)) || "")
+        row.amount = String(parseAmountId(r.amount) || "")
         row.type =
           String(r.type).toLowerCase() === "income" || String(r.type).toLowerCase() === "pemasukan"
             ? "income"
             : "expense"
         row.category = String(r.category || "Lainnya")
-        row.date = String(r.date || new Date().toISOString().split("T")[0])
+        row.date = normalizeDateId(r.date) || new Date().toISOString().split("T")[0]
       }
       return row
     })

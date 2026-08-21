@@ -59,8 +59,11 @@ function extractRowsDirect(
       else if (/(tanggal|date)/.test(n)) keyMap[k] = "date"
     }
   }
-  const required = type === "anggota" ? "name" : "description"
-  if (!Object.values(keyMap).includes(required)) return null
+  const mapped = new Set(Object.values(keyMap))
+  // Direct path hanya untuk pemetaan lengkap — parsial menghasilkan default yang salah
+  // (keuangan butuh type & tanggal; serahkan ke AI bila kolomnya tidak dikenali)
+  const required: string[] = type === "anggota" ? ["name"] : ["description", "amount", "type", "date"]
+  if (!required.every((f) => mapped.has(f))) return null
 
   const out: Record<string, string>[] = []
   for (const r of rows) {

@@ -63,10 +63,19 @@ export function ImportModal({
         signal: AbortSignal.timeout(35000),
       })
       const raw = await res.text()
-      const data = raw ? JSON.parse(raw) : {}
+      let data: { rows?: unknown[]; error?: string } = {}
+      try {
+        data = raw ? JSON.parse(raw) : {}
+      } catch {
+        data = {}
+      }
       if (!res.ok || !data.rows) {
+        if (data.error) throw new Error(data.error)
+        const snippet = raw.trim().slice(0, 120).replace(/\s+/g, " ")
         throw new Error(
-          data.error || (raw ? `Gagal membaca file (HTTP ${res.status})` : "Koneksi terputus saat memproses (server sedang restart?) — coba lagi")
+          snippet
+            ? `Server menjawab HTTP ${res.status}: "${snippet}"`
+            : `Koneksi terputus saat memproses (HTTP ${res.status}, body kosong) — coba lagi`
         )
       }
       setRows(

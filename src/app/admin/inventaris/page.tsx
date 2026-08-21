@@ -108,6 +108,10 @@ export default function InventarisAdminPage() {
     fetchItems()
   }
 
+  const visibleItems = items
+    .filter((it) => it.name.toLowerCase().includes(search.toLowerCase()))
+    .filter((it) => fCat === "all" || it.category === fCat)
+
   return (
     <RequireRole path="/admin/inventaris">
       <div className="space-y-6">
@@ -143,7 +147,7 @@ export default function InventarisAdminPage() {
               ))}
             </select>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-line bg-card">
+          <div className="hidden md:block overflow-hidden rounded-2xl border border-line bg-card">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
@@ -157,10 +161,7 @@ export default function InventarisAdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {items
-                    .filter((it) => it.name.toLowerCase().includes(search.toLowerCase()))
-                    .filter((it) => fCat === "all" || it.category === fCat)
-                    .map((item, index) => (
+                  {visibleItems.map((item, index) => (
                     <tr key={item.id} className="border-b border-line/50 last:border-0 hover:bg-soft/50">
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-3">
@@ -211,6 +212,52 @@ export default function InventarisAdminPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Card list mobile */}
+          <div className="md:hidden space-y-3">
+            {visibleItems.map((item) => (
+              <div key={item.id} className="rounded-xl border border-line bg-card p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {item.image_url && (
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        className="h-14 w-20 shrink-0 rounded-lg object-cover outline outline-1 outline-black/10"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-sm">{item.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {item.category} · Stok{" "}
+                        <span className={item.stock > 0 ? "font-semibold text-green-500" : "font-semibold text-red-500"}>
+                          {item.stock}
+                        </span>
+                      </p>
+                      <p className={`text-xs mt-0.5 font-medium ${item.is_available ? "text-green-500" : "text-red-500"}`}>
+                        {item.is_available ? "Tersedia" : "Tidak Tersedia"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1">
+                    <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => openEdit(item)} aria-label={`Edit ${item.name}`}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => handleDelete(item.id)} aria-label={`Hapus ${item.name}`}>
+                      <Trash2 className="h-4 w-4 text-red-400" />
+                    </Button>
+                  </div>
+                </div>
+                <p className="mt-2 text-sm font-semibold text-accent tabular-nums">
+                  Rp{fmt(Number(item.price))}
+                  <span className="text-xs font-normal text-muted-foreground">/sewa</span>
+                </p>
+              </div>
+            ))}
+            {visibleItems.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground py-8">Tidak ada aset yang cocok.</p>
+            )}
           </div>
           </>
         )}

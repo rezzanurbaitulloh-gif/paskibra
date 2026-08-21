@@ -223,7 +223,7 @@ export default function StructureManagement() {
         </div>
       </Card>
 
-      <Card className="glass border-line overflow-x-auto">
+      <Card className="glass border-line hidden md:block">
         <Table className="min-w-[640px]">
           <TableHeader>
             <TableRow>
@@ -261,6 +261,34 @@ export default function StructureManagement() {
           </TableBody>
         </Table>
       </Card>
+
+      <div className="md:hidden space-y-3">
+        {filtered.map((member) => (
+          <div key={member.id} className="rounded-xl border border-line bg-card p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-semibold text-sm truncate">{member.name}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {member.position}
+                  {member.generation ? ` · Gen ${member.generation}` : ""}
+                </p>
+                <p className="text-sm text-muted-foreground/70 mt-0.5">{member.kelas || "—"}</p>
+              </div>
+              <div className="flex gap-1 shrink-0">
+                <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => handleEdit(member)} aria-label={`Ubah ${member.name}`}>
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => handleDelete(member.id)} aria-label={`Hapus ${member.name}`}>
+                  <Trash2 className="w-4 h-4 text-red-500" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <p className="text-center text-sm text-muted-foreground py-8">Tidak ada anggota yang cocok.</p>
+        )}
+      </div>
 
       <ImportModal
         open={showImport}

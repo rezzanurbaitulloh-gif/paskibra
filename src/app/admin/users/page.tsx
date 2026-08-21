@@ -216,7 +216,7 @@ export default function UsersAdminPage() {
             <p className="mt-3 text-sm text-muted-foreground">Belum ada pengguna.</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-line bg-card">
+          <div className="hidden md:block overflow-hidden rounded-2xl border border-line bg-card">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
@@ -280,6 +280,47 @@ export default function UsersAdminPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {/* Card list mobile */}
+        {users.length > 0 && (
+          <div className="md:hidden space-y-3">
+            {users
+              .filter((u) => (u.email || "").toLowerCase().includes(search.toLowerCase()))
+              .filter((u) => fRole === "all" || (u.role || "none") === fRole)
+              .map((u) => (
+                <div key={u.id} className="rounded-xl border border-line bg-card p-4">
+                  <p className="truncate font-medium text-sm">{u.email}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Terdaftar {new Date(u.created_at).toLocaleDateString("id-ID")} · Masuk terakhir{" "}
+                    {u.last_sign_in_at
+                      ? new Date(u.last_sign_in_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+                      : "—"}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <Select value={u.role || "none"} onValueChange={(v) => handleRole(u, v === "none" ? null : v)}>
+                      <SelectTrigger className="h-11 min-w-36 border-line bg-soft" aria-label={`Role ${u.email}`}>
+                        <SelectValue placeholder="User biasa" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">User biasa</SelectItem>
+                        {ROLES.map((r) => (
+                          <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => setPasswordTarget(u)} aria-label={`Ubah sandi ${u.email}`}>
+                        <KeyRound className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => handleDelete(u)} aria-label={`Hapus akun ${u.email}`}>
+                        <Trash2 className="h-4 w-4 text-red-400" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
         )}
 

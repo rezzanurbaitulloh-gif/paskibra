@@ -149,7 +149,7 @@ export default function GaleriAdminPage() {
           </Select>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-line bg-card">
+        <div className="hidden md:block overflow-hidden rounded-2xl border border-line bg-card">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead>
@@ -211,6 +211,49 @@ export default function GaleriAdminPage() {
               <p className="py-10 text-center text-sm text-muted-foreground">Belum ada media.</p>
             )}
           </div>
+        </div>
+
+        {/* Card list mobile */}
+        <div className="md:hidden space-y-3">
+          {items
+            .filter((it) => it.title.toLowerCase().includes(search.toLowerCase()))
+            .filter((it) => fCat === "all" || it.category === fCat)
+            .map((item) => (
+              <div key={item.id} className="rounded-xl border border-line bg-card p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-soft outline outline-1 outline-black/10 dark:outline-white/10">
+                      {item.media_type === "video_embed" ? (
+                        <Video className="h-5 w-5 text-accent" />
+                      ) : item.image_url ? (
+                        <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
+                      ) : (
+                        <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-sm">{item.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{item.category}</p>
+                      <p className="text-xs text-muted-foreground/70 mt-0.5">
+                        {(item.images?.length || 0) + (item.image_url ? 1 : 0)} foto
+                        {item.videos && item.videos.length > 0 && `, ${item.videos.length} video`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-1">
+                    <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => openEdit(item)} aria-label={`Edit ${item.title}`}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-11 w-11" onClick={() => handleDelete(item.id)} aria-label={`Hapus ${item.title}`}>
+                      <Trash2 className="h-4 w-4 text-red-400" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          {items.length === 0 && (
+            <p className="py-10 text-center text-sm text-muted-foreground">Belum ada media.</p>
+          )}
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>

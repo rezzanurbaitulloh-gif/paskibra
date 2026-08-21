@@ -424,8 +424,8 @@ export default function KeuanganPage() {
           )}
         </AnimatePresence>
 
-        {/* Riwayat */}
-        <div className="overflow-x-auto rounded-2xl border border-line bg-card">
+        {/* Riwayat — tabel desktop */}
+        <div className="hidden md:block overflow-x-auto rounded-2xl border border-line bg-card">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b border-line text-left text-xs text-muted-foreground">
@@ -465,6 +465,43 @@ export default function KeuanganPage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Riwayat — card list mobile */}
+        <div className="md:hidden space-y-3">
+          {filtered.length === 0 && (
+            <p className="text-center text-sm text-muted-foreground py-8">
+              Belum ada catatan kas. Mulai dengan “+ Tambah Catatan Kas”.
+            </p>
+          )}
+          {filtered.map((r) => (
+            <div key={r.id} className="rounded-xl border border-line bg-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-sm">{r.description}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {r.date} · {r.category}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-11 w-11 shrink-0"
+                  onClick={() => handleDelete(r.id)}
+                  aria-label={`Hapus ${r.description}`}
+                >
+                  <Trash2 className="h-4 w-4 text-red-400" />
+                </Button>
+              </div>
+              <p
+                className={`mt-2 text-base font-semibold tabular-nums ${
+                  r.type === "income" ? "text-green-500" : "text-red-400"
+                }`}
+              >
+                {r.type === "income" ? "+" : "−"} Rp{fmt(Number(r.amount))}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
       <RekapModal open={showRekap} onClose={() => setShowRekap(false)} />

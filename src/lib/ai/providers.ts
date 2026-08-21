@@ -95,6 +95,14 @@ export function getAIEndpoints(): AIEndpoint[] {
   const cloud = config.filter((e) => !/localhost|127\.0\.0\.1/.test(e.url))
   const local = config.filter((e) => /localhost|127\.0\.0\.1/.test(e.url))
   const all = [...envEndpoints(), ...envJsonEndpoints(), ...cloud, ...local, ...publicFallback()]
+    // hcnsec: model "auto" adalah router ke backend sehat — pastikan selalu dicoba lebih dulu
+    .map((e) =>
+      /api\.hcnsec\.cn/.test(e.url)
+        ? { ...e, models: ["auto", ...e.models.filter((m) => m !== "auto")] }
+        : e,
+    )
+    // endpoint yang terbukti sehat (hcnsec) dicoba sebelum yang flaky (bynara)
+    .sort((a, b) => Number(/api\.hcnsec\.cn/.test(b.url)) - Number(/api\.hcnsec\.cn/.test(a.url)))
   return all.filter((e) => {
     const id = `${e.url}|${e.key}`
     if (seen.has(id)) return false

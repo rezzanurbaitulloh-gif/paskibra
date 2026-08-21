@@ -59,7 +59,7 @@ export function AnimatedBackground() {
             className="absolute left-1/2 top-0 h-[500px] w-[900px] -translate-x-1/2"
             style={{
               background:
-                "radial-gradient(ellipse 60% 50% at 50% 0%, var(--glow-red), transparent)",
+                "radial-gradient(ellipse 60% 50% at 50% 0%, var(--glow-brand), transparent)",
             }}
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}

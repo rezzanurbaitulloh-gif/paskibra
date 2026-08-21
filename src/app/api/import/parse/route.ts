@@ -74,6 +74,46 @@ function extractRowsDirect(
   return out.length > 0 ? out : null
 }
 
+/** Fallback tanpa AI untuk teks docx/txt: deteksi delimiter per baris lalu petakan kolom */
+function extractRowsFromText(text: string, type: string): Record<string, string>[] | null {
+  const lines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 1)
+  if (lines.length === 0) return null
+  const norm = (k: string) => k.toLowerCase().replace(/[^a-z0-9]/g, "")
+  const splitLine = (line: string): string[] => {
+    for (const d of ["\t", ";", "|", "  "]) {
+      const parts = line.split(d).map((p) => p.trim()).filter(Boolean)
+      if (parts.length >= 2) return parts
+    }
+    return [line]
+  }
+  const mapFields = (parts: string[]): Record<string, string> | null => {
+    if (type === "anggota") {
+      const row: Record<string, string> = { name: parts[0], position: parts[1] || "", division: parts[2] || "", generation: parts[3] || "", kelas: parts[4] || "" }
+      return row.name ? row : null
+    }
+    const amountIdx = parts.findIndex((p, i) => i > 0 && /rp\s*\d|\d{4,}/i.test(p.replace(/\./g, "")))
+    if (amountIdx < 1) return null
+    const dateMatch = parts.find((p) => /\d{1,2}[\/\- ]\d{1,2}([\/\- ]\d{2,4})?/.test(p))
+    return {
+      description: parts[0],
+      amount: parts[amountIdx].replace(/[^\d]/g, ""),
+      type: /keluar|belanja|pengeluaran|biaya/i.test(parts.join(" ")) ? "expense" : "income",
+      category: "",
+      date: dateMatch || "",
+    }
+  }
+  const out: Record<string, string>[] = []
+  for (const line of lines) {
+    const parts = splitLine(line)
+    if (parts.length < 2 && type === "anggota") continue
+    const row = mapFields(parts)
+    if (!row) continue
+    if (/^(nama|no|daftar|description|deskripsi)\b/i.test(row.name || row.description || "")) continue
+    out.push(row)
+  }
+  return out.length > 0 ? out : null
+}
+
 /** Normalisasi baris agar konsisten dengan hasil AI */
 function normalizeRows(raw: Record<string, string>[], type: string): Record<string, string>[] {
   return raw
@@ -160,6 +200,10 @@ export async function POST(request: NextRequest) {
     if (directRows && directRows.length > 0) {
       return Response.json({ rows: normalizeRows(directRows, type) })
     }
+    const textRows = extractRowsFromText(text, type)
+    if (textRows && textRows.length > 0) {
+      return Response.json({ rows: normalizeRows(textRows, type) })
+    }
 
     const lastError: { message: string } = { message: "Semua endpoint AI gagal" }
     const deadline = Date.now() + 20000
@@ -233,7 +277,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return Response.json({ error: lastError.message }, { status: 500 })
+    return Response.json(
+      { error: `Layanan AI sedang tidak tersedia (${lastError.message}). Coba lagi beberapa menit lagi, atau gunakan file Excel (.xlsx/.csv) yang kolomnya jelas.` },
+      { status: 503 },
+    )
   } catch (err) {
     const message = err instanceof Error ? err.message : "Terjadi kesalahan"
     return Response.json({ error: message }, { status: 500 })

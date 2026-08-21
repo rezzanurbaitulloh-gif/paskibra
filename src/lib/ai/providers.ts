@@ -48,6 +48,21 @@ function readOpencodeConfig(): RawEndpoint[] {
   }
 }
 
+/** Gemini (OpenAI-compatible) — prioritas utama jika GEMINI_API_KEY tersedia */
+function geminiEndpoint(): RawEndpoint[] {
+  const key = String(process.env.GEMINI_API_KEY || "").trim()
+  if (!key) return []
+  const model = process.env.GEMINI_MODEL || "gemini-3.6-flash"
+  return [
+    {
+      url: "https://generativelanguage.googleapis.com/v1beta/openai",
+      key,
+      models: [model],
+      provider: "gemini",
+    },
+  ]
+}
+
 /** Tambahan dari env (jika ada key yang tidak ada di JSON) — Nara sebagai default utama */
 function envEndpoints(): RawEndpoint[] {
   const out: RawEndpoint[] = []
@@ -94,7 +109,7 @@ export function getAIEndpoints(): AIEndpoint[] {
   const config = readOpencodeConfig()
   const cloud = config.filter((e) => !/localhost|127\.0\.0\.1/.test(e.url))
   const local = config.filter((e) => /localhost|127\.0\.0\.1/.test(e.url))
-  const all = [...envEndpoints(), ...envJsonEndpoints(), ...cloud, ...local, ...publicFallback()]
+  const all = [...geminiEndpoint(), ...envEndpoints(), ...envJsonEndpoints(), ...cloud, ...local, ...publicFallback()]
     // hcnsec: model "auto" adalah router ke backend sehat — pastikan selalu dicoba lebih dulu
     .map((e) =>
       /api\.hcnsec\.cn/.test(e.url)

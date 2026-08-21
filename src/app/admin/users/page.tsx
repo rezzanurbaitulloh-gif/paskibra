@@ -220,7 +220,7 @@ export default function UsersAdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-line text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-line text-xs uppercase tracking-wider text-muted-foreground">
                     <th className="px-4 py-3">Email</th>
                     <th className="px-4 py-3">Role</th>
                     <th className="px-4 py-3">Terdaftar</th>

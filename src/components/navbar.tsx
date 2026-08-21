@@ -111,7 +111,7 @@ export function Navbar() {
             <ProfileMenu />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
+              className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg border border-line text-muted-foreground hover:text-foreground"
               aria-label="Menu"
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

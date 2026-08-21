@@ -153,7 +153,7 @@ export default function GaleriAdminPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead>
-                <tr className="border-b border-line text-[11px] uppercase tracking-wider text-muted-foreground">
+                <tr className="border-b border-line text-xs uppercase tracking-wider text-muted-foreground">
                   <th className="px-4 py-3">Media</th>
                   <th className="px-4 py-3">Kategori</th>
                   <th className="px-4 py-3">Konten</th>
@@ -182,7 +182,7 @@ export default function GaleriAdminPage() {
                         </div>
                       </td>
                       <td className="px-4 py-2.5">
-                        <span className="rounded-full border border-line bg-soft px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        <span className="rounded-full border border-line bg-soft px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                           {item.category}
                         </span>
                       </td>
@@ -312,7 +312,7 @@ export default function GaleriAdminPage() {
                     <ImageUpload
                       value=""
                       label="Tambah Foto"
-                      className="h-20 [&_button]:h-full [&_button]:border-dashed [&_button]:text-[10px]"
+                      className="h-20 [&_button]:h-full [&_button]:border-dashed [&_button]:text-xs"
                       hideHint
                       onChange={(url) => setForm((f) => ({ ...f, extraImages: [...f.extraImages, url] }))}
                     />
@@ -358,7 +358,7 @@ export default function GaleriAdminPage() {
                     <Plus className="mr-2 h-3.5 w-3.5" /> Tambah Link Video
                   </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Video akan tampil di halaman detail galeri dan diputar otomatis (autoplay) saat dibuka.
                 </p>
               </div>

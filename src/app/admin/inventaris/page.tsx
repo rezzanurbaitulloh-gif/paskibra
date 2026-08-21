@@ -151,7 +151,7 @@ export default function InventarisAdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-line text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-line text-xs uppercase tracking-wider text-muted-foreground">
                     <th className="px-4 py-3">Aset</th>
                     <th className="px-4 py-3">Kategori</th>
                     <th className="px-4 py-3">Harga Sewa</th>
@@ -173,19 +173,19 @@ export default function InventarisAdminPage() {
                           <div className="min-w-0">
                             <p className="truncate font-medium">{item.name}</p>
                             {item.description && (
-                              <p className="line-clamp-1 text-[11px] text-muted-foreground">{item.description}</p>
+                              <p className="line-clamp-1 text-xs text-muted-foreground">{item.description}</p>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-2.5">
-                        <span className="rounded-full border border-line bg-soft px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        <span className="rounded-full border border-line bg-soft px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                           {item.category}
                         </span>
                       </td>
                       <td className="px-4 py-2.5 text-xs font-semibold text-accent">
                         {fmt(Number(item.price))}
-                        <span className="text-[10px] font-normal text-muted-foreground">/sewa</span>
+                        <span className="text-xs font-normal text-muted-foreground">/sewa</span>
                       </td>
                       <td className="px-4 py-2.5 text-xs">
                         <span className={item.stock > 0 ? "font-semibold text-green-500" : "font-semibold text-red-500"}>

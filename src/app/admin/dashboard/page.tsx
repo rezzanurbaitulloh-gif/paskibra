@@ -94,7 +94,7 @@ function LiveClock() {
       </span>
       <div className="leading-tight">
         <p className="font-display text-sm font-bold tabular-nums tracking-tight">{time}</p>
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {date} • {tzAbbr}
         </p>
       </div>
@@ -423,7 +423,7 @@ export default function AdminDashboard() {
             <p className="font-display text-base font-bold tabular-nums sm:text-3xl">{card.value}</p>
             <p className="text-[9px] font-medium leading-tight text-muted-foreground sm:text-xs">{card.label}</p>
             {card.delta === 0 && card.label === "Inventaris" && (
-              <span className="hidden rounded-full bg-soft px-2 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block">
+              <span className="hidden rounded-full bg-soft px-2 py-0.5 text-xs font-medium text-muted-foreground sm:inline-block">
                 Total
               </span>
             )}
@@ -447,23 +447,23 @@ export default function AdminDashboard() {
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <div className="rounded-xl border border-line bg-soft/50 p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Total Terdaftar
             </p>
             <p className="mt-1.5 font-display text-xl font-bold">{lkbbTotal}</p>
           </div>
           <div className="rounded-xl border border-line bg-soft/50 p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500">DP</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-amber-500">DP</p>
             <p className="mt-1.5 font-display text-xl font-bold">{lkbbDp}</p>
           </div>
           <div className="rounded-xl border border-line bg-soft/50 p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-500">
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-500">
               Lunas
             </p>
             <p className="mt-1.5 font-display text-xl font-bold">{lkbbLunas}</p>
           </div>
           <div className="rounded-xl border border-line bg-soft/50 p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Total Transfer Masuk
             </p>
             <p className="mt-1.5 font-display text-xl font-bold text-emerald-500">
@@ -480,13 +480,13 @@ export default function AdminDashboard() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold">{r.school_name}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {new Date(r.created_at).toLocaleDateString("id-ID")}
                   </p>
                 </div>
                 <span
                   className={cn(
-                    "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
                     r.payment_status === "lunas" && "bg-emerald-500/15 text-emerald-500",
                     r.payment_status === "dp" && "bg-amber-500/15 text-amber-500",
                     r.payment_status === "belum" && "bg-muted text-muted-foreground"
@@ -530,7 +530,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-display text-sm font-bold">Galeri per Kategori</h3>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Distribusi dokumentasi kegiatan</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Distribusi dokumentasi kegiatan</p>
             </div>
             <ImageIcon className="h-4 w-4 text-muted-foreground" />
           </div>
@@ -554,7 +554,7 @@ export default function AdminDashboard() {
             ))}
           </div>
           <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
-            <p className="text-[11px] text-muted-foreground">Total {stats.galeri || 0} item</p>
+            <p className="text-xs text-muted-foreground">Total {stats.galeri || 0} item</p>
             <Link href="/admin/galeri" className="inline-flex min-h-[44px] items-center px-2 text-xs font-medium text-foreground hover:underline">
               Kelola galeri →
             </Link>
@@ -567,15 +567,15 @@ export default function AdminDashboard() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="font-display text-sm font-bold">Anggota per Tahun & Generasi</h3>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Komposisi anggota berdasarkan data anggota pengurus
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="rounded-lg border border-line bg-soft px-3 py-1.5 text-[11px] font-semibold">
+            <span className="rounded-lg border border-line bg-soft px-3 py-1.5 text-xs font-semibold">
               Total Anggota: {stats.members || 0}
             </span>
-            <span className="rounded-lg border border-line bg-soft px-3 py-1.5 text-[11px] font-semibold">
+            <span className="rounded-lg border border-line bg-soft px-3 py-1.5 text-xs font-semibold">
               Total Generasi: {genData.length}
             </span>
           </div>
@@ -590,7 +590,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs font-semibold text-muted-foreground">Total Anggota per Tahun</p>
               {yearData.length === 0 ? (
-                <p className="py-6 text-center text-[11px] text-muted-foreground">Belum ada data.</p>
+                <p className="py-6 text-center text-xs text-muted-foreground">Belum ada data.</p>
               ) : (
                 <div className="mt-3 space-y-3">
                   {yearData.map((y) => (
@@ -614,7 +614,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs font-semibold text-muted-foreground">Total Anggota per Generasi</p>
               {genData.length === 0 ? (
-                <p className="py-6 text-center text-[11px] text-muted-foreground">Belum ada data.</p>
+                <p className="py-6 text-center text-xs text-muted-foreground">Belum ada data.</p>
               ) : (
                 <div className="mt-3 space-y-3">
                   {genData.map((g) => (
@@ -644,7 +644,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between px-5 py-4">
             <div>
               <h3 className="font-display text-sm font-bold">Saran Terbaru</h3>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Masukan dari pengunjung</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Masukan dari pengunjung</p>
             </div>
             <Link href="/admin/saran" className="inline-flex min-h-[44px] items-center px-2 text-xs font-medium text-foreground hover:underline">
               Lihat semua →
@@ -662,7 +662,7 @@ export default function AdminDashboard() {
                   </div>
                   <span
                     className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                      "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
                       s.admin_reply ? "bg-green-500/10 text-green-500" : "bg-amber-500/10 text-amber-500"
                     )}
                   >
@@ -678,7 +678,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between px-5 py-4">
             <div>
               <h3 className="font-display text-sm font-bold">Artikel Terbaru</h3>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">Publikasi tim redaksi</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Publikasi tim redaksi</p>
             </div>
             <Link href="/admin/artikel" className="inline-flex min-h-[44px] items-center px-2 text-xs font-medium text-foreground hover:underline">
               Lihat semua →
@@ -695,7 +695,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-1 text-xs font-semibold">{a.title}</p>
-                    <p className="mt-0.5 text-[10px] text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {new Date(a.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
                     </p>
                   </div>

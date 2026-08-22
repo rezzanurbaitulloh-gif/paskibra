@@ -39,7 +39,15 @@ const MONTH_NAMES = [
 
 const fmt = (n: number) => "Rp " + Math.round(n).toLocaleString("id-ID")
 
-export function RekapModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function RekapModal({
+  open,
+  onClose,
+  table = "financial_records",
+}: {
+  open: boolean
+  onClose: () => void
+  table?: string
+}) {
   const [records, setRecords] = useState<FinRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState<string>("all")
@@ -56,7 +64,7 @@ export function RekapModal({ open, onClose }: { open: boolean; onClose: () => vo
 
   const fetchRecords = useCallback(async () => {
     setLoading(true)
-    let q = supabase.from("financial_records").select("*").order("date", { ascending: true })
+    let q = supabase.from(table).select("*").order("date", { ascending: true })
     if (month !== "all" && year !== "all") q = q.gte("date", `${year}-${month}-01`).lt("date", `${year}-${month}-31`)
     else if (month !== "all") q = q.or(`date.like.%-${month}-%`)
     else if (year !== "all") q = q.gte("date", `${year}-01-01`).lt("date", `${year + 1}-01-01`)

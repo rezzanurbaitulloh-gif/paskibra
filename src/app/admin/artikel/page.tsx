@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Edit, Trash2, FileText } from "lucide-react"
+import { Plus, Edit, Trash2, FileText, ImagePlus, Loader2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useToast } from "@/components/ui/toast"
@@ -29,6 +29,43 @@ export default function ArticlesPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Article | null>(null)
   const [form, setForm] = useState(emptyForm)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const contentRef = useRef<HTMLTextAreaElement>(null)
+
+  const handleInsertImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+    setUploadingImage(true)
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const fd = new FormData()
+      fd.append("file", file, file.name)
+      fd.append("name", file.name)
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.access_token}` },
+        body: fd,
+      })
+      const raw = await res.text()
+      const data = raw ? JSON.parse(raw) : {}
+      if (!res.ok || !data.url) throw new Error(data.error || "Upload gagal")
+      const md = `\n\n![gambar](${data.url})\n\n`
+      const ta = contentRef.current
+      const pos = ta ? (ta.selectionStart ?? form.content.length) : form.content.length
+      setForm((f) => ({
+        ...f,
+        content: f.content.slice(0, pos) + md + f.content.slice(pos),
+      }))
+    } catch {
+      toast({ type: "error", title: "Gagal mengunggah gambar" })
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   const fetchArticles = async () => {
     const { data } = await supabase.from("articles").select("*").order("created_at", { ascending: false })
@@ -152,8 +189,44 @@ export default function ArticlesPage() {
               <Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="contoh: sejarah-paskibra" className="h-10 border-line bg-soft" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Konten</Label>
-              <Textarea value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} rows={8} required className="resize-none border-line bg-soft" />
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground">Konten</Label>
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg border border-line bg-soft px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+                >
+                  {uploadingImage ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Mengunggah…
+                    </>
+                  ) : (
+                    <>
+                      <ImagePlus className="h-3.5 w-3.5" /> Tambah Gambar
+                    </>
+                  )}
+                </button>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleInsertImage}
+                />
+              </div>
+              <Textarea
+                ref={contentRef}
+                value={form.content}
+                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                rows={8}
+                required
+                className="resize-none border-line bg-soft"
+                placeholder={"Tulis isi artikel…\n\nGambar akan disisipkan otomatis saat diunggah."}
+              />
+              <p className="text-[11px] leading-snug text-muted-foreground/70">
+                Sisipkan baris kosong sebelum & sesudah gambar agar tampil penuh di artikel.
+              </p>
             </div>
             <Button type="submit" className="w-full gradient-primary text-white">{editing ? "Simpan" : "Terbitkan"}</Button>
           </form>

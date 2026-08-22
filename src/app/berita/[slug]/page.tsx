@@ -33,6 +33,56 @@ export default async function BeritaDetailPage({ params }: { params: Promise<{ s
     .map((p: string) => p.trim())
     .filter(Boolean)
 
+  const IMG_RE = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g
+
+  const renderParagraph = (p: string, key: number) => {
+    const isImageOnly = /^!\[[^\]]*\]\(https?:\/\/[^\s)]+\)$/.test(p)
+    if (isImageOnly) {
+      const m = p.match(/^!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)$/)!
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={key}
+          src={m[2]}
+          alt={m[1] || "Ilustrasi artikel"}
+          className="w-full rounded-xl border border-line"
+          loading="lazy"
+        />
+      )
+    }
+    if (!IMG_RE.test(p)) {
+      return (
+        <p key={key} className="text-sm leading-relaxed text-muted-foreground md:text-base">
+          {p}
+        </p>
+      )
+    }
+    IMG_RE.lastIndex = 0
+    const parts: React.ReactNode[] = []
+    let last = 0
+    let m: RegExpExecArray | null
+    while ((m = IMG_RE.exec(p))) {
+      if (m.index > last) parts.push(<span key={`t${last}`}>{p.slice(last, m.index)}</span>)
+      parts.push(
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={`i${m.index}`}
+          src={m[2]}
+          alt={m[1] || "Ilustrasi artikel"}
+          className="my-3 w-full rounded-xl border border-line"
+          loading="lazy"
+        />
+      )
+      last = m.index + m[0].length
+    }
+    if (last < p.length) parts.push(<span key={`t${last}`}>{p.slice(last)}</span>)
+    return (
+      <p key={key} className="text-sm leading-relaxed text-muted-foreground md:text-base">
+        {parts}
+      </p>
+    )
+  }
+
   return (
     <div id="konten" className="min-h-screen">
       <div className="container mx-auto max-w-3xl px-4 pt-28 pb-16">
@@ -56,11 +106,7 @@ export default async function BeritaDetailPage({ params }: { params: Promise<{ s
             {article.title}
           </h1>
           <div className="mt-6 space-y-4">
-            {paragraphs.map((p: string, i: number) => (
-              <p key={i} className="text-sm leading-relaxed text-muted-foreground md:text-base">
-                {p}
-              </p>
-            ))}
+            {paragraphs.map((p: string, i: number) => renderParagraph(p, i))}
           </div>
         </article>
       </div>

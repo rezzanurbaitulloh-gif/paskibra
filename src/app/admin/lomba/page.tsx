@@ -190,6 +190,13 @@ function ParticipantsManager() {
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = "/admin/lomba/keuangan")}
+            className="border-line"
+          >
+            <Wallet className="mr-2 h-4 w-4" /> Keuangan LKBB
+          </Button>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input

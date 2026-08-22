@@ -100,7 +100,6 @@ export function ColorPicker({
   const [hsva, setHsva] = useState<Hsva>(initial.current)
   const [hexText, setHexText] = useState(value)
   const areaRef = useRef<HTMLDivElement>(null)
-  const dragging = useRef(false)
 
   // Sinkron saat nilai diubah dari luar (mis. undo/reset)
   useEffect(() => {
@@ -118,24 +117,45 @@ export function ColorPicker({
     onChange(next.a >= 100 ? "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("") : `rgba(${r}, ${g}, ${b}, ${Math.round(next.a) / 100})`)
   }
 
+  const hsvaRef = useRef(hsva)
+  hsvaRef.current = hsva
+
   const update = (patch: Partial<Hsva>) => {
-    setHsva((prev) => {
-      const next = { ...prev, ...patch }
-      emit(next)
-      return next
-    })
+    const next = { ...hsvaRef.current, ...patch }
+    hsvaRef.current = next
+    setHsva(next)
+    emit(next)
   }
 
   const rgb = hsvToRgb(hsva.h, hsva.s, hsva.v)
   const hueRgb = hsvToRgb(hsva.h, 100, 100)
 
-  const handleArea = (e: React.PointerEvent<HTMLDivElement>) => {
+  const areaPointToSv = (clientX: number, clientY: number) => {
     const el = areaRef.current
-    if (!el) return
+    if (!el) return null
     const rect = el.getBoundingClientRect()
-    const s = clamp(Math.round(((e.clientX - rect.left) / rect.width) * 100), 0, 100)
-    const v = clamp(Math.round(((e.clientY - rect.top) / rect.height) * 100), 0, 100)
-    update({ s, v: 100 - v })
+    if (rect.width === 0 || rect.height === 0) return null
+    const s = clamp(Math.round(((clientX - rect.left) / rect.width) * 100), 0, 100)
+    const v = clamp(Math.round(((clientY - rect.top) / rect.height) * 100), 0, 100)
+    return { s, v: 100 - v }
+  }
+
+  const startDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const pt = areaPointToSv(e.clientX, e.clientY)
+    if (pt) update(pt)
+    const move = (ev: PointerEvent) => {
+      const next = areaPointToSv(ev.clientX, ev.clientY)
+      if (next) update(next)
+    }
+    const up = () => {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+      window.removeEventListener("pointercancel", up)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+    window.addEventListener("pointercancel", up)
   }
 
   const applyHexText = () => {
@@ -175,16 +195,7 @@ export function ColorPicker({
         {/* Area geser Saturasi × Kecerahan */}
         <div
           ref={areaRef}
-          onPointerDown={(e) => {
-            e.currentTarget.setPointerCapture(e.pointerId)
-            dragging.current = true
-            handleArea(e)
-          }}
-          onPointerMove={(e) => dragging.current && handleArea(e)}
-          onPointerUp={(e) => {
-            e.currentTarget.releasePointerCapture(e.pointerId)
-            dragging.current = false
-          }}
+          onPointerDown={startDrag}
           className="relative h-32 w-full cursor-crosshair touch-none overflow-hidden rounded-lg border border-line"
           style={{
             backgroundColor: `hsl(${hsva.h} 100% 50%)`,

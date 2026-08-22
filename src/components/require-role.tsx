@@ -14,6 +14,7 @@ const allowedRoles: Record<string, string[]> = {
   "/admin/users": ["super_admin"],
   "/admin/dashboard": ["super_admin", "bendahara", "humas"],
   "/admin/lomba": ["super_admin", "bendahara", "humas"],
+  "/admin/lomba/keuangan": ["super_admin", "bendahara"],
 }
 
 export function RequireRole({ path, children }: { path: string; children: ReactNode }) {

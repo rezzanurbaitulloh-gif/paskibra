@@ -27,6 +27,7 @@ import {
 import { supabase } from "@/lib/supabase/client"
 import { DEFAULT_SETTINGS, FONT_OPTIONS, type SiteSettings } from "@/contexts/SiteSettingsContext"
 import { ImageUpload } from "@/components/image-upload"
+import { ColorPicker } from "@/components/ui/color-picker"
 import { ListEditor, type ListField } from "@/components/admin/ListEditor"
 import { ContentExtractor } from "@/components/admin/content-extractor"
 
@@ -210,7 +211,7 @@ export default function SettingsPage() {
             <Card className="glass border-line">
               <CardHeader>
                 <CardTitle className="font-display">Palet Warna</CardTitle>
-                <p className="text-sm text-muted-foreground">Klik kotak warna untuk memilih, atau ketik kode hex di bawahnya. Warna Teks berlaku di tema terang — di tema gelap otomatis memakai warna terang bawaan agar tetap terbaca.</p>
+                <p className="text-sm text-muted-foreground">Klik kotak warna untuk membuka pemilih warna: geser area warna, atur hue &amp; opacity, isi nilai RGB, atau ketik kode hex. Warna Teks berlaku di tema terang — di tema gelap otomatis memakai warna terang bawaan agar tetap terbaca.</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -218,23 +219,31 @@ export default function SettingsPage() {
                     .filter(([key]) => key !== "background")
                     .map(([key, value]) => (
                       <div key={key} className="rounded-xl border border-line bg-soft/50 p-3">
-                        <div className="relative h-14 w-full overflow-hidden rounded-lg border border-line">
-                          <input
-                            type="color"
-                            value={value}
-                            onChange={(e) => updateSetting("colors", key, e.target.value)}
-                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                            aria-label={`Pilih warna ${key}`}
+                        <div className="relative mb-2 h-14 w-full overflow-hidden rounded-lg border border-line">
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundColor: value,
+                              backgroundImage:
+                                /rgba\(/.test(value) || value.length === 9
+                                  ? "repeating-conic-gradient(#80808080 0% 25%, transparent 0% 50%) 50% / 12px 12px"
+                                  : undefined,
+                            }}
                           />
-                          <div className="absolute inset-0" style={{ backgroundColor: value }} />
-                          <span className="absolute bottom-1 right-1 rounded bg-black/50 px-1 py-0.5 text-[9px] font-mono text-white/90">
+                          <span className="absolute bottom-1 right-1 rounded bg-black/50 px-1 py-0.5 font-mono text-[9px] text-white/90">
                             {value}
                           </span>
                         </div>
-                        <Label className="mt-2 block text-xs capitalize">
+                        <Label className="block text-xs capitalize">
                           {key === "foreground" ? "Warna Teks" : key}
                         </Label>
-                        <Input value={value} onChange={(e) => updateSetting("colors", key, e.target.value)} className="mt-1.5 h-8 border-line bg-card font-mono text-xs" />
+                        <div className="mt-1.5">
+                          <ColorPicker
+                            value={value}
+                            onChange={(v) => updateSetting("colors", key, v)}
+                            presets={Object.values(settings.colors)}
+                          />
+                        </div>
                       </div>
                     ))}
                 </div>
